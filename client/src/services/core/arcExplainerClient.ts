@@ -25,7 +25,6 @@ export interface PerformanceData {
   totalFeedback?: number;
   latestAnalysis?: string;
   worstExplanationId?: number;
-  compositeScore?: number;
   totalAttempts: number;
   modelPerformance: ModelPerformance[];
   dataset: string;
