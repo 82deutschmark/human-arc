@@ -1,4 +1,5 @@
-/**
+/**DATE: September 13, 2025
+ * AUTH: Gemini 2.5 Pro
  * Single Source of Truth for Assessment Puzzles
  * ============================================
  * This file contains the definitive list of puzzle IDs used in the user assessment.
@@ -12,3 +13,13 @@ export const ASSESSMENT_PUZZLE_IDS = [
   'ea786f4a', // Make an X
   '66e6c45b', // Expand!
 ];
+
+///
+// 'e7639916',    //  Connect the dots! Large!
+  
+ //  '0bb8deee',    //  Corral the shapes
+ //   '32e9702f',    //  Easy answer, everything pulled to the left and change 0 to 5 
+ //   '27a28665',    // 7 Examples, 3 Tests!
+ //   '7b80bb43', //  Close the gates!  Very Large and unusual size
+ //   '1caeab9d', //  Line them up!
+ //   '87ab05b8', //
