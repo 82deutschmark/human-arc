@@ -14,6 +14,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
+import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 
 // Curated assessment puzzle IDs HARDCODED BY THE DESIGNER!

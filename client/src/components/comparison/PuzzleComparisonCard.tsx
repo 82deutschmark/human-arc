@@ -7,9 +7,23 @@
 import { Link } from 'wouter';
 import type { PerformanceData } from '@/services/core/arcExplainerClient';
 
+// Define the detailed structure for a human performance record
+interface HumanPerformanceRecord {
+  puzzleId: string;
+  isCorrect: boolean;
+  timestamp: string;
+  basePoints: number;
+  speedBonus: number;
+  efficiencyBonus: number;
+  finalScore: number;
+  timeElapsed: number;
+  stepCount: number;
+  attemptNumber: number;
+}
+
 interface PuzzleComparisonCardProps {
   puzzleId: string;
-  humanResult: any; // Replace with a more specific type
+  humanResult: HumanPerformanceRecord;
   aiResult: PerformanceData | null;
 }
 
@@ -42,11 +56,28 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Human Performance */}
-        <div className={`p-3 rounded-lg ${humanCorrect ? 'bg-green-900/50' : 'bg-red-900/50'}`}>
-          <p className="font-bold text-white mb-1">Your Result</p>
-          <p className={`text-3xl font-bold ${humanCorrect ? 'text-green-400' : 'text-red-400'}`}>
-            {humanCorrect ? '✅ Correct' : '❌ Incorrect'}
-          </p>
+                <div className={`p-3 rounded-lg ${humanCorrect ? 'bg-green-900/50' : 'bg-red-900/50'}`}>
+          <p className="font-bold text-white mb-2">Your Result</p>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-300">Status:</span>
+              <span className={`font-bold text-xl ${humanCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                {humanCorrect ? '✅ Correct' : '❌ Incorrect'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-300">Score:</span>
+              <span className="font-bold text-xl text-amber-300">{humanResult.finalScore.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-300">Time:</span>
+              <span className="font-bold text-xl">{(humanResult.timeElapsed / 1000).toFixed(1)}s</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-300">Steps:</span>
+              <span className="font-bold text-xl">{humanResult.stepCount}</span>
+            </div>
+          </div>
         </div>
 
         {/* AI Performance */}

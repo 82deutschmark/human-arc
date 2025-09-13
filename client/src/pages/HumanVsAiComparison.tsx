@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
+import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
 
@@ -46,7 +47,10 @@ const [playFabId, setPlayFabId] = useState<string | null>(null);
 setPlayFabId(playFabAuthManager.getPlayFabId());
 
         // 2. Fetch human performance data from PlayFab
-        let humanData = await playFabUserData.getHumanPerformanceData();
+                let allHumanData = await playFabUserData.getHumanPerformanceData();
+
+        // Filter for assessment puzzles only
+        let humanData = allHumanData.filter(record => ASSESSMENT_PUZZLE_IDS.includes(record.puzzleId));
 
         // Filter out duplicates to prevent key errors
         if (humanData) {
