@@ -66,6 +66,13 @@ export function HumanVsAiComparison() {
         if (humanData.length > 0) {
           console.log('🔍 [DEBUG] Sample human record structure:', humanData[0]);
           console.log('🔍 [DEBUG] Sample record keys:', Object.keys(humanData[0]));
+          console.log('🔍 [DEBUG] "correct" field value:', humanData[0].correct);
+          console.log('🔍 [DEBUG] "correct" field type:', typeof humanData[0].correct);
+          console.log('🔍 [DEBUG] finalScore value:', humanData[0].finalScore);
+          console.log('🔍 [DEBUG] All human records with scores:');
+          humanData.forEach((record, index) => {
+            console.log(`    Record ${index}: puzzleId=${record.puzzleId}, correct=${record.correct} (${typeof record.correct}), finalScore=${record.finalScore}`);
+          });
         }
 
         // Filter out duplicates to prevent key errors
@@ -95,10 +102,14 @@ export function HumanVsAiComparison() {
           const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
           const aiData = arcId ? aiDataMap.get(arcId) : null;
 
-          // Data Transformation Layer
+          // Data Transformation Layer - FIX: Proper correctness determination
           const transformedHumanData = {
             puzzleId: humanRecord.puzzleId,
-            correct: humanRecord.correct || false,
+            // FIX: If a record exists in humanPerformanceData with a score, the player was correct
+            // CloudScript only saves successful completions to this array
+            correct: humanRecord.correct !== undefined
+              ? humanRecord.correct
+              : (humanRecord.finalScore > 0 ? true : false), // Score-based fallback
             timestamp: humanRecord.timestamp || new Date().toISOString(),
             basePoints: humanRecord.basePoints || 0,
             speedBonus: humanRecord.speedBonus || 0,
@@ -108,6 +119,9 @@ export function HumanVsAiComparison() {
             stepCount: humanRecord.stepCount || 0,
             attemptNumber: humanRecord.attemptNumber || 1,
           };
+
+          // DEBUG: Log transformation for each record
+          console.log(`🔄 [TRANSFORM] ${humanRecord.puzzleId}: correct=${humanRecord.correct} -> ${transformedHumanData.correct}, score=${transformedHumanData.finalScore}`);
 
           console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${
             aiData?.hasData
