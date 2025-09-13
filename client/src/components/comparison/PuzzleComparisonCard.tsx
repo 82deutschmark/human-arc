@@ -89,8 +89,10 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
               <span className="text-slate-300">Time:</span>
               <span className="font-bold text-xl">
                 {humanResult.timeElapsed ? humanResult.timeElapsed.toFixed(1) : 'N/A'}s
-                {/* DEBUG: Log time value (now in seconds, no conversion needed) */}
-                {console.log(`🔍 [DEBUG] ${puzzleId} - timeElapsed (seconds):`, humanResult.timeElapsed)}
+                {/* DEBUG: timeElapsed is in seconds, no conversion needed */}
+                {/* Debug values - uncomment if needed for debugging:
+                  console.log(`🔍 [DEBUG] ${puzzleId} - timeElapsed (seconds):`, humanResult.timeElapsed)
+                */}
               </span>
             </div>
             <div className="flex justify-between items-center">
