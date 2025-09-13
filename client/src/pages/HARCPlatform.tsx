@@ -11,8 +11,78 @@
  * - Build a comprehensive dataset for human vs AI reasoning research
  */
 import { useLocation } from 'wouter';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { arcExplainerClient, type PerformanceStatsResponse } from '@/services/core/arcExplainerClient';
+import { BarChart, Zap, Cpu, AlertTriangle } from 'lucide-react';
+
+interface PlatformStatsData {
+  performance: PerformanceStatsResponse;
+  general: {
+    totalPuzzles: number;
+    totalModels: number;
+  };
+}
+
+function PlatformStats() {
+  const [stats, setStats] = useState<PlatformStatsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setIsLoading(true);
+        const performance = await arcExplainerClient.getPerformanceStats();
+        const general = await arcExplainerClient.getGeneralStats();
+        setStats({ performance, general });
+      } catch (error) {
+        console.error("Failed to fetch platform stats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="bg-slate-800 border-slate-700 animate-pulse">
+            <CardContent className="pt-6">
+              <div className="h-6 bg-slate-700 rounded w-1/2 mx-auto"></div>
+              <div className="h-4 bg-slate-700 rounded w-3/4 mx-auto mt-2"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (!stats) return null;
+
+  const statItems = [
+    { icon: BarChart, value: stats.general.totalPuzzles, label: 'Puzzles Analyzed', color: 'text-cyan-400' },
+    { icon: Cpu, value: stats.general.totalModels, label: 'AI Models Tracked', color: 'text-green-400' },
+    { icon: Zap, value: stats.performance.impossible, label: 'Impossible for AI', color: 'text-amber-400' },
+    { icon: AlertTriangle, value: stats.performance.extremely_hard, label: 'Extremely Hard for AI', color: 'text-red-400' },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+      {statItems.map(item => (
+        <Card key={item.label} className="bg-slate-800 border-slate-700 text-center">
+          <CardContent className="pt-6">
+            <item.icon className={`w-8 h-8 mx-auto mb-2 ${item.color}`} />
+            <div className={`text-3xl font-bold ${item.color}`}>{item.value.toLocaleString()}</div>
+            <p className="text-sm text-slate-300 mt-1">{item.label}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
 export default function HARCPlatform() {
   const [, setLocation] = useLocation();
@@ -46,6 +116,9 @@ export default function HARCPlatform() {
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-12">
+        {/* Mission Statement */}
+        <PlatformStats />
+
         {/* Mission Statement */}
         <div className="text-center mb-12">
           <h2 className="text-2xl font-bold text-cyan-400 mb-6">

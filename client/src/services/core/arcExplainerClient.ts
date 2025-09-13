@@ -240,23 +240,23 @@ export class ArcExplainerClient {
   async getBatchPerformance(puzzleIds: string[]): Promise<Map<string, PerformanceData>> {
     const performanceMap = new Map<string, PerformanceData>();
 
-    // For now, use worst-performing endpoint and filter
-    // In future, could add a batch endpoint to arc-explainer
-    const worstPuzzles = await this.getWorstPerformingPuzzles({ limit: 200 });
-
-    puzzleIds.forEach(playFabId => {
-      const arcId = idConverter.normalizeToArcId(playFabId);
-      if (!arcId) return;
-
-      const found = worstPuzzles.find(p =>
-        (p.id === arcId) || (p.puzzleId === arcId)
-      );
-
-      if (found && found.performanceData) {
-        performanceMap.set(playFabId, found.performanceData);
-      }
+    // Create an array of promises to fetch performance for each puzzle
+    const performancePromises = puzzleIds.map(async (id) => {
+      const performance = await this.getPuzzlePerformance(id);
+      return { id, performance };
     });
 
+    // Wait for all promises to resolve
+    const results = await Promise.all(performancePromises);
+
+    // Populate the map with the results
+    for (const result of results) {
+      if (result.performance) {
+        performanceMap.set(result.id, result.performance);
+      }
+    }
+
+    console.log(`🤖 Fetched batch performance for ${performanceMap.size}/${puzzleIds.length} puzzles`);
     return performanceMap;
   }
 
