@@ -31,6 +31,46 @@ export interface PerformanceData {
   dangerousOverconfidence?: boolean;
 }
 
+// NEW: Types for the proper explanations endpoint
+export interface ExplanationRecord {
+  id: number;
+  puzzleId: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string;
+  confidence: number;
+  modelName: string;
+  predictedOutputGrid: any[][];
+  isPredictionCorrect: boolean;
+  predictionAccuracyScore: number;
+  hasMultiplePredictions: boolean;
+  multiplePredictedOutputs?: any[];
+  multiTestResults?: any[];
+  multiTestAllCorrect?: boolean;
+  multiTestAverageAccuracy?: number;
+  createdAt: string;
+  helpfulVotes: number;
+  notHelpfulVotes: number;
+}
+
+// Aggregated stats from explanations
+export interface AggregatedAIStats {
+  totalAttempts: number;
+  correctAttempts: number;
+  accuracy: number;
+  averageConfidence: number;
+  modelBreakdown: ModelStats[];
+  hasData: boolean;
+}
+
+export interface ModelStats {
+  modelName: string;
+  attempts: number;
+  correct: number;
+  accuracy: number;
+  avgConfidence: number;
+}
+
 export interface PuzzleWithPerformance {
   id: string;
   puzzleId?: string;
@@ -422,6 +462,134 @@ export class ArcExplainerClient {
     }
 
     console.log(`📊 Batch accuracy stats complete: ${statsMap.size}/${puzzleIds.length} puzzles`);
+    return statsMap;
+  }
+
+  /**
+   * Get AI explanations for a specific puzzle (PROPER ENDPOINT)
+   * Returns array of explanation records with performance data
+   */
+  async getPuzzleExplanations(puzzleId: string): Promise<ExplanationRecord[]> {
+    const arcId = idConverter.normalizeToArcId(puzzleId);
+    if (!arcId) {
+      console.error(`❌ Invalid puzzle ID for explanations: ${puzzleId}`);
+      return [];
+    }
+
+    console.log(`🤖 Getting AI explanations for puzzle: ${arcId}`);
+    const endpoint = `/api/puzzle/${arcId}/explanations`;
+
+    try {
+      const response = await this.request<any>(endpoint);
+
+      if (response?.success && Array.isArray(response?.data)) {
+        console.log(`✅ Found ${response.data.length} explanations for ${arcId}`);
+        return response.data;
+      }
+
+      console.warn(`⚠️ No explanations found for ${arcId}`);
+      return [];
+    } catch (error) {
+      console.error(`❌ Failed to get explanations for ${arcId}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Aggregate AI performance stats from explanations array
+   */
+  aggregateAIStats(explanations: ExplanationRecord[]): AggregatedAIStats {
+    if (explanations.length === 0) {
+      return {
+        totalAttempts: 0,
+        correctAttempts: 0,
+        accuracy: 0,
+        averageConfidence: 0,
+        modelBreakdown: [],
+        hasData: false
+      };
+    }
+
+    const totalAttempts = explanations.length;
+    const correctAttempts = explanations.filter(exp => exp.isPredictionCorrect).length;
+    const accuracy = (correctAttempts / totalAttempts) * 100;
+
+    // Calculate average confidence
+    const validConfidences = explanations
+      .map(exp => exp.confidence)
+      .filter(conf => typeof conf === 'number' && !isNaN(conf));
+    const averageConfidence = validConfidences.length > 0
+      ? validConfidences.reduce((sum, conf) => sum + conf, 0) / validConfidences.length
+      : 0;
+
+    // Calculate per-model breakdown
+    const modelMap = new Map<string, { attempts: number; correct: number; confidences: number[] }>();
+
+    for (const exp of explanations) {
+      if (!modelMap.has(exp.modelName)) {
+        modelMap.set(exp.modelName, { attempts: 0, correct: 0, confidences: [] });
+      }
+
+      const modelData = modelMap.get(exp.modelName)!;
+      modelData.attempts++;
+      if (exp.isPredictionCorrect) modelData.correct++;
+      if (typeof exp.confidence === 'number' && !isNaN(exp.confidence)) {
+        modelData.confidences.push(exp.confidence);
+      }
+    }
+
+    const modelBreakdown: ModelStats[] = Array.from(modelMap.entries()).map(([modelName, data]) => ({
+      modelName,
+      attempts: data.attempts,
+      correct: data.correct,
+      accuracy: (data.correct / data.attempts) * 100,
+      avgConfidence: data.confidences.length > 0
+        ? data.confidences.reduce((sum, conf) => sum + conf, 0) / data.confidences.length
+        : 0
+    }));
+
+    // Sort by accuracy descending
+    modelBreakdown.sort((a, b) => b.accuracy - a.accuracy);
+
+    return {
+      totalAttempts,
+      correctAttempts,
+      accuracy,
+      averageConfidence,
+      modelBreakdown,
+      hasData: true
+    };
+  }
+
+  /**
+   * Get aggregated AI performance stats for multiple puzzles using explanations
+   * This is the CORRECT method to use instead of getBatchAccuracyStats
+   */
+  async getBatchExplanationsStats(puzzleIds: string[]): Promise<Map<string, AggregatedAIStats>> {
+    console.log(`🔍 Getting batch explanations for ${puzzleIds.length} puzzles`);
+    const statsMap = new Map<string, AggregatedAIStats>();
+
+    const promises = puzzleIds.map(async (puzzleId) => {
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      if (!arcId) return { puzzleId, arcId: null, stats: null };
+
+      const explanations = await this.getPuzzleExplanations(arcId);
+      const stats = this.aggregateAIStats(explanations);
+
+      return { puzzleId, arcId, stats };
+    });
+
+    const results = await Promise.all(promises);
+
+    for (const result of results) {
+      if (result.arcId && result.stats) {
+        statsMap.set(result.arcId, result.stats);
+      }
+    }
+
+    const puzzlesWithData = Array.from(statsMap.values()).filter(stats => stats.hasData).length;
+    console.log(`📊 Batch explanations complete: ${puzzlesWithData}/${puzzleIds.length} puzzles have AI data`);
+
     return statsMap;
   }
 

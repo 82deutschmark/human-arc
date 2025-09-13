@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
-import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
+import { arcExplainerClient, type AggregatedAIStats } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
@@ -17,22 +17,7 @@ import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCa
 interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
-  ai: AccuracyStatsData | null;
-}
-
-// New interface for accuracy stats data
-interface AccuracyStatsData {
-  totalSolverAttempts: number;
-  totalCorrectPredictions: number;
-  overallAccuracyPercentage: number;
-  modelAccuracyRankings: ModelAccuracy[];
-}
-
-interface ModelAccuracy {
-  modelName: string;
-  totalAttempts: number;
-  correctPredictions: number;
-  accuracyPercentage: number;
+  ai: AggregatedAIStats | null;
 }
 
 export function HumanVsAiComparison() {
@@ -43,9 +28,12 @@ export function HumanVsAiComparison() {
 
   // Calculate summary statistics
   const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
-  // New: Use overallAccuracyPercentage from accuracy stats endpoint
-  const aiCorrect = Math.round(comparisonData.reduce((acc, d) => acc + ((d.ai?.overallAccuracyPercentage || 0) / 100), 0));
+  // New: Use aggregated AI stats from explanations
+  const totalAIAttempts = comparisonData.reduce((acc, d) => acc + (d.ai?.totalAttempts || 0), 0);
+  const totalAICorrect = comparisonData.reduce((acc, d) => acc + (d.ai?.correctAttempts || 0), 0);
+  const aiAccuracy = totalAIAttempts > 0 ? (totalAICorrect / totalAIAttempts) * 100 : 0;
   const totalPuzzles = comparisonData.length;
+  const puzzlesWithAIData = comparisonData.filter(d => d.ai?.hasData).length;
 
   useEffect(() => {
     const fetchComparisonData = async () => {
@@ -87,9 +75,9 @@ export function HumanVsAiComparison() {
           return;
         }
 
-        // 3. Use the NEW batch accuracy stats endpoint for better performance data
-        console.log('🚀 Using NEW batch accuracy stats endpoint');
-        const aiDataMap = await arcExplainerClient.getBatchAccuracyStats(ASSESSMENT_PUZZLE_IDS);
+        // 3. Use the PROPER explanations endpoint for real AI performance data
+        console.log('🚀 Using PROPER explanations endpoint for real AI stats');
+        const aiDataMap = await arcExplainerClient.getBatchExplanationsStats(ASSESSMENT_PUZZLE_IDS);
 
         // 4. Merge human and AI data
         console.log(`📊 AI data map contains:`, Array.from(aiDataMap.keys()));
@@ -98,7 +86,11 @@ export function HumanVsAiComparison() {
         const mergedData = humanData.map(humanRecord => {
           const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
           const aiData = arcId ? aiDataMap.get(arcId) : null;
-          console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${aiData ? 'HAS AI DATA' : 'NO AI DATA'}`);
+          console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${
+            aiData?.hasData
+              ? `${aiData.correctAttempts}/${aiData.totalAttempts} (${aiData.accuracy.toFixed(1)}%)`
+              : 'NO AI DATA'
+          }`);
           return {
             puzzleId: humanRecord.puzzleId,
             human: humanRecord,
@@ -149,11 +141,37 @@ export function HumanVsAiComparison() {
         
         {totalPuzzles > 0 && (
           <div className="mb-8">
-            <ComparisonSummary 
-              humanCorrect={humanCorrect}
-              aiCorrect={aiCorrect}
-              totalPuzzles={totalPuzzles}
-            />
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <h2 className="text-xl font-semibold text-amber-400 mb-4">Performance Summary</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-400">{humanCorrect}/{totalPuzzles}</div>
+                  <div className="text-slate-400">Human Correct</div>
+                  <div className="text-sm text-slate-500">
+                    ({totalPuzzles > 0 ? ((humanCorrect / totalPuzzles) * 100).toFixed(1) : 0}%)
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400">
+                    {totalAICorrect}/{totalAIAttempts}
+                  </div>
+                  <div className="text-slate-400">AI Correct</div>
+                  <div className="text-sm text-slate-500">
+                    ({aiAccuracy.toFixed(1)}% accuracy)
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">{puzzlesWithAIData}/{totalPuzzles}</div>
+                  <div className="text-slate-400">Puzzles with AI Data</div>
+                  <div className="text-sm text-slate-500">
+                    {totalAIAttempts} total AI attempts
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

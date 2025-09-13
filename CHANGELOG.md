@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 ## Recent Commits (Latest First)
 
+**2025-09-13**: 🎯 NEW BULK API ENDPOINTS - Efficient AI Performance Data Loading
+- **BREAKTHROUGH**: Implemented the new `/api/feedback/accuracy-stats` endpoint for bulk performance data
+- **PERFORMANCE BOOST**: Replaced individual puzzle API calls with efficient batch processing
+- **RICH DATA**: New endpoint provides comprehensive model performance statistics including:
+  - Overall accuracy percentage per puzzle
+  - Total solver attempts and correct predictions
+  - Detailed model rankings with individual model performance
+- **BETTER ARCHITECTURE**:
+  - Added `getBatchAccuracyStats()` method in `arcExplainerClient`
+  - Proper TypeScript interfaces for the new data structure
+  - Updated `HumanVsAiComparison` to use batch endpoint
+- **INVESTIGATION RESULTS**: Discovered the correct API pattern - query parameters (`?puzzleId=X`) not URL paths
+- **HOW TO TEST**: Visit comparison page to see much richer AI performance data with better loading performance
+- **FILES MODIFIED**:
+  - `client/src/services/core/arcExplainerClient.ts` (New batch endpoints)
+  - `client/src/pages/HumanVsAiComparison.tsx` (Updated to use new endpoint)
+- **Author**: Sonnet 4
+
 **2025-09-13**: 🚀 AI COMPARISON DATA LOADING FIX - Simple Solution to Complex Problem
 - **THE PROBLEM**: AI performance data was not loading on the Human vs AI Comparison page (`/assessment/comparison`), showing empty or missing AI statistics
 - **ROOT CAUSE**: ID format mismatch between assessment puzzle IDs (ARC format: 'e7dd8335') and human performance data from PlayFab (prefixed format: 'ARC-TR-e7dd8335'). The filtering logic used simple includes() check which failed.
