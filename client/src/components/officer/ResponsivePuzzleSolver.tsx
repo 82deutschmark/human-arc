@@ -672,7 +672,10 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
       );
     }
 
-    // Add composite difficulty score
+    // Add composite difficulty score?????
+    // This seems to have no basis in reality and was probably hallucinated by Claude.
+    // We need to audit the project for it.  Find out what it thinks that it is doing, 
+    // probably some AI slop hallucination.
     if (performanceStats.compositeScore > 0) {
       badges.push(
         <Badge key="difficulty" variant="outline" className="border-amber-400 text-amber-300">
@@ -687,7 +690,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   return (
     <div className="min-h-screen bg-slate-900 text-amber-50">
       <Navbar 
-        title="ARC Puzzles for People" 
+        title="Are you smarter than a Chatbot?" 
         badges={renderBadges()} 
         showBackButton={true} 
         onBack={onBack}

@@ -79,7 +79,7 @@ export const SPACE_EMOJIS = {
   alchemy_science: ['⬛', '⚗️', '🔬', '🔭', '📡', '🧲', '🌡️', '🧬', '💉', '🧪'],
 
   // Ancient Scripts
-  ancient_scripts: ['⬛', '𓀀', '𓂀', '𓃒', '𓆏', '𓋹', '𓍯', '𓎛', '𓏤', '𓐍'],
+  ancient_scripts: ['⬛', '𓀀', '𓂀', '𓃒', '𓆏', '𓋹', '𓍯', 'Ͽ', 'Ϡ', 'ͳ'],
 
   // Zodiac Signs
   zodiac_signs: ['⬛', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐'],
@@ -88,7 +88,7 @@ export const SPACE_EMOJIS = {
   foreign_celestial: ['⬛', '🈶', '🈚', '🈯', '🈸', '🈴', '🈳', '㊗️', '㊙️', '🈺'],
 
   // Symbolic Portals & Gateways
-  cosmic_portals: ['⬛', '🚪', '⛩️', '🏞️', '🛤️', '🌉', '🕳️', '🌀', '🌌', '🌠'],
+  cosmic_portals: ['⬛', '🚪', '⛩️', '🏞️', '🛤️', '🌉', '🕳️', '🗺', '🔍', '🏛'],
 
   // Void Dwellers
   void_dwellers: ['⬛', '🐙', '🦑', '🦐', '🦀', '🐡', '🐠', '🐟', '🐬', '🐋'],
