@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { playFabUserData } from '@/services/playfab';
+import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 import { arcExplainerAPI, type AIPuzzlePerformance } from '@/services/arcExplainerAPI';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
@@ -33,7 +33,17 @@ export function HumanVsAiComparison() {
       try {
         setIsLoading(true);
 
-        // 1. Fetch human performance data from PlayFab
+        // 1. Initialize PlayFab and authenticate the user
+        const titleId = import.meta.env.VITE_PLAYFAB_TITLE_ID;
+        if (!titleId) {
+          throw new Error('VITE_PLAYFAB_TITLE_ID environment variable not found');
+        }
+        if (!playFabRequestManager.isInitialized()) {
+          await playFabRequestManager.initialize({ titleId, secretKey: import.meta.env.VITE_PLAYFAB_SECRET_KEY });
+        }
+        await playFabAuthManager.ensureAuthenticated();
+
+        // 2. Fetch human performance data from PlayFab
         const humanData = await playFabUserData.getHumanPerformanceData();
         if (!humanData || humanData.length === 0) {
           setError('No human performance data found. Please complete the assessment first.');
@@ -41,13 +51,13 @@ export function HumanVsAiComparison() {
           return;
         }
 
-        // 2. Extract puzzle IDs
+        // 3. Extract puzzle IDs
         const puzzleIds = humanData.map(record => record.puzzleId);
 
-        // 3. Fetch AI performance data for those puzzles
+        // 4. Fetch AI performance data for those puzzles
         const aiDataMap = await arcExplainerAPI.getBatchPuzzlePerformance(puzzleIds);
 
-        // 4. Merge the data
+        // 5. Merge the data
         const mergedData: ComparisonData[] = humanData.map(humanRecord => {
           const aiRecord = aiDataMap.get(humanRecord.puzzleId) || null;
           return {
