@@ -175,27 +175,39 @@ export class ArcExplainerClient {
       // Convert PlayFab ID to ARC ID if needed
       const arcId = idConverter.normalizeToArcId(puzzleId);
       if (!arcId) {
-        console.error(`Invalid puzzle ID: ${puzzleId}`);
+        console.error(`❌ Invalid puzzle ID for performance lookup: ${puzzleId}`);
         return null;
       }
 
+      console.log(`🌐 Making API request for puzzle: ${arcId}`);
       const endpoint = `/api/puzzle/task/${arcId}`;
       const response = await this.request<any>(endpoint);
+
+      console.log(`📡 API Response for ${arcId}:`, {
+        success: response?.success,
+        hasData: !!response?.data,
+        hasPerformanceData: !!(response?.data?.performanceData),
+        dataKeys: response?.data ? Object.keys(response.data) : [],
+        avgAccuracy: response?.data?.avgAccuracy
+      });
 
       // The API returns the performance data nested inside a `data` object.
       // The structure is { success: true, data: { puzzle: {...}, performanceData: {...} } }
       if (response.success && response.data && response.data.performanceData) {
+        console.log(`✅ Found performance data in nested structure for ${arcId}`);
         return response.data.performanceData;
       }
 
       // It's also possible the performance data is at the root of the data object
       if (response.success && response.data?.avgAccuracy !== undefined) {
+        console.log(`✅ Found performance data at root level for ${arcId}`);
         return response.data;
       }
 
+      console.warn(`⚠️ No performance data found for ${arcId}`);
       return null;
     } catch (error) {
-      console.error(`Failed to get performance for ${puzzleId}:`, error);
+      console.error(`❌ Failed to get performance for ${puzzleId}:`, error);
       return null;
     }
   }
@@ -245,16 +257,27 @@ export class ArcExplainerClient {
    * Get batch performance data for multiple puzzles
    */
   async getBatchPerformance(puzzleIds: string[]): Promise<Map<string, PerformanceData>> {
+    console.log(`🔍 getBatchPerformance called with IDs:`, puzzleIds);
     const performanceMap = new Map<string, PerformanceData>();
 
     // Create an array of promises to fetch performance for each puzzle
-    const performancePromises = puzzleIds.map(async (playFabId) => {
-      const arcId = idConverter.normalizeToArcId(playFabId);
+    const performancePromises = puzzleIds.map(async (puzzleId) => {
+      console.log(`🔄 Processing puzzle ID: ${puzzleId}`);
+
+      // First, check if this is already an ARC ID
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      console.log(`🔗 ID conversion: ${puzzleId} -> ${arcId}`);
+
       if (!arcId) {
-        return { id: playFabId, arcId: null, performance: null };
+        console.error(`❌ Failed to convert ID: ${puzzleId}`);
+        return { id: puzzleId, arcId: null, performance: null };
       }
+
+      console.log(`📡 Fetching performance for ARC ID: ${arcId}`);
       const performance = await this.getPuzzlePerformance(arcId);
-      return { id: playFabId, arcId, performance };
+      console.log(`📊 Performance result for ${arcId}:`, performance ? 'SUCCESS' : 'FAILED');
+
+      return { id: puzzleId, arcId, performance };
     });
 
     // Wait for all promises to resolve
@@ -264,10 +287,14 @@ export class ArcExplainerClient {
     for (const result of results) {
       if (result.arcId && result.performance) {
         performanceMap.set(result.arcId, result.performance);
+        console.log(`✅ Added to map: ${result.arcId}`);
+      } else {
+        console.warn(`⚠️ Skipped (no performance data): ${result.id} -> ${result.arcId}`);
       }
     }
 
-    console.log(`🤖 Fetched batch performance for ${performanceMap.size}/${puzzleIds.length} puzzles`);
+    console.log(`🤖 Final result: ${performanceMap.size}/${puzzleIds.length} puzzles with performance data`);
+    console.log(`📋 Map contents:`, Array.from(performanceMap.keys()));
     return performanceMap;
   }
 

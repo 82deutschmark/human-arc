@@ -64,6 +64,18 @@
 ### Models
 - **`GET /api/models`** - Get available AI models
 - **`GET /api/models/:provider`** - Get models for a specific provider
+### NEW
+our list is missing the following endpoints that exist in the codebase:
+
+GET /api/puzzles/stats: Gets performance metrics for all puzzles, used by the Puzzle DB Viewer.
+GET /api/feedback/accuracy-stats: A dedicated route to get accuracy stats from the feedback controller.
+GET /api/metrics/reliability: Retrieves model reliability statistics.
+GET /api/metrics/comprehensive-dashboard: Gets data for a comprehensive analytics dashboard.
+GET /api/models/:modelKey: Retrieves the configuration for a single, specific model by its key.
+Minor Inaccuracies & Nuances:
+GET /api/models/:provider: The correct path is GET /api/models/provider/:provider. The /provider/ segment is static.
+
+
 
 ## Currently Used vs Available Opportunities
 
