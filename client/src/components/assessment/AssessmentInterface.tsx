@@ -16,18 +16,22 @@ import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 
-// Curated assessment puzzle IDs
+// Curated assessment puzzle IDs HARDCODED BY THE DESIGNER!
 const ASSESSMENT_PUZZLE_IDS = [
   
   'e7dd8335',    //  Easy answer, fill the bottom half of the symmetrical shape
   'fc754716',    //  Make the outline whatever the dot is
   'a699fb00',    //  Connect the dots
   'ea786f4a',    //  Make an X
-  'e7639916',    //  Connect the dots! Large!
   '66e6c45b',    //  Expand!
-  '0bb8deee',    //  Corral the shapes
-  '32e9702f',    //  Easy answer, everything pulled to the left and change 0 to 5 
-  '27a28665',    // 7 Examples, 3 Tests!
+
+  /// LIMIT TO 5 PUZZLES for testing and development, expand to 10 later.  
+
+// 'e7639916',    //  Connect the dots! Large!
+  
+ //  '0bb8deee',    //  Corral the shapes
+ //   '32e9702f',    //  Easy answer, everything pulled to the left and change 0 to 5 
+ //   '27a28665',    // 7 Examples, 3 Tests!
  //   '7b80bb43', //  Close the gates!  Very Large and unusual size
  //   '1caeab9d', //  Line them up!
  //   '87ab05b8', //
@@ -124,20 +128,41 @@ export function AssessmentInterface() {
   // Check which puzzles have already been completed
   const checkCompletedPuzzles = async (): Promise<Set<string>> => {
     try {
+      console.log('[Assessment] Checking completed puzzles...');
+
       // Directly fetch only the performance data needed
-      const humanPerformanceData = await playFabUserData.getHumanPerformanceData();
-      
+      let humanPerformanceData = await playFabUserData.getHumanPerformanceData();
+
+      // If no data found, attempt player recovery
+      if (!humanPerformanceData || humanPerformanceData.length === 0) {
+        console.log('[Assessment] No completion data found, attempting player recovery...');
+
+        const recovered = await playFabAuthManager.attemptPlayerRecovery();
+        if (recovered) {
+          console.log('[Assessment] Player recovery successful, re-checking completion data...');
+          humanPerformanceData = await playFabUserData.getHumanPerformanceData();
+        } else {
+          console.log('[Assessment] Player recovery failed or no previous data found');
+        }
+      }
+
       if (humanPerformanceData && humanPerformanceData.length > 0) {
         // The data is already parsed as an array of objects
         const completed = new Set<string>(humanPerformanceData.map(r => r.puzzleId));
         setCompletedPuzzles(completed);
-        console.log('Checked completed puzzles, found:', completed);
+        console.log('[Assessment] Found completed puzzles:', completed);
+
+        // Log recovery success if we found data after recovery attempt
+        const currentPlayFabId = playFabAuthManager.getPlayFabId();
+        console.log('[Assessment] Current PlayFab ID:', currentPlayFabId);
+
         return completed;
       }
     } catch (error) {
-      console.error('Failed to check completed puzzles:', error);
+      console.error('[Assessment] Failed to check completed puzzles:', error);
     }
-    console.log('No completed puzzles found.');
+
+    console.log('[Assessment] No completed puzzles found after all attempts.');
     return new Set<string>();
   };
 

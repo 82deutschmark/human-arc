@@ -13,13 +13,16 @@ export function AssessmentModal({ open, onClose }: AssessmentModalProps) {
         <DialogTitle className="sr-only">ARC Assessment Information</DialogTitle>
         <div className="text-center space-y-4 p-2 sm:p-4">
           <div>
-            <h1 className="text-3xl font-bold text-amber-400 mb-2">ARC Assessment</h1>
-            <p className="text-slate-400 font-mono text-sm">ABSTRACT REASONING EVALUATION</p>
+            <h1 className="text-3xl font-bold text-amber-400 mb-2">Are you smarter than an LLM?</h1>
+            <p className="text-slate-400 font-mono text-sm">Are you ready to challenge the limits
+               of your cognitive abilities and be compared to the state of the art in "AI"?</p>
           </div>
           
           <div className="space-y-4 px-2">
             <div className="bg-slate-900 border border-slate-600 rounded p-3 sm:p-4">
-              <h3 className="text-amber-400 font-semibold mb-2">Welcome to the Assessment</h3>
+              <h3 className="text-amber-400 font-semibold mb-2">ARC-AGI is a unique benchmark for AI systems,
+                one they haven't been able to beat yet.
+              </h3>
               <div className="text-slate-200 text-base leading-relaxed space-y-3">
                 <p>
                   You will be presented with a series of <span className="text-amber-400 font-bold">Abstract Reasoning Corpus (ARC)</span> puzzles designed to evaluate pattern recognition and logical reasoning abilities.
