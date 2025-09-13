@@ -6,8 +6,10 @@
  */
 
 import { useState, useEffect } from 'react';
-import { playFabUserData } from '@/services/playfab';
-import { arcExplainerAPI, type AIPuzzlePerformance } from '@/services/arcExplainerAPI';
+import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
+import { arcExplainerClient, type AggregatedAIStats } from '@/services/core/arcExplainerClient';
+import { idConverter } from '@/services/idConverter';
+import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
 
@@ -15,45 +17,84 @@ import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCa
 interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
-  ai: AIPuzzlePerformance | null;
+  ai: AggregatedAIStats | null;
 }
 
 export function HumanVsAiComparison() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
+  const [playFabId, setPlayFabId] = useState<string | null>(null);
 
   // Calculate summary statistics
-  const humanCorrect = comparisonData.filter(d => d.human?.correct).length;
-  const aiCorrect = Math.round(comparisonData.reduce((acc, d) => acc + (d.ai?.avgAccuracy || 0), 0));
+  const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
+  // New: Use aggregated AI stats from explanations
+  const totalAIAttempts = comparisonData.reduce((acc, d) => acc + (d.ai?.totalAttempts || 0), 0);
+  const totalAICorrect = comparisonData.reduce((acc, d) => acc + (d.ai?.correctAttempts || 0), 0);
+  const aiAccuracy = totalAIAttempts > 0 ? (totalAICorrect / totalAIAttempts) * 100 : 0;
   const totalPuzzles = comparisonData.length;
+  const puzzlesWithAIData = comparisonData.filter(d => d.ai?.hasData).length;
 
   useEffect(() => {
     const fetchComparisonData = async () => {
       try {
         setIsLoading(true);
 
-        // 1. Fetch human performance data from PlayFab
-        const humanData = await playFabUserData.getHumanPerformanceData();
+        // 1. Initialize PlayFab and authenticate the user
+        const titleId = import.meta.env.VITE_PLAYFAB_TITLE_ID;
+        if (!titleId) {
+          throw new Error('VITE_PLAYFAB_TITLE_ID environment variable not found');
+        }
+        if (!playFabRequestManager.isInitialized()) {
+          await playFabRequestManager.initialize({ titleId, secretKey: import.meta.env.VITE_PLAYFAB_SECRET_KEY });
+        }
+        await playFabAuthManager.ensureAuthenticated();
+        setPlayFabId(playFabAuthManager.getPlayFabId());
+
+        // 2. Fetch human performance data from PlayFab
+        let allHumanData = await playFabUserData.getHumanPerformanceData();
+
+        // Filter for assessment puzzles only - handle both ARC and PlayFab format IDs
+        let humanData = allHumanData.filter(record => {
+          const arcId = idConverter.normalizeToArcId(record.puzzleId);
+          return arcId && ASSESSMENT_PUZZLE_IDS.includes(arcId);
+        });
+
+        // Filter out duplicates to prevent key errors
+        if (humanData) {
+          const seen = new Set();
+          humanData = humanData.filter(item => {
+            const duplicate = seen.has(item.puzzleId);
+            seen.add(item.puzzleId);
+            return !duplicate;
+          });
+        }
         if (!humanData || humanData.length === 0) {
           setError('No human performance data found. Please complete the assessment first.');
           setIsLoading(false);
           return;
         }
 
-        // 2. Extract puzzle IDs
-        const puzzleIds = humanData.map(record => record.puzzleId);
+        // 3. Use the PROPER explanations endpoint for real AI performance data
+        console.log('🚀 Using PROPER explanations endpoint for real AI stats');
+        const aiDataMap = await arcExplainerClient.getBatchExplanationsStats(ASSESSMENT_PUZZLE_IDS);
 
-        // 3. Fetch AI performance data for those puzzles
-        const aiDataMap = await arcExplainerAPI.getBatchPuzzlePerformance(puzzleIds);
+        // 4. Merge human and AI data
+        console.log(`📊 AI data map contains:`, Array.from(aiDataMap.keys()));
+        console.log(`👤 Human data contains ${humanData.length} records`);
 
-        // 4. Merge the data
-        const mergedData: ComparisonData[] = humanData.map(humanRecord => {
-          const aiRecord = aiDataMap.get(humanRecord.puzzleId) || null;
+        const mergedData = humanData.map(humanRecord => {
+          const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
+          const aiData = arcId ? aiDataMap.get(arcId) : null;
+          console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${
+            aiData?.hasData
+              ? `${aiData.correctAttempts}/${aiData.totalAttempts} (${aiData.accuracy.toFixed(1)}%)`
+              : 'NO AI DATA'
+          }`);
           return {
             puzzleId: humanRecord.puzzleId,
             human: humanRecord,
-            ai: aiRecord,
+            ai: aiData || null,
           };
         });
 
@@ -95,15 +136,42 @@ export function HumanVsAiComparison() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-amber-400 mb-4 text-center">Human vs. AI Performance</h1>
+        <h1 className="text-3xl font-bold text-amber-400 mb-2 text-center">Human vs. AI Performance</h1>
+        {playFabId && <p className="text-center text-slate-400 text-sm mb-4">PlayFab ID: {playFabId}</p>}
         
         {totalPuzzles > 0 && (
           <div className="mb-8">
-            <ComparisonSummary 
-              humanCorrect={humanCorrect}
-              aiCorrect={aiCorrect}
-              totalPuzzles={totalPuzzles}
-            />
+            <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+              <h2 className="text-xl font-semibold text-amber-400 mb-4">Performance Summary</h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-400">{humanCorrect}/{totalPuzzles}</div>
+                  <div className="text-slate-400">Human Correct</div>
+                  <div className="text-sm text-slate-500">
+                    ({totalPuzzles > 0 ? ((humanCorrect / totalPuzzles) * 100).toFixed(1) : 0}%)
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400">
+                    {totalAICorrect}/{totalAIAttempts}
+                  </div>
+                  <div className="text-slate-400">AI Correct</div>
+                  <div className="text-sm text-slate-500">
+                    ({aiAccuracy.toFixed(1)}% accuracy)
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400">{puzzlesWithAIData}/{totalPuzzles}</div>
+                  <div className="text-slate-400">Puzzles with AI Data</div>
+                  <div className="text-sm text-slate-500">
+                    {totalAIAttempts} total AI attempts
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

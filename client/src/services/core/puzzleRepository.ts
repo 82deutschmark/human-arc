@@ -175,7 +175,8 @@ export class PuzzleRepository {
 
       // Step 3: Create enhanced puzzles
       let enhanced: EnhancedPuzzle[] = allPuzzles.map(puzzle => {
-        const performance = performanceMap.get(puzzle.id);
+        const arcId = idConverter.normalizeToArcId(puzzle.id);
+        const performance = arcId ? performanceMap.get(arcId) : undefined;
         const hasPerformanceData = !!performance;
 
         return {
@@ -317,15 +318,16 @@ export class PuzzleRepository {
     // Load uncached puzzles in batch
     if (uncachedIds.length > 0) {
       const playfabPuzzles = await playfabPuzzleClient.loadPuzzlesByIds(uncachedIds);
-      const performanceMap = includePerformance ?
-        await arcExplainerClient.getBatchPerformance(uncachedIds) :
-        new Map();
+      const performanceMap = includePerformance
+        ? await arcExplainerClient.getBatchPerformance(uncachedIds)
+        : new Map();
 
       for (const id of uncachedIds) {
         const puzzleData = playfabPuzzles.get(id);
         if (!puzzleData) continue;
 
-        const performance = performanceMap.get(id);
+        const arcId = idConverter.normalizeToArcId(id);
+        const performance = arcId ? performanceMap.get(arcId) : undefined;
         const enhanced: EnhancedPuzzle = {
           ...puzzleData,
           aiPerformance: performance,

@@ -1,4 +1,4 @@
-/**
+/**POSSIBLY DEPRECATED!!!!
  * arc-explainer HTTP API Client
  * 
  * Makes browser HTTP calls to external arc-explainer server

@@ -369,6 +369,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         // Add new detailed performance record
         humanPerformanceData.push({
             puzzleId,
+            isCorrect: true, // Add the missing correctness flag
             timestamp: new Date().toISOString(),
             ...scoreData,
             timeElapsed,

@@ -11,11 +11,13 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Badge } from '@/components/ui/badge';
 import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { AssessmentStepSuccessModal } from '@/components/assessment/AssessmentStepSuccessModal';
 import { ResponsiveOfficerGrid, ResponsiveOfficerDisplayGrid } from '@/components/officer/ResponsiveOfficerGrid';
 import { TrainingExamplesSection } from '@/components/officer/TrainingExamplesSection';
 import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
 import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
+import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EmojiSet } from '@/constants/spaceEmojis';
@@ -671,14 +673,6 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
       );
     }
 
-    // Add composite difficulty score
-    if (performanceStats.compositeScore > 0) {
-      badges.push(
-        <Badge key="difficulty" variant="outline" className="border-amber-400 text-amber-300">
-          Difficulty: {performanceStats.compositeScore.toFixed(1)}
-        </Badge>
-      );
-    }
 
     return badges;
   };
@@ -686,7 +680,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   return (
     <div className="min-h-screen bg-slate-900 text-amber-50">
       <Navbar 
-        title="ARC Puzzles for People" 
+        title="Are you smarter than a Chatbot?" 
         badges={renderBadges()} 
         showBackButton={true} 
         onBack={onBack}
@@ -743,14 +737,22 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           )}
 
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-amber-400 font-bold text-5xl">
-              Test Case {currentTestIndex + 1}
-              {isAssessmentMode && totalTests > 1 && (
-                <span className="text-slate-400 text-2xl font-normal ml-2">
-                  of {totalTests}
-                </span>
-              )}
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-amber-400 font-bold text-5xl">
+                Test Case {currentTestIndex + 1}
+                {isAssessmentMode && totalTests > 1 && (
+                  <span className="text-slate-400 text-2xl font-normal ml-2">
+                    of {totalTests}
+                  </span>
+                )}
+              </h2>
+              <DisplayModeToolbar 
+                displayMode={displayState.displayMode} 
+                onDisplayModeChange={handleDisplayModeChange}
+                emojiSet={displayState.emojiSet}
+                onEmojiSetChange={handleEmojiSetChange}
+              />
+            </div>
             <div className="text-slate-300 text-xl font-medium">
               {isValidating ? '🔄 Validating with PlayFab...' : 
                validationResult?.correct ? '🎉 PlayFab Verified!' :
@@ -794,8 +796,6 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 displayMode={displayState.displayMode}
                 emojiSet={displayState.emojiSet}
                 selectedValue={displayState.selectedValue}
-                onDisplayModeChange={handleDisplayModeChange}
-                onEmojiSetChange={handleEmojiSetChange}
                 onValueSelect={handleValueSelect}
                 onCopyInput={copyInput}
                 onResetSolution={resetSolution}
@@ -922,19 +922,24 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
       </main>
 
       {/* Success Modal */}
-      <SuccessModal
-        open={showSuccessModal}
-        onClose={() => {
-          setShowSuccessModal(false);
-          // In assessment mode, trigger advancement when user clicks OK
-          if (isAssessmentMode && onAssessmentAdvance) {
-            onAssessmentAdvance();
-          }
-        }}
-        title="Excellent Work!"
-        message="Puzzle solved successfully! Click OK to continue to the next challenge..."
-        showDesignerNotes={true}
-      />
+      {isAssessmentMode ? (
+        <AssessmentStepSuccessModal
+          open={showSuccessModal}
+          puzzleId={puzzle.id}
+          onClose={() => setShowSuccessModal(false)} // onClose just closes the modal
+          onAssessmentAdvance={onAssessmentAdvance} // onAssessmentAdvance handles moving to the next puzzle
+        />
+      ) : (
+        <SuccessModal
+          open={showSuccessModal}
+          onClose={() => {
+            setShowSuccessModal(false);
+          }}
+          title="Excellent Work!"
+          message="Puzzle solved successfully! Click OK to continue to the next challenge..."
+          showDesignerNotes={true}
+        />
+      )}
     </div>
   );
 }

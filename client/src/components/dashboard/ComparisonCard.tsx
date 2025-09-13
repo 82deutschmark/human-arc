@@ -9,7 +9,7 @@
  * for a single ARC puzzle.
  */
 
-import type { AIPuzzlePerformance } from '@/services/arcExplainerAPI';
+import type { PerformanceData } from '@/services/core/arcExplainerClient';
 
 interface HumanPerformanceRecord {
   puzzleId: string;
@@ -26,15 +26,12 @@ interface HumanPerformanceRecord {
 
 interface ComparisonCardProps {
   humanRecord: HumanPerformanceRecord;
-  aiRecord: AIPuzzlePerformance | null;
+  aiRecord: PerformanceData | null;
 }
 
 export function ComparisonCard({ humanRecord, aiRecord }: ComparisonCardProps) {
   const humanTime = (humanRecord.timeElapsed / 1000).toFixed(1);
-  const aiAccuracy = aiRecord ? (aiRecord.avgAccuracy * 100).toFixed(1) : 'N/A';
-
-  // Simple comparison logic: Human wins if AI accuracy is less than 100% or no AI data
-  const humanWon = !aiRecord || aiRecord.avgAccuracy < 1;
+    const humanWon = !aiRecord || aiRecord.avgAccuracy < 1; // Human wins if AI is not perfect
 
   return (
     <div className={`bg-slate-700 p-4 rounded-lg border-2 ${humanWon ? 'border-green-500' : 'border-red-500'}`}>
@@ -50,15 +47,15 @@ export function ComparisonCard({ humanRecord, aiRecord }: ComparisonCardProps) {
         </div>
 
         {/* AI Benchmark */}
-        <div className="bg-slate-800 p-3 rounded">
+                <div className="bg-slate-800 p-3 rounded">
           <h4 className="font-bold text-purple-400 mb-2">AI Benchmark</h4>
           {aiRecord ? (
-            <>
-              <div className="text-2xl font-bold">{aiAccuracy}% <span className="text-sm">Accuracy</span></div>
-              <div className="text-xs text-slate-400 mt-1">
-                {aiRecord.totalExplanations} analyses
-              </div>
-            </>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="text-left"><span className="text-slate-400">Success:</span> <span className={`font-bold ${aiRecord.avgAccuracy > 0.5 ? 'text-green-400' : 'text-red-400'}`}>{`${(aiRecord.avgAccuracy * 100).toFixed(0)}%`}</span></div>
+              <div className="text-left"><span className="text-slate-400">Attempts:</span> <span className="font-bold text-amber-300">{aiRecord.totalExplanations}</span></div>
+              <div className="text-left"><span className="text-slate-400">Confidence:</span> <span className="font-bold text-cyan-300">{aiRecord.avgConfidence ? `${aiRecord.avgConfidence.toFixed(0)}%` : 'N/A'}</span></div>
+              <div className="text-left"><span className="text-slate-400">Failures:</span> <span className="font-bold text-purple-300">{aiRecord.wrongCount}</span></div>
+            </div>
           ) : (
             <div className="text-slate-400 text-sm">No AI data available</div>
           )}

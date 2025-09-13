@@ -10,6 +10,12 @@ import { idConverter } from '@/services/idConverter';
 import { apiCache, CacheManager } from './cacheManager';
 
 // Response types from arc-explainer API
+export interface ModelPerformance {
+  modelName: string;
+  accuracy: number;
+  avgConfidence?: number;
+}
+
 export interface PerformanceData {
   avgAccuracy: number;
   avgConfidence?: number;
@@ -19,7 +25,50 @@ export interface PerformanceData {
   totalFeedback?: number;
   latestAnalysis?: string;
   worstExplanationId?: number;
-  compositeScore?: number;
+  totalAttempts: number;
+  modelPerformance: ModelPerformance[];
+  dataset: string;
+  dangerousOverconfidence?: boolean;
+}
+
+// NEW: Types for the proper explanations endpoint
+export interface ExplanationRecord {
+  id: number;
+  puzzleId: string;
+  patternDescription: string;
+  solvingStrategy: string;
+  hints: string;
+  confidence: number;
+  modelName: string;
+  predictedOutputGrid: any[][];
+  isPredictionCorrect: boolean;
+  predictionAccuracyScore: number;
+  hasMultiplePredictions: boolean;
+  multiplePredictedOutputs?: any[];
+  multiTestResults?: any[];
+  multiTestAllCorrect?: boolean;
+  multiTestAverageAccuracy?: number;
+  createdAt: string;
+  helpfulVotes: number;
+  notHelpfulVotes: number;
+}
+
+// Aggregated stats from explanations
+export interface AggregatedAIStats {
+  totalAttempts: number;
+  correctAttempts: number;
+  accuracy: number;
+  averageConfidence: number;
+  modelBreakdown: ModelStats[];
+  hasData: boolean;
+}
+
+export interface ModelStats {
+  modelName: string;
+  attempts: number;
+  correct: number;
+  accuracy: number;
+  avgConfidence: number;
 }
 
 export interface PuzzleWithPerformance {
@@ -166,20 +215,39 @@ export class ArcExplainerClient {
       // Convert PlayFab ID to ARC ID if needed
       const arcId = idConverter.normalizeToArcId(puzzleId);
       if (!arcId) {
-        console.error(`Invalid puzzle ID: ${puzzleId}`);
+        console.error(`❌ Invalid puzzle ID for performance lookup: ${puzzleId}`);
         return null;
       }
 
+      console.log(`🌐 Making API request for puzzle: ${arcId}`);
       const endpoint = `/api/puzzle/task/${arcId}`;
       const response = await this.request<any>(endpoint);
 
-      if (response.success && response.data) {
-        return response.data.performanceData || null;
+      console.log(`📡 API Response for ${arcId}:`, {
+        success: response?.success,
+        hasData: !!response?.data,
+        hasPerformanceData: !!(response?.data?.performanceData),
+        dataKeys: response?.data ? Object.keys(response.data) : [],
+        avgAccuracy: response?.data?.avgAccuracy
+      });
+
+      // The API returns the performance data nested inside a `data` object.
+      // The structure is { success: true, data: { puzzle: {...}, performanceData: {...} } }
+      if (response.success && response.data && response.data.performanceData) {
+        console.log(`✅ Found performance data in nested structure for ${arcId}`);
+        return response.data.performanceData;
       }
 
+      // It's also possible the performance data is at the root of the data object
+      if (response.success && response.data?.avgAccuracy !== undefined) {
+        console.log(`✅ Found performance data at root level for ${arcId}`);
+        return response.data;
+      }
+
+      console.warn(`⚠️ No performance data found for ${arcId}`);
       return null;
     } catch (error) {
-      console.error(`Failed to get performance for ${puzzleId}:`, error);
+      console.error(`❌ Failed to get performance for ${puzzleId}:`, error);
       return null;
     }
   }
@@ -229,25 +297,44 @@ export class ArcExplainerClient {
    * Get batch performance data for multiple puzzles
    */
   async getBatchPerformance(puzzleIds: string[]): Promise<Map<string, PerformanceData>> {
+    console.log(`🔍 getBatchPerformance called with IDs:`, puzzleIds);
     const performanceMap = new Map<string, PerformanceData>();
 
-    // For now, use worst-performing endpoint and filter
-    // In future, could add a batch endpoint to arc-explainer
-    const worstPuzzles = await this.getWorstPerformingPuzzles({ limit: 200 });
+    // Create an array of promises to fetch performance for each puzzle
+    const performancePromises = puzzleIds.map(async (puzzleId) => {
+      console.log(`🔄 Processing puzzle ID: ${puzzleId}`);
 
-    puzzleIds.forEach(playFabId => {
-      const arcId = idConverter.normalizeToArcId(playFabId);
-      if (!arcId) return;
+      // First, check if this is already an ARC ID
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      console.log(`🔗 ID conversion: ${puzzleId} -> ${arcId}`);
 
-      const found = worstPuzzles.find(p =>
-        (p.id === arcId) || (p.puzzleId === arcId)
-      );
-
-      if (found && found.performanceData) {
-        performanceMap.set(playFabId, found.performanceData);
+      if (!arcId) {
+        console.error(`❌ Failed to convert ID: ${puzzleId}`);
+        return { id: puzzleId, arcId: null, performance: null };
       }
+
+      console.log(`📡 Fetching performance for ARC ID: ${arcId}`);
+      const performance = await this.getPuzzlePerformance(arcId);
+      console.log(`📊 Performance result for ${arcId}:`, performance ? 'SUCCESS' : 'FAILED');
+
+      return { id: puzzleId, arcId, performance };
     });
 
+    // Wait for all promises to resolve
+    const results = await Promise.all(performancePromises);
+
+    // Populate the map with the results
+    for (const result of results) {
+      if (result.arcId && result.performance) {
+        performanceMap.set(result.arcId, result.performance);
+        console.log(`✅ Added to map: ${result.arcId}`);
+      } else {
+        console.warn(`⚠️ Skipped (no performance data): ${result.id} -> ${result.arcId}`);
+      }
+    }
+
+    console.log(`🤖 Final result: ${performanceMap.size}/${puzzleIds.length} puzzles with performance data`);
+    console.log(`📋 Map contents:`, Array.from(performanceMap.keys()));
     return performanceMap;
   }
 
@@ -288,6 +375,252 @@ export class ArcExplainerClient {
     }
 
     return response.data;
+  }
+
+  /**
+   * Get performance metrics for all puzzles (NEW ENDPOINT)
+   */
+  async getAllPuzzlesStats(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/puzzles/stats');
+    const response = await this.request<any>('/api/puzzles/stats');
+    console.log('📊 /api/puzzles/stats response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 200) + '...' : null
+    });
+    return response;
+  }
+
+  /**
+   * Get accuracy stats from feedback controller (NEW ENDPOINT)
+   * This endpoint returns rich performance data including model rankings
+   */
+  async getFeedbackAccuracyStats(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/feedback/accuracy-stats');
+    const response = await this.request<any>('/api/feedback/accuracy-stats');
+    console.log('📊 /api/feedback/accuracy-stats response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 200) + '...' : null
+    });
+    return response;
+  }
+
+  /**
+   * Get accuracy stats for a specific puzzle using feedback controller
+   * Returns: { totalSolverAttempts, totalCorrectPredictions, overallAccuracyPercentage, modelAccuracyRankings[] }
+   */
+  async getPuzzleAccuracyStats(puzzleId: string): Promise<any> {
+    const arcId = idConverter.normalizeToArcId(puzzleId);
+    if (!arcId) {
+      console.error(`❌ Invalid puzzle ID for accuracy stats: ${puzzleId}`);
+      return null;
+    }
+
+    console.log(`🎯 Getting accuracy stats for puzzle: ${arcId}`);
+    const endpoint = `/api/feedback/accuracy-stats?puzzleId=${arcId}`;
+    const response = await this.request<any>(endpoint);
+
+    if (response?.success && response?.data) {
+      console.log(`✅ Accuracy stats for ${arcId}:`, {
+        overallAccuracy: response.data.overallAccuracyPercentage,
+        totalAttempts: response.data.totalSolverAttempts,
+        modelCount: response.data.modelAccuracyRankings?.length
+      });
+      return response.data;
+    }
+
+    console.warn(`⚠️ No accuracy stats found for ${arcId}`);
+    return null;
+  }
+
+  /**
+   * Get accuracy stats for multiple puzzles in batch
+   * More efficient than individual calls
+   */
+  async getBatchAccuracyStats(puzzleIds: string[]): Promise<Map<string, any>> {
+    console.log(`🔍 Getting batch accuracy stats for ${puzzleIds.length} puzzles`);
+    const statsMap = new Map<string, any>();
+
+    const promises = puzzleIds.map(async (puzzleId) => {
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      if (!arcId) return { puzzleId, arcId: null, stats: null };
+
+      const stats = await this.getPuzzleAccuracyStats(arcId);
+      return { puzzleId, arcId, stats };
+    });
+
+    const results = await Promise.all(promises);
+
+    for (const result of results) {
+      if (result.arcId && result.stats) {
+        // Store using the original ARC ID for consistent lookup
+        statsMap.set(result.arcId, result.stats);
+      }
+    }
+
+    console.log(`📊 Batch accuracy stats complete: ${statsMap.size}/${puzzleIds.length} puzzles`);
+    return statsMap;
+  }
+
+  /**
+   * Get AI explanations for a specific puzzle (PROPER ENDPOINT)
+   * Returns array of explanation records with performance data
+   */
+  async getPuzzleExplanations(puzzleId: string): Promise<ExplanationRecord[]> {
+    const arcId = idConverter.normalizeToArcId(puzzleId);
+    if (!arcId) {
+      console.error(`❌ Invalid puzzle ID for explanations: ${puzzleId}`);
+      return [];
+    }
+
+    console.log(`🤖 Getting AI explanations for puzzle: ${arcId}`);
+    const endpoint = `/api/puzzle/${arcId}/explanations`;
+
+    try {
+      const response = await this.request<any>(endpoint);
+
+      if (response?.success && Array.isArray(response?.data)) {
+        console.log(`✅ Found ${response.data.length} explanations for ${arcId}`);
+        return response.data;
+      }
+
+      console.warn(`⚠️ No explanations found for ${arcId}`);
+      return [];
+    } catch (error) {
+      console.error(`❌ Failed to get explanations for ${arcId}:`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Aggregate AI performance stats from explanations array
+   */
+  aggregateAIStats(explanations: ExplanationRecord[]): AggregatedAIStats {
+    if (explanations.length === 0) {
+      return {
+        totalAttempts: 0,
+        correctAttempts: 0,
+        accuracy: 0,
+        averageConfidence: 0,
+        modelBreakdown: [],
+        hasData: false
+      };
+    }
+
+    const totalAttempts = explanations.length;
+    const correctAttempts = explanations.filter(exp => exp.isPredictionCorrect).length;
+    const accuracy = (correctAttempts / totalAttempts) * 100;
+
+    // Calculate average confidence
+    const validConfidences = explanations
+      .map(exp => exp.confidence)
+      .filter(conf => typeof conf === 'number' && !isNaN(conf));
+    const averageConfidence = validConfidences.length > 0
+      ? validConfidences.reduce((sum, conf) => sum + conf, 0) / validConfidences.length
+      : 0;
+
+    // Calculate per-model breakdown
+    const modelMap = new Map<string, { attempts: number; correct: number; confidences: number[] }>();
+
+    for (const exp of explanations) {
+      if (!modelMap.has(exp.modelName)) {
+        modelMap.set(exp.modelName, { attempts: 0, correct: 0, confidences: [] });
+      }
+
+      const modelData = modelMap.get(exp.modelName)!;
+      modelData.attempts++;
+      if (exp.isPredictionCorrect) modelData.correct++;
+      if (typeof exp.confidence === 'number' && !isNaN(exp.confidence)) {
+        modelData.confidences.push(exp.confidence);
+      }
+    }
+
+    const modelBreakdown: ModelStats[] = Array.from(modelMap.entries()).map(([modelName, data]) => ({
+      modelName,
+      attempts: data.attempts,
+      correct: data.correct,
+      accuracy: (data.correct / data.attempts) * 100,
+      avgConfidence: data.confidences.length > 0
+        ? data.confidences.reduce((sum, conf) => sum + conf, 0) / data.confidences.length
+        : 0
+    }));
+
+    // Sort by accuracy descending
+    modelBreakdown.sort((a, b) => b.accuracy - a.accuracy);
+
+    return {
+      totalAttempts,
+      correctAttempts,
+      accuracy,
+      averageConfidence,
+      modelBreakdown,
+      hasData: true
+    };
+  }
+
+  /**
+   * Get aggregated AI performance stats for multiple puzzles using explanations
+   * This is the CORRECT method to use instead of getBatchAccuracyStats
+   */
+  async getBatchExplanationsStats(puzzleIds: string[]): Promise<Map<string, AggregatedAIStats>> {
+    console.log(`🔍 Getting batch explanations for ${puzzleIds.length} puzzles`);
+    const statsMap = new Map<string, AggregatedAIStats>();
+
+    const promises = puzzleIds.map(async (puzzleId) => {
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      if (!arcId) return { puzzleId, arcId: null, stats: null };
+
+      const explanations = await this.getPuzzleExplanations(arcId);
+      const stats = this.aggregateAIStats(explanations);
+
+      return { puzzleId, arcId, stats };
+    });
+
+    const results = await Promise.all(promises);
+
+    for (const result of results) {
+      if (result.arcId && result.stats) {
+        statsMap.set(result.arcId, result.stats);
+      }
+    }
+
+    const puzzlesWithData = Array.from(statsMap.values()).filter(stats => stats.hasData).length;
+    console.log(`📊 Batch explanations complete: ${puzzlesWithData}/${puzzleIds.length} puzzles have AI data`);
+
+    return statsMap;
+  }
+
+  /**
+   * Get model reliability statistics (NEW ENDPOINT)
+   */
+  async getModelReliabilityStats(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/metrics/reliability');
+    const response = await this.request<any>('/api/metrics/reliability');
+    console.log('📊 /api/metrics/reliability response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 200) + '...' : null
+    });
+    return response;
+  }
+
+  /**
+   * Get comprehensive dashboard data (NEW ENDPOINT)
+   */
+  async getComprehensiveDashboard(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/metrics/comprehensive-dashboard');
+    const response = await this.request<any>('/api/metrics/comprehensive-dashboard');
+    console.log('📊 /api/metrics/comprehensive-dashboard response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 500) + '...' : null
+    });
+    return response;
   }
 
   /**
