@@ -5,7 +5,7 @@
  */
 
 import { Link } from 'wouter';
-import type { PerformanceData } from '@/services/core/arcExplainerClient';
+import type { AggregatedAIStats } from '@/services/core/arcExplainerClient';
 
 // Define the detailed structure for a human performance record
 interface HumanPerformanceRecord {
@@ -24,21 +24,30 @@ interface HumanPerformanceRecord {
 interface PuzzleComparisonCardProps {
   puzzleId: string;
   humanResult: HumanPerformanceRecord;
-  aiResult: PerformanceData | null;
+  aiResult: AggregatedAIStats | null;
 }
 
 export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
+  // Add debugging to see exact data structure
+  console.log(`🧩 PuzzleComparisonCard for ${puzzleId}:`, aiResult);
+
   const humanCorrect = humanResult?.isCorrect || false;
-  const aiAccuracy = aiResult?.avgAccuracy || 0;
-  const avgConfidence = aiResult?.avgConfidence || 0;
-  const aiWrongCount = aiResult?.wrongCount || 0;
-  const explanationQuality = (aiResult?.totalExplanations || 0) + (aiResult?.totalFeedback || 0) - (aiResult?.negativeFeedback || 0);
 
-  const isOverconfident = aiAccuracy < 0.5 && avgConfidence > 80;
+  // Fix property mappings for AggregatedAIStats interface
+  const aiAccuracy = aiResult?.accuracy || 0;  // was avgAccuracy
+  const avgConfidence = aiResult?.averageConfidence || 0;  // was avgConfidence
+  const totalAttempts = aiResult?.totalAttempts || 0;  // was totalExplanations
+  const correctAttempts = aiResult?.correctAttempts || 0;
+  const aiWrongCount = totalAttempts - correctAttempts;  // calculated from new data
 
+  // Convert accuracy percentage (0-100) to decimal for comparison
+  const aiAccuracyDecimal = aiAccuracy / 100;
+  const isOverconfident = aiAccuracyDecimal < 0.5 && avgConfidence > 80;
+
+  // Simplified quality assessment based on total attempts and accuracy
   const getExplanationQualityTier = () => {
-    if (explanationQuality > 10) return { label: 'High', color: 'text-green-400' };
-    if (explanationQuality > 5) return { label: 'Medium', color: 'text-yellow-400' };
+    if (totalAttempts > 20 && aiAccuracy > 60) return { label: 'High', color: 'text-green-400' };
+    if (totalAttempts > 10 && aiAccuracy > 40) return { label: 'Medium', color: 'text-yellow-400' };
     return { label: 'Low', color: 'text-red-400' };
   };
 
@@ -81,27 +90,33 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
         </div>
 
         {/* AI Performance */}
-                <div className="p-3 rounded-lg bg-slate-700/50 space-y-2">
+        <div className="p-3 rounded-lg bg-slate-700/50 space-y-2">
           <p className="font-bold text-white mb-2">AI Benchmark</p>
-          {aiResult ? (
+          {aiResult && aiResult.hasData ? (
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-slate-300">Success Rate:</span>
-                <span className={`font-bold text-xl ${aiResult.avgAccuracy > 0.5 ? 'text-green-400' : 'text-red-400'}`}>
-                  {`${(aiResult.avgAccuracy * 100).toFixed(0)}%`}
+                <span className={`font-bold text-xl ${aiAccuracyDecimal > 0.5 ? 'text-green-400' : 'text-red-400'}`}>
+                  {`${aiAccuracy.toFixed(1)}%`}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Total Attempts:</span>
-                <span className="font-bold text-xl text-amber-300">{aiResult.totalExplanations}</span>
+                <span className="text-slate-300">Correct/Total:</span>
+                <span className="font-bold text-xl text-amber-300">{correctAttempts}/{totalAttempts}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-slate-300">Avg. Confidence:</span>
-                <span className="font-bold text-xl text-cyan-300">{aiResult.avgConfidence ? `${aiResult.avgConfidence.toFixed(0)}%` : 'N/A'}</span>
+                <span className="font-bold text-xl text-cyan-300">
+                  {avgConfidence > 0 ? `${avgConfidence.toFixed(0)}%` : 'N/A'}
+                </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-300">Total Failures:</span>
-                <span className="font-bold text-xl text-purple-300">{aiResult.wrongCount}</span>
+                <span className="text-slate-300">Failed Attempts:</span>
+                <span className="font-bold text-xl text-purple-300">{aiWrongCount}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">AI Models:</span>
+                <span className="font-bold text-xl text-orange-300">{aiResult.modelBreakdown.length}</span>
               </div>
               {isOverconfident && (
                 <div className="pt-2 text-center bg-red-900/50 rounded-md p-1 mt-2">
