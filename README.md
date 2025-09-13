@@ -1,19 +1,40 @@
 # Space Force Mission Control 2050
+## Version 0.1.0 - Minimal Working Prototype
 
-A Space Force-themed puzzle platform featuring two distinct training systems: **Enlisted Track** with 155 curated operational tasks, and **Officer Track** with 1,920+ ARC-AGI puzzles for advanced training. Built on the Abstract Reasoning Corpus (ARC) framework while maintaining accessibility for all players.
+A Space Force-themed puzzle platform featuring integrated human vs AI performance comparison. Successfully unifies PlayFab and arc-explainer APIs to provide real-time performance analysis comparing human puzzle-solving abilities against state-of-the-art AI models. Built on the Abstract Reasoning Corpus (ARC) framework.
 
 
-- **Purpose**: Develop human reasoning skills through space operations-themed puzzles
-- **Dual Track System**: Enlisted (themed tasks) + Officer (raw ARC-AGI datasets)  
-- **Inspiration**: Based on the ARC-AGI benchmark for measuring AI and human intelligence
+## **Core Achievement: Human vs AI Performance Comparison**
+- **Real Performance Data**: Integrated PlayFab human performance tracking with arc-explainer AI statistics
+- **Unified APIs**: Successfully bridges PlayFab CloudScript validation with external AI performance data
+- **Assessment Pipeline**: Complete user flow from puzzle solving → performance comparison → puzzle discovery
+- **Technical Foundation**: Establishes architecture for the full HARC Platform implementation
+
+## **Key Features**
+- **Assessment Interface**: Users solve curated ARC puzzles with full performance tracking
+- **Performance Comparison**: Real-time comparison of human vs AI solving statistics
+- **Puzzle Discovery**: Foundation for browsing challenging puzzles based on AI difficulty metrics
+- **Dual Track System**: Enlisted (themed tasks) + Officer (raw ARC-AGI datasets)
 - **Platform**: Static web application with PlayFab cloud backend
-- **Accessibility**: Colorblind-friendly emoji sets and clear visual feedback
 
 https://learn.microsoft.com/en-us/rest/api/playfab/server/?view=playfab-rest - PlayFab Server API Reference
 
 **Architecture**: Pure static site deployment with PlayFab-only backend. No server infrastructure required!
 
-## Key Features
+## **Technical Architecture**
+- **Frontend**: React + TypeScript + Vite static application
+- **Backend**: PlayFab CloudScript functions for secure validation and scoring
+- **External APIs**: arc-explainer integration for AI performance benchmarks
+- **Data Flow**: Assessment → PlayFab Storage → Comparison Analysis → Puzzle Discovery
+- **Deployment**: Static site with no server infrastructure requirements
+
+## **User Experience Flow**
+1. **Assessment**: Users solve curated ARC puzzles in `/assessment`
+2. **Performance Tracking**: All actions logged to PlayFab with comprehensive metrics
+3. **Comparison Analysis**: View detailed human vs AI performance at `/assessment/comparison`
+4. **Puzzle Discovery**: Browse challenging puzzles where humans outperform or struggle vs AI (foundation for HARC Platform)
+
+## Legacy Features
 
 ### Enlisted Track (155 Tasks)
 - **Themed Categories**: O₂ Systems, Navigation, Power, Communications, Fuel Systems, Pre-Launch, Security

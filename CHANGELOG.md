@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file.
 
+## Version 0.1.0 - Minimal Working Prototype (2025-01-13)
+
+**🎉 MILESTONE: First working human vs AI performance comparison system**
+
+This version represents the successful unification of PlayFab and arc-explainer APIs to create a functional minimal prototype. After months of development, we now have a working system that accurately compares human puzzle-solving performance against AI benchmarks.
+
+### **Core Achievement: Unified API Integration**
+- **PlayFab Integration**: Complete human performance data collection and storage
+- **arc-explainer Integration**: Real AI performance statistics from explanation records
+- **Data Flow**: Assessment → Performance Comparison → Puzzle Discovery pipeline
+
+### **Critical Technical Fixes**
+1. **PlayFab Data Consistency**
+   - Fixed field name mismatch: CloudScript now saves `correct: true` (not `isCorrect`)
+   - Resolved time unit inconsistency: Consistent seconds throughout the pipeline
+   - Implemented actual step counting via PlayFab event stream analysis
+
+2. **Event-Based Step Counting**
+   - Replaced hardcoded step count (100) with real event querying
+   - Uses `server.GetPlayerEvents()` to count `cell_change` events by sessionId
+   - Proper error handling and fallback to default values
+
+3. **Time Handling Architecture**
+   - ResponsivePuzzleSolver sends time in seconds to CloudScript
+   - Removed incorrect millisecond-to-second conversions in UI components
+   - Consistent time display format across all comparison views
+
+### **API Integration Patterns Established**
+- **ID Normalization**: Reliable conversion between ARC and PlayFab ID formats
+- **Batch Processing**: Efficient aggregation of AI performance data via explanations endpoint
+- **Data Merging**: Robust combination of human and AI performance records
+- **Error Handling**: Graceful degradation when API data is unavailable
+
+### **User Experience Flow**
+1. Users complete puzzles in Assessment Interface
+2. Performance data is stored in PlayFab with full metrics
+3. Human vs AI Comparison page shows real performance comparisons
+4. Foundation established for HARC Platform puzzle discovery
+
+### **Technical Foundation**
+- **CloudScript Functions**: Reliable puzzle validation with comprehensive scoring
+- **Event Stream**: Detailed player action tracking for research purposes
+- **Data Structures**: Consistent field naming and type safety across APIs
+- **Performance Monitoring**: Comprehensive logging and debugging capabilities
+
+### **Files Modified**
+- `cloudscript.js`: Step counting and field consistency fixes
+- `client/src/components/comparison/PuzzleComparisonCard.tsx`: Data display fixes
+- `client/src/pages/HumanVsAiComparison.tsx`: API integration and field updates
+- `client/src/components/officer/ResponsivePuzzleSolver.tsx`: Time unit conversion
+- `client/src/services/core/arcExplainerClient.ts`: Explanations endpoint integration
+
+### **Testing Instructions**
+1. Complete ARC puzzles in assessment mode (`/assessment`)
+2. Visit Human vs AI Comparison (`/assessment/comparison`)
+3. Verify: Correct status display, actual step counts, accurate time values
+4. Check browser console for comprehensive debug logging
+
+---
+
 ## Recent Commits (Latest First)
 
 **2025-09-13**: ✅ COMPLETE FIX - AI Comparison Page Now Shows Real Performance Data!
