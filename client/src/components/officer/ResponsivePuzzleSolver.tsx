@@ -17,6 +17,7 @@ import { TrainingExamplesSection } from '@/components/officer/TrainingExamplesSe
 import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
 import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
+import { DisplayModeControls } from '@/components/officer/DisplayModeControls';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EmojiSet } from '@/constants/spaceEmojis';
@@ -736,14 +737,17 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           )}
 
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-amber-400 font-bold text-5xl">
-              Test Case {currentTestIndex + 1}
-              {isAssessmentMode && totalTests > 1 && (
-                <span className="text-slate-400 text-2xl font-normal ml-2">
-                  of {totalTests}
-                </span>
-              )}
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-amber-400 font-bold text-5xl">
+                Test Case {currentTestIndex + 1}
+                {isAssessmentMode && totalTests > 1 && (
+                  <span className="text-slate-400 text-2xl font-normal ml-2">
+                    of {totalTests}
+                  </span>
+                )}
+              </h2>
+              <DisplayModeControls displayMode={displayState.displayMode} onDisplayModeChange={handleDisplayModeChange} />
+            </div>
             <div className="text-slate-300 text-xl font-medium">
               {isValidating ? '🔄 Validating with PlayFab...' : 
                validationResult?.correct ? '🎉 PlayFab Verified!' :
@@ -787,7 +791,6 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 displayMode={displayState.displayMode}
                 emojiSet={displayState.emojiSet}
                 selectedValue={displayState.selectedValue}
-                onDisplayModeChange={handleDisplayModeChange}
                 onEmojiSetChange={handleEmojiSetChange}
                 onValueSelect={handleValueSelect}
                 onCopyInput={copyInput}
