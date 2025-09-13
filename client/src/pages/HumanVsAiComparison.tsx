@@ -8,6 +8,7 @@
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
+import { idConverter } from '@/services/idConverter';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
@@ -71,7 +72,13 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
         const puzzleIds = humanData.map(record => record.puzzleId);
 
                 // 3. Get unique puzzle IDs and fetch AI data for each one
-        const uniquePuzzleIds = [...new Set(humanData.map(record => record.puzzleId))];
+                const uniquePuzzleIds = [
+          ...new Set(
+            humanData
+              .map(record => idConverter.normalizeToArcId(record.puzzleId))
+              .filter((id): id is string => id !== null)
+          )
+        ];
         const aiDataPromises = uniquePuzzleIds.map(id => arcExplainerClient.getPuzzlePerformance(id));
         const aiDataResults = await Promise.all(aiDataPromises);
 
@@ -84,7 +91,7 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
         const mergedData = humanData.map(humanRecord => ({
           puzzleId: humanRecord.puzzleId,
           human: humanRecord,
-          ai: aiDataMap.get(humanRecord.puzzleId) || null,
+                    ai: aiDataMap.get(idConverter.normalizeToArcId(humanRecord.puzzleId)!) || null,
         }));
 
         setComparisonData(mergedData);

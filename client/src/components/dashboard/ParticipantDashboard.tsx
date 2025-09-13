@@ -19,6 +19,7 @@ import { playFabAuthManager } from '@/services/playfab/authManager';
 import { playFabRequestManager } from '@/services/playfab/requestManager';
 import { playFabUserData } from '@/services/playfab/userData';
 import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
+import { idConverter } from '@/services/idConverter';
 
 // Defines the structure of a single performance record
 interface HumanPerformanceRecord {
@@ -68,7 +69,13 @@ export function ParticipantDashboard() {
         }
 
         // 3. Get unique puzzle IDs and fetch AI data for each one
-        const uniquePuzzleIds = [...new Set(humanPerformance.map(record => record.puzzleId))];
+                        const uniquePuzzleIds = [
+          ...new Set(
+            humanPerformance
+              .map(record => idConverter.normalizeToArcId(record.puzzleId))
+              .filter((id): id is string => id !== null)
+          )
+        ];
         const aiDataPromises = uniquePuzzleIds.map(id => arcExplainerClient.getPuzzlePerformance(id));
         const aiDataResults = await Promise.all(aiDataPromises);
 
