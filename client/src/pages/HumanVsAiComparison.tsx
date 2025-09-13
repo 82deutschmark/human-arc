@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
-import { arcExplainerAPI, type AIPuzzlePerformance } from '@/services/arcExplainerAPI';
+import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
 
@@ -15,16 +15,17 @@ import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCa
 interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
-  ai: AIPuzzlePerformance | null;
+  ai: PerformanceData | null;
 }
 
 export function HumanVsAiComparison() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
+const [playFabId, setPlayFabId] = useState<string | null>(null);
 
   // Calculate summary statistics
-  const humanCorrect = comparisonData.filter(d => d.human?.correct).length;
+  const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
   const aiCorrect = Math.round(comparisonData.reduce((acc, d) => acc + (d.ai?.avgAccuracy || 0), 0));
   const totalPuzzles = comparisonData.length;
 
@@ -42,9 +43,20 @@ export function HumanVsAiComparison() {
           await playFabRequestManager.initialize({ titleId, secretKey: import.meta.env.VITE_PLAYFAB_SECRET_KEY });
         }
         await playFabAuthManager.ensureAuthenticated();
+setPlayFabId(playFabAuthManager.getPlayFabId());
 
         // 2. Fetch human performance data from PlayFab
-        const humanData = await playFabUserData.getHumanPerformanceData();
+        let humanData = await playFabUserData.getHumanPerformanceData();
+
+        // Filter out duplicates to prevent key errors
+        if (humanData) {
+            const seen = new Set();
+            humanData = humanData.filter(item => {
+                const duplicate = seen.has(item.puzzleId);
+                seen.add(item.puzzleId);
+                return !duplicate;
+            });
+        }
         if (!humanData || humanData.length === 0) {
           setError('No human performance data found. Please complete the assessment first.');
           setIsLoading(false);
@@ -55,7 +67,7 @@ export function HumanVsAiComparison() {
         const puzzleIds = humanData.map(record => record.puzzleId);
 
         // 4. Fetch AI performance data for those puzzles
-        const aiDataMap = await arcExplainerAPI.getBatchPuzzlePerformance(puzzleIds);
+        const aiDataMap = await arcExplainerClient.getBatchPerformance(puzzleIds);
 
         // 5. Merge the data
         const mergedData: ComparisonData[] = humanData.map(humanRecord => {
@@ -105,7 +117,8 @@ export function HumanVsAiComparison() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-amber-400 mb-4 text-center">Human vs. AI Performance</h1>
+        <h1 className="text-3xl font-bold text-amber-400 mb-2 text-center">Human vs. AI Performance</h1>
+{playFabId && <p className="text-center text-slate-400 text-sm mb-4">PlayFab ID: {playFabId}</p>}
         
         {totalPuzzles > 0 && (
           <div className="mb-8">

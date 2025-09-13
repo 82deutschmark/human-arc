@@ -5,16 +5,16 @@
  */
 
 import { Link } from 'wouter';
-import type { AIPuzzlePerformance } from '@/services/arcExplainerAPI';
+import type { PerformanceData } from '@/services/core/arcExplainerClient';
 
 interface PuzzleComparisonCardProps {
   puzzleId: string;
   humanResult: any; // Replace with a more specific type
-  aiResult: AIPuzzlePerformance | null;
+  aiResult: PerformanceData | null;
 }
 
 export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
-  const humanCorrect = humanResult?.correct || false;
+  const humanCorrect = humanResult?.isCorrect || false;
   const aiAccuracy = aiResult?.avgAccuracy || 0;
   const aiConfidenceWhenWrong = aiResult?.avgConfidence || 0;
   const aiWrongCount = aiResult?.wrongCount || 0;
