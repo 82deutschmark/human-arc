@@ -49,8 +49,8 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
     <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 transition-all hover:border-amber-400">
       <div className="flex justify-between items-center mb-3">
         <h3 className="font-bold text-lg text-amber-300">Puzzle: {puzzleId}</h3>
-        <Link href={`/officer-track/solve/${puzzleId}`}>
-          <a className="text-sm text-sky-400 hover:text-sky-300 transition-colors">Review Puzzle →</a>
+        <Link href={`/officer-track/solve/${puzzleId}`} className="text-sm text-sky-400 hover:text-sky-300 transition-colors">
+          Review Puzzle →
         </Link>
       </div>
       
