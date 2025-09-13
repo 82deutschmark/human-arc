@@ -338,6 +338,124 @@ export class ArcExplainerClient {
   }
 
   /**
+   * Get performance metrics for all puzzles (NEW ENDPOINT)
+   */
+  async getAllPuzzlesStats(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/puzzles/stats');
+    const response = await this.request<any>('/api/puzzles/stats');
+    console.log('📊 /api/puzzles/stats response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 200) + '...' : null
+    });
+    return response;
+  }
+
+  /**
+   * Get accuracy stats from feedback controller (NEW ENDPOINT)
+   * This endpoint returns rich performance data including model rankings
+   */
+  async getFeedbackAccuracyStats(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/feedback/accuracy-stats');
+    const response = await this.request<any>('/api/feedback/accuracy-stats');
+    console.log('📊 /api/feedback/accuracy-stats response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 200) + '...' : null
+    });
+    return response;
+  }
+
+  /**
+   * Get accuracy stats for a specific puzzle using feedback controller
+   * Returns: { totalSolverAttempts, totalCorrectPredictions, overallAccuracyPercentage, modelAccuracyRankings[] }
+   */
+  async getPuzzleAccuracyStats(puzzleId: string): Promise<any> {
+    const arcId = idConverter.normalizeToArcId(puzzleId);
+    if (!arcId) {
+      console.error(`❌ Invalid puzzle ID for accuracy stats: ${puzzleId}`);
+      return null;
+    }
+
+    console.log(`🎯 Getting accuracy stats for puzzle: ${arcId}`);
+    const endpoint = `/api/feedback/accuracy-stats?puzzleId=${arcId}`;
+    const response = await this.request<any>(endpoint);
+
+    if (response?.success && response?.data) {
+      console.log(`✅ Accuracy stats for ${arcId}:`, {
+        overallAccuracy: response.data.overallAccuracyPercentage,
+        totalAttempts: response.data.totalSolverAttempts,
+        modelCount: response.data.modelAccuracyRankings?.length
+      });
+      return response.data;
+    }
+
+    console.warn(`⚠️ No accuracy stats found for ${arcId}`);
+    return null;
+  }
+
+  /**
+   * Get accuracy stats for multiple puzzles in batch
+   * More efficient than individual calls
+   */
+  async getBatchAccuracyStats(puzzleIds: string[]): Promise<Map<string, any>> {
+    console.log(`🔍 Getting batch accuracy stats for ${puzzleIds.length} puzzles`);
+    const statsMap = new Map<string, any>();
+
+    const promises = puzzleIds.map(async (puzzleId) => {
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      if (!arcId) return { puzzleId, arcId: null, stats: null };
+
+      const stats = await this.getPuzzleAccuracyStats(arcId);
+      return { puzzleId, arcId, stats };
+    });
+
+    const results = await Promise.all(promises);
+
+    for (const result of results) {
+      if (result.arcId && result.stats) {
+        // Store using the original ARC ID for consistent lookup
+        statsMap.set(result.arcId, result.stats);
+      }
+    }
+
+    console.log(`📊 Batch accuracy stats complete: ${statsMap.size}/${puzzleIds.length} puzzles`);
+    return statsMap;
+  }
+
+  /**
+   * Get model reliability statistics (NEW ENDPOINT)
+   */
+  async getModelReliabilityStats(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/metrics/reliability');
+    const response = await this.request<any>('/api/metrics/reliability');
+    console.log('📊 /api/metrics/reliability response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 200) + '...' : null
+    });
+    return response;
+  }
+
+  /**
+   * Get comprehensive dashboard data (NEW ENDPOINT)
+   */
+  async getComprehensiveDashboard(): Promise<any> {
+    console.log('🌐 Calling NEW endpoint: /api/metrics/comprehensive-dashboard');
+    const response = await this.request<any>('/api/metrics/comprehensive-dashboard');
+    console.log('📊 /api/metrics/comprehensive-dashboard response structure:', {
+      success: response?.success,
+      hasData: !!response?.data,
+      dataKeys: response?.data ? Object.keys(response.data) : [],
+      sampleData: response?.data ? JSON.stringify(response.data).substring(0, 500) + '...' : null
+    });
+    return response;
+  }
+
+  /**
    * Clear API cache
    */
   clearCache(): void {

@@ -17,7 +17,22 @@ import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCa
 interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
-  ai: PerformanceData | null;
+  ai: AccuracyStatsData | null;
+}
+
+// New interface for accuracy stats data
+interface AccuracyStatsData {
+  totalSolverAttempts: number;
+  totalCorrectPredictions: number;
+  overallAccuracyPercentage: number;
+  modelAccuracyRankings: ModelAccuracy[];
+}
+
+interface ModelAccuracy {
+  modelName: string;
+  totalAttempts: number;
+  correctPredictions: number;
+  accuracyPercentage: number;
 }
 
 export function HumanVsAiComparison() {
@@ -28,7 +43,8 @@ export function HumanVsAiComparison() {
 
   // Calculate summary statistics
   const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
-  const aiCorrect = Math.round(comparisonData.reduce((acc, d) => acc + (d.ai?.avgAccuracy || 0), 0));
+  // New: Use overallAccuracyPercentage from accuracy stats endpoint
+  const aiCorrect = Math.round(comparisonData.reduce((acc, d) => acc + ((d.ai?.overallAccuracyPercentage || 0) / 100), 0));
   const totalPuzzles = comparisonData.length;
 
   useEffect(() => {
@@ -71,8 +87,9 @@ export function HumanVsAiComparison() {
           return;
         }
 
-        // 3. Use the hardcoded list of assessment puzzle IDs to fetch AI data
-        const aiDataMap = await arcExplainerClient.getBatchPerformance(ASSESSMENT_PUZZLE_IDS);
+        // 3. Use the NEW batch accuracy stats endpoint for better performance data
+        console.log('🚀 Using NEW batch accuracy stats endpoint');
+        const aiDataMap = await arcExplainerClient.getBatchAccuracyStats(ASSESSMENT_PUZZLE_IDS);
 
         // 4. Merge human and AI data
         console.log(`📊 AI data map contains:`, Array.from(aiDataMap.keys()));
