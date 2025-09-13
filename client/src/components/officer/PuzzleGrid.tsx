@@ -1,4 +1,4 @@
-/**
+/**MISLEADING!!!  THIS IS for displaying puzzle CARDS displaying data, not for solving puzzles!!!
  * Simple Responsive Puzzle Grid
  * 
  * CSS Grid that adapts to screen size:

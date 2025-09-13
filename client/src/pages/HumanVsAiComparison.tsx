@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
-import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
+import { getEvaluation2Puzzles, type OfficerPuzzle } from '@/services/officerArcAPI';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
@@ -16,7 +16,7 @@ import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCa
 interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
-  ai: PerformanceData | null;
+  ai: OfficerPuzzle | null;
 }
 
 export function HumanVsAiComparison() {
@@ -70,18 +70,17 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
         // 3. Extract puzzle IDs
         const puzzleIds = humanData.map(record => record.puzzleId);
 
-        // 4. Fetch AI performance data for those puzzles
-        const aiDataMap = await arcExplainerClient.getBatchPerformance(puzzleIds);
+        // 3. Fetch all AI puzzle data from the correct API
+        const aiPuzzlesResponse = await getEvaluation2Puzzles();
+        const aiDataMap = new Map<string, OfficerPuzzle>();
+        aiPuzzlesResponse.puzzles.forEach(p => aiDataMap.set(p.id, p));
 
-        // 5. Merge the data
-        const mergedData: ComparisonData[] = humanData.map(humanRecord => {
-          const aiRecord = aiDataMap.get(humanRecord.puzzleId) || null;
-          return {
-            puzzleId: humanRecord.puzzleId,
-            human: humanRecord,
-            ai: aiRecord,
-          };
-        });
+        // 4. Merge human and AI data
+        const mergedData = humanData.map(humanRecord => ({
+          puzzleId: humanRecord.puzzleId,
+          human: humanRecord,
+          ai: aiDataMap.get(humanRecord.puzzleId) || null,
+        }));
 
         setComparisonData(mergedData);
 

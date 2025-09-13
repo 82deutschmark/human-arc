@@ -30,11 +30,11 @@ interface PuzzleComparisonCardProps {
 export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
   const humanCorrect = humanResult?.isCorrect || false;
   const aiAccuracy = aiResult?.avgAccuracy || 0;
-  const aiConfidenceWhenWrong = aiResult?.avgConfidence || 0;
+  const avgConfidence = aiResult?.avgConfidence || 0;
   const aiWrongCount = aiResult?.wrongCount || 0;
   const explanationQuality = (aiResult?.totalExplanations || 0) + (aiResult?.totalFeedback || 0) - (aiResult?.negativeFeedback || 0);
 
-  const isOverconfident = aiAccuracy < 0.5 && aiConfidenceWhenWrong > 0.8;
+  const isOverconfident = aiAccuracy < 0.5 && avgConfidence > 80;
 
   const getExplanationQualityTier = () => {
     if (explanationQuality > 10) return { label: 'High', color: 'text-green-400' };
@@ -81,26 +81,36 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
         </div>
 
         {/* AI Performance */}
-        <div className="p-3 rounded-lg bg-slate-700/50 space-y-2">
-          <p className="font-bold text-white mb-1">AI Collective Performance</p>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-300">Avg. Accuracy:</span>
-            <span className={`font-bold text-xl ${aiAccuracy > 0.5 ? 'text-green-400' : 'text-red-400'}`}>
-              {(aiAccuracy * 100).toFixed(0)}%
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-300">Models Failed:</span>
-            <span className="font-bold text-xl">{aiWrongCount}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-slate-300">Analysis Quality:</span>
-            <span className={`font-bold text-xl ${qualityTier.color}`}>{qualityTier.label}</span>
-          </div>
-          {isOverconfident && (
-            <div className="pt-2 text-center bg-red-900/50 rounded-md p-1 mt-2">
-              <p className="text-red-300 font-bold text-sm">🚨 Dangerous Overconfidence Detected</p>
+                <div className="p-3 rounded-lg bg-slate-700/50 space-y-2">
+          <p className="font-bold text-white mb-2">AI Benchmark</p>
+          {aiResult ? (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Success Rate:</span>
+                <span className={`font-bold text-xl ${aiResult.avgAccuracy > 0.5 ? 'text-green-400' : 'text-red-400'}`}>
+                  {`${(aiResult.avgAccuracy * 100).toFixed(0)}%`}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Total Attempts:</span>
+                <span className="font-bold text-xl text-amber-300">{aiResult.totalExplanations}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Avg. Confidence:</span>
+                <span className="font-bold text-xl text-cyan-300">{aiResult.avgConfidence ? `${aiResult.avgConfidence.toFixed(0)}%` : 'N/A'}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-300">Total Failures:</span>
+                <span className="font-bold text-xl text-purple-300">{aiResult.wrongCount}</span>
+              </div>
+              {isOverconfident && (
+                <div className="pt-2 text-center bg-red-900/50 rounded-md p-1 mt-2">
+                  <p className="text-red-300 font-bold text-sm">🚨 Dangerous Overconfidence Detected</p>
+                </div>
+              )}
             </div>
+          ) : (
+            <div className="text-slate-400 text-center">No AI data available</div>
           )}
         </div>
       </div>

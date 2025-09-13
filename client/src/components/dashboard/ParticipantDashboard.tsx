@@ -18,7 +18,7 @@ import { ComparisonCard } from './ComparisonCard';
 import { playFabAuthManager } from '@/services/playfab/authManager';
 import { playFabRequestManager } from '@/services/playfab/requestManager';
 import { playFabUserData } from '@/services/playfab/userData';
-import { arcExplainerAPI, type AIPuzzlePerformance } from '@/services/arcExplainerAPI';
+import { getEvaluation2Puzzles, type OfficerPuzzle } from '@/services/officerArcAPI';
 
 // Defines the structure of a single performance record
 interface HumanPerformanceRecord {
@@ -35,105 +35,70 @@ interface HumanPerformanceRecord {
 }
 
 
+// This will be the new data structure for our comparison
 interface ComparisonData {
   human: HumanPerformanceRecord;
-  ai: AIPuzzlePerformance | null;
+  ai: OfficerPuzzle | null;
 }
 
-// Fetches the detailed human performance data from PlayFab user data.
-const fetchHumanPerformanceData = async (): Promise<HumanPerformanceRecord[]> => {
-  try {
-    console.log('Fetching human performance data from PlayFab...');
-    
-    // Get player data using existing service
-    const playerData = await playFabUserData.getPlayerData();
-    const data = playerData?.humanPerformanceData;
-    
-    if (!data) {
-      console.log('No human performance data found for this user.');
-      return [];
-    }
-
-    const performanceRecords: HumanPerformanceRecord[] = JSON.parse(data);
-    console.log(`Found ${performanceRecords.length} performance records`);
-    return performanceRecords;
-    
-  } catch (error) {
-    console.error('Failed to fetch human performance data:', error);
-    return [];
-  }
-};
-
-const fetchAiBenchmarkData = async (puzzleIds: string[]): Promise<Map<string, AIPuzzlePerformance>> => {
-  try {
-    console.log('Fetching AI benchmark data for puzzles:', puzzleIds);
-    // Use existing arc-explainer API service
-    const performanceMap = await arcExplainerAPI.getBatchPuzzlePerformance(puzzleIds);
-    console.log(`Got AI performance data for ${performanceMap.size} puzzles`);
-    return performanceMap;
-  } catch (error) {
-    console.error('Failed to fetch AI benchmark data:', error);
-    return new Map();
-  }
-};
 
 export function ParticipantDashboard() {
-  const [humanData, setHumanData] = useState<HumanPerformanceRecord[]>([]);
-  const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+    const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const initializeAndLoadData = async () => {
+        const loadDashboardData = async () => {
       try {
         setIsLoading(true);
-        
-        // Initialize PlayFab if needed
+
+        // 1. Initialize PlayFab
         const titleId = import.meta.env.VITE_PLAYFAB_TITLE_ID;
-        if (!titleId) {
-          throw new Error('VITE_PLAYFAB_TITLE_ID environment variable not found');
-        }
+        if (!titleId) throw new Error('VITE_PLAYFAB_TITLE_ID not set');
         if (!playFabRequestManager.isInitialized()) {
           await playFabRequestManager.initialize({ titleId, secretKey: import.meta.env.VITE_PLAYFAB_SECRET_KEY });
         }
         await playFabAuthManager.ensureAuthenticated();
-        
-        // Load human performance data
-        const humanPerformance = await fetchHumanPerformanceData();
-        setHumanData(humanPerformance);
 
-        if (humanPerformance.length > 0) {
-          // Get unique puzzle IDs
-          const uniquePuzzleIds = [...new Set(humanPerformance.map(record => record.puzzleId))];
-          
-          // Fetch AI benchmark data
-          const aiPerformanceMap = await fetchAiBenchmarkData(uniquePuzzleIds);
+        // 2. Fetch both human and AI data concurrently
+        const [humanPerformance, aiPuzzlesResponse] = await Promise.all([
+          playFabUserData.getHumanPerformanceData(),
+          getEvaluation2Puzzles() // Correct API call
+        ]);
 
-          // Create comparison data - take latest record for each puzzle
-          const latestRecords = new Map<string, HumanPerformanceRecord>();
-          humanPerformance.forEach(record => {
-            const existing = latestRecords.get(record.puzzleId);
-            if (!existing || new Date(record.timestamp) > new Date(existing.timestamp)) {
-              latestRecords.set(record.puzzleId, record);
-            }
-          });
-
-          const mergedData: ComparisonData[] = Array.from(latestRecords.values()).map(humanRecord => ({
-            human: humanRecord,
-            ai: aiPerformanceMap.get(humanRecord.puzzleId) || null
-          }));
-
-          setComparisonData(mergedData);
+        if (!humanPerformance || humanPerformance.length === 0) {
+          setIsLoading(false);
+          return; // Nothing to compare
         }
 
-        setIsLoading(false);
+        // 3. Create a lookup map for AI data
+        const aiDataMap = new Map<string, OfficerPuzzle>();
+        aiPuzzlesResponse.puzzles.forEach(p => aiDataMap.set(p.id, p));
+
+        // 4. Merge human and AI data, taking the latest human record for each puzzle
+        const latestHumanRecords = new Map<string, HumanPerformanceRecord>();
+        humanPerformance.forEach(record => {
+          const existing = latestHumanRecords.get(record.puzzleId);
+          if (!existing || new Date(record.timestamp) > new Date(existing.timestamp)) {
+            latestHumanRecords.set(record.puzzleId, record);
+          }
+        });
+
+        const mergedData: ComparisonData[] = Array.from(latestHumanRecords.values()).map(humanRecord => ({
+          human: humanRecord,
+          ai: aiDataMap.get(humanRecord.puzzleId) || null
+        }));
+
+        setComparisonData(mergedData);
+
       } catch (err: any) {
         setError(err.message || 'Failed to load dashboard data.');
+      } finally {
         setIsLoading(false);
       }
     };
 
-    initializeAndLoadData();
+    loadDashboardData();
   }, []);
 
   if (isLoading) {
@@ -148,12 +113,12 @@ export function ParticipantDashboard() {
     <div className="p-6 bg-slate-800 text-white">
       <h1 className="text-3xl font-bold text-amber-400 mb-6">Participant Dashboard</h1>
       
-      {humanData.length === 0 ? (
+      {comparisonData.length === 0 ? (
         <p>No performance data found. Complete some puzzles in the Assessment section to see your results.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {comparisonData.map(data => (
-            <ComparisonCard key={data.human.puzzleId} humanRecord={data.human} aiRecord={data.ai} />
+            <ComparisonCard key={data.human.puzzleId} humanRecord={data.human} aiRecord={data.ai as any} />
           ))}
         </div>
       )}
