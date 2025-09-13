@@ -88,9 +88,9 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Time:</span>
               <span className="font-bold text-xl">
-                {humanResult.timeElapsed ? (humanResult.timeElapsed / 1000).toFixed(1) : 'N/A'}s
-                {/* DEBUG: Log time value and conversion */}
-                {console.log(`🔍 [DEBUG] ${puzzleId} - timeElapsed raw:`, humanResult.timeElapsed, 'converted:', humanResult.timeElapsed ? (humanResult.timeElapsed / 1000).toFixed(1) : 'N/A')}
+                {humanResult.timeElapsed ? humanResult.timeElapsed.toFixed(1) : 'N/A'}s
+                {/* DEBUG: Log time value (now in seconds, no conversion needed) */}
+                {console.log(`🔍 [DEBUG] ${puzzleId} - timeElapsed (seconds):`, humanResult.timeElapsed)}
               </span>
             </div>
             <div className="flex justify-between items-center">

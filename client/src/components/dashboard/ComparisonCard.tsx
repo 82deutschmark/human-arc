@@ -30,7 +30,7 @@ interface ComparisonCardProps {
 }
 
 export function ComparisonCard({ humanRecord, aiRecord }: ComparisonCardProps) {
-  const humanTime = (humanRecord.timeElapsed / 1000).toFixed(1);
+  const humanTime = humanRecord.timeElapsed.toFixed(1);
     const humanWon = !aiRecord || aiRecord.avgAccuracy < 1; // Human wins if AI is not perfect
 
   return (

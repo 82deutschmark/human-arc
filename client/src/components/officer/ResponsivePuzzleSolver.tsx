@@ -374,7 +374,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
       const result = await playFabValidation.validateARCPuzzle({
         puzzleId: puzzle.id,
         solutions: solutions,
-        timeElapsed: Date.now() - sessionStartTime,
+        timeElapsed: Math.floor((Date.now() - sessionStartTime) / 1000), // Convert milliseconds to seconds
         attemptNumber: attemptNumber,
         sessionId: sessionId
       });
@@ -911,7 +911,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 <strong>✅ PlayFab Validation Complete:</strong> 
                 {getValidationMessage()}
                 {validationResult.timeElapsed && (
-                  <div>Time: {(validationResult.timeElapsed / 1000).toFixed(1)}s</div>
+                  <div>Time: {validationResult.timeElapsed.toFixed(1)}s</div>
                 )}
               </div>
             </div>
