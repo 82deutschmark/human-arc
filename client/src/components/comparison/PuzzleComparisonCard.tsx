@@ -31,7 +31,14 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
   // Add debugging to see exact data structure
   console.log(`🧩 PuzzleComparisonCard for ${puzzleId}:`, aiResult);
 
+  // DEBUG: Detailed logging of human result data
+  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult:`, humanResult);
+  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult type:`, typeof humanResult);
+  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult.isCorrect:`, humanResult?.isCorrect);
+  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult keys:`, humanResult ? Object.keys(humanResult) : 'null/undefined');
+
   const humanCorrect = humanResult?.isCorrect || false;
+  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - final humanCorrect:`, humanCorrect);
 
   // Fix property mappings for AggregatedAIStats interface
   const aiAccuracy = aiResult?.accuracy || 0;  // was avgAccuracy
@@ -76,15 +83,19 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Score:</span>
-              <span className="font-bold text-xl text-amber-300">{humanResult.finalScore.toLocaleString()}</span>
+              <span className="font-bold text-xl text-amber-300">{humanResult.finalScore?.toLocaleString() || 'N/A'}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Time:</span>
-              <span className="font-bold text-xl">{(humanResult.timeElapsed / 1000).toFixed(1)}s</span>
+              <span className="font-bold text-xl">
+                {humanResult.timeElapsed ? (humanResult.timeElapsed / 1000).toFixed(1) : 'N/A'}s
+                {/* DEBUG: Log time value and conversion */}
+                {console.log(`🔍 [DEBUG] ${puzzleId} - timeElapsed raw:`, humanResult.timeElapsed, 'converted:', humanResult.timeElapsed ? (humanResult.timeElapsed / 1000).toFixed(1) : 'N/A')}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Steps:</span>
-              <span className="font-bold text-xl">{humanResult.stepCount}</span>
+              <span className="font-bold text-xl">{humanResult.stepCount || 'N/A'}</span>
             </div>
           </div>
         </div>

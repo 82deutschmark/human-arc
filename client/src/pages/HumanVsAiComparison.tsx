@@ -60,6 +60,14 @@ export function HumanVsAiComparison() {
           return arcId && ASSESSMENT_PUZZLE_IDS.includes(arcId);
         });
 
+        // DEBUG: Log the exact structure of human performance data
+        console.log('🔍 [DEBUG] Raw human performance data from PlayFab:', allHumanData);
+        console.log('🔍 [DEBUG] Filtered human data for assessment:', humanData);
+        if (humanData.length > 0) {
+          console.log('🔍 [DEBUG] Sample human record structure:', humanData[0]);
+          console.log('🔍 [DEBUG] Sample record keys:', Object.keys(humanData[0]));
+        }
+
         // Filter out duplicates to prevent key errors
         if (humanData) {
           const seen = new Set();
