@@ -182,8 +182,15 @@ export class ArcExplainerClient {
       const endpoint = `/api/puzzle/task/${arcId}`;
       const response = await this.request<any>(endpoint);
 
-      if (response.success && response.data) {
-        return response.data.performanceData || null;
+      // The API returns the performance data nested inside a `data` object.
+      // The structure is { success: true, data: { puzzle: {...}, performanceData: {...} } }
+      if (response.success && response.data && response.data.performanceData) {
+        return response.data.performanceData;
+      }
+
+      // It's also possible the performance data is at the root of the data object
+      if (response.success && response.data?.avgAccuracy !== undefined) {
+        return response.data;
       }
 
       return null;
