@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Version 0.1.0 - Minimal Working Prototype (2025-01-13)
+## Version 0.1.0 - Minimal Working Prototype (2025-09-13)
 
 **🎉 MILESTONE: First working human vs AI performance comparison system**
 
@@ -63,6 +63,19 @@ This version represents the successful unification of PlayFab and arc-explainer 
 ---
 
 ## Recent Commits (Latest First)
+
+**2025-09-13**: 🐛 FIX - Human Performance Data Now Displays Correctly
+- **THE PROBLEM**: The Human vs. AI Comparison page was not displaying human performance metrics (score, time, steps) correctly, showing 'N/A' or '0' for all values.
+- **ROOT CAUSE**: A data structure mismatch occurred between the raw data from PlayFab's `getHumanPerformanceData` and the `HumanPerformanceRecord` interface expected by the `PuzzleComparisonCard` component.
+- **THE FIX**: Implemented a data transformation layer in `HumanVsAiComparison.tsx` to map the raw PlayFab data to the required interface before rendering.
+- **SOLUTION DETAILS**:
+  - The `map` function now creates a `transformedHumanData` object, ensuring all fields are correctly populated.
+  - Default values are provided for any missing data points to prevent rendering errors.
+- **RESULT**: The UI now correctly displays all human performance metrics from PlayFab.
+- **FILES MODIFIED**:
+  - `client/src/pages/HumanVsAiComparison.tsx` (Added data transformation)
+- **Author**: Gemini 2.5 Pro
+
 
 **2025-09-13**: ✅ COMPLETE FIX - AI Comparison Page Now Shows Real Performance Data!
 - **SUCCESS**: Fixed the "showing no numbers" issue - AI performance data now displays in the UI!

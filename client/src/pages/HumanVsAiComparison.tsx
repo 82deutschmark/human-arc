@@ -94,14 +94,30 @@ export function HumanVsAiComparison() {
         const mergedData = humanData.map(humanRecord => {
           const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
           const aiData = arcId ? aiDataMap.get(arcId) : null;
+
+          // Data Transformation Layer
+          const transformedHumanData = {
+            puzzleId: humanRecord.puzzleId,
+            correct: humanRecord.correct || false,
+            timestamp: humanRecord.timestamp || new Date().toISOString(),
+            basePoints: humanRecord.basePoints || 0,
+            speedBonus: humanRecord.speedBonus || 0,
+            efficiencyBonus: humanRecord.efficiencyBonus || 0,
+            finalScore: humanRecord.finalScore || 0,
+            timeElapsed: humanRecord.timeElapsed || 0,
+            stepCount: humanRecord.stepCount || 0,
+            attemptNumber: humanRecord.attemptNumber || 1,
+          };
+
           console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${
             aiData?.hasData
               ? `${aiData.correctAttempts}/${aiData.totalAttempts} (${aiData.accuracy.toFixed(1)}%)`
               : 'NO AI DATA'
           }`);
+
           return {
             puzzleId: humanRecord.puzzleId,
-            human: humanRecord,
+            human: transformedHumanData, // Use transformed data
             ai: aiData || null,
           };
         });
