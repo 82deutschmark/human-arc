@@ -6,7 +6,6 @@
 
 import { Link } from 'wouter';
 import type { PerformanceData } from '@/services/core/arcExplainerClient';
-import type { EnhancedPuzzle } from '@/services/core/puzzleRepository';
 
 // Define the detailed structure for a human performance record
 interface HumanPerformanceRecord {
@@ -26,10 +25,9 @@ interface PuzzleComparisonCardProps {
   puzzleId: string;
   humanResult: HumanPerformanceRecord;
   aiResult: PerformanceData | null;
-  puzzle: EnhancedPuzzle | null;
 }
 
-export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult, puzzle }: PuzzleComparisonCardProps) {
+export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
   const humanCorrect = humanResult?.isCorrect || false;
   const aiAccuracy = aiResult?.avgAccuracy || 0;
   const avgConfidence = aiResult?.avgConfidence || 0;
@@ -50,18 +48,15 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult, puzzle }
   return (
     <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 transition-all hover:border-amber-400">
       <div className="flex justify-between items-center mb-3">
-                <div>
-          <h3 className="font-bold text-lg text-amber-300">{puzzle?.filename || puzzleId}</h3>
-          {puzzle && <p className="text-xs text-slate-400">Dataset: {puzzle.dataset}</p>}
-        </div>
-                <Link href={`/officer-track/solve/${puzzleId}`} className="text-sm text-sky-400 hover:text-sky-300 transition-colors self-start">
+        <h3 className="font-bold text-lg text-amber-300">{puzzleId}</h3>
+        <Link href={`/officer-track/solve/${puzzleId}`} className="text-sm text-sky-400 hover:text-sky-300 transition-colors self-start">
           Review Puzzle →
         </Link>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Human Performance */}
-                <div className={`p-3 rounded-lg ${humanCorrect ? 'bg-green-900/50' : 'bg-red-900/50'}`}>
+        <div className={`p-3 rounded-lg ${humanCorrect ? 'bg-green-900/50' : 'bg-red-900/50'}`}>
           <p className="font-bold text-white mb-2">Your Result</p>
           <div className="space-y-2">
             <div className="flex justify-between items-center">

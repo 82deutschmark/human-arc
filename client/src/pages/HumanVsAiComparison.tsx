@@ -7,8 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
-import { puzzleRepository, type EnhancedPuzzle } from '@/services/core/puzzleRepository';
-import type { PerformanceData } from '@/services/core/arcExplainerClient';
+import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
@@ -19,14 +18,13 @@ interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
   ai: PerformanceData | null;
-  puzzle: EnhancedPuzzle | null;
 }
 
 export function HumanVsAiComparison() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
-const [playFabId, setPlayFabId] = useState<string | null>(null);
+  const [playFabId, setPlayFabId] = useState<string | null>(null);
 
   // Calculate summary statistics
   const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
@@ -47,22 +45,22 @@ const [playFabId, setPlayFabId] = useState<string | null>(null);
           await playFabRequestManager.initialize({ titleId, secretKey: import.meta.env.VITE_PLAYFAB_SECRET_KEY });
         }
         await playFabAuthManager.ensureAuthenticated();
-setPlayFabId(playFabAuthManager.getPlayFabId());
+        setPlayFabId(playFabAuthManager.getPlayFabId());
 
         // 2. Fetch human performance data from PlayFab
-                let allHumanData = await playFabUserData.getHumanPerformanceData();
+        let allHumanData = await playFabUserData.getHumanPerformanceData();
 
         // Filter for assessment puzzles only
         let humanData = allHumanData.filter(record => ASSESSMENT_PUZZLE_IDS.includes(record.puzzleId));
 
         // Filter out duplicates to prevent key errors
         if (humanData) {
-            const seen = new Set();
-            humanData = humanData.filter(item => {
-                const duplicate = seen.has(item.puzzleId);
-                seen.add(item.puzzleId);
-                return !duplicate;
-            });
+          const seen = new Set();
+          humanData = humanData.filter(item => {
+            const duplicate = seen.has(item.puzzleId);
+            seen.add(item.puzzleId);
+            return !duplicate;
+          });
         }
         if (!humanData || humanData.length === 0) {
           setError('No human performance data found. Please complete the assessment first.');
@@ -70,29 +68,17 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
           return;
         }
 
-        // 3. Extract puzzle IDs
-        const puzzleIds = humanData.map(record => record.puzzleId);
+        // 3. Use the hardcoded list of assessment puzzle IDs to fetch AI data
+        const aiDataMap = await arcExplainerClient.getBatchPerformance(ASSESSMENT_PUZZLE_IDS);
 
-                // 3. Get unique puzzle IDs and fetch AI data for each one
-                const uniquePuzzleIds = [
-          ...new Set(
-            humanData
-              .map(record => idConverter.normalizeToArcId(record.puzzleId))
-              .filter((id): id is string => id !== null)
-          )
-        ];
-        // 4. Fetch enhanced puzzle data (including AI performance) in a single batch
-        // 4. Fetch enhanced puzzle data (including AI performance) in a single batch
-        const enhancedPuzzlesMap = await puzzleRepository.findByIds(puzzleIds, true);
-
-        // 5. Merge human and AI data
+        // 4. Merge human and AI data
         const mergedData = humanData.map(humanRecord => {
-          const enhancedPuzzle = enhancedPuzzlesMap.get(humanRecord.puzzleId) || null;
+          const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
+          const aiData = arcId ? aiDataMap.get(arcId) : null;
           return {
             puzzleId: humanRecord.puzzleId,
             human: humanRecord,
-            ai: enhancedPuzzle?.aiPerformance || null,
-            puzzle: enhancedPuzzle,
+            ai: aiData || null,
           };
         });
 
@@ -135,7 +121,7 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
     <div className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-amber-400 mb-2 text-center">Human vs. AI Performance</h1>
-{playFabId && <p className="text-center text-slate-400 text-sm mb-4">PlayFab ID: {playFabId}</p>}
+        {playFabId && <p className="text-center text-slate-400 text-sm mb-4">PlayFab ID: {playFabId}</p>}
         
         {totalPuzzles > 0 && (
           <div className="mb-8">
@@ -154,7 +140,6 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
               puzzleId={data.puzzleId}
               humanResult={data.human}
               aiResult={data.ai}
-              puzzle={data.puzzle}
             />
           ))}
         </div>
