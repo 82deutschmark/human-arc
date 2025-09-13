@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
-import { getEvaluation2Puzzles, type OfficerPuzzle } from '@/services/officerArcAPI';
+import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
 import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
@@ -16,7 +16,7 @@ import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCa
 interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
-  ai: OfficerPuzzle | null;
+  ai: PerformanceData | null;
 }
 
 export function HumanVsAiComparison() {
@@ -70,10 +70,15 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
         // 3. Extract puzzle IDs
         const puzzleIds = humanData.map(record => record.puzzleId);
 
-        // 3. Fetch all AI puzzle data from the correct API
-        const aiPuzzlesResponse = await getEvaluation2Puzzles();
-        const aiDataMap = new Map<string, OfficerPuzzle>();
-        aiPuzzlesResponse.puzzles.forEach(p => aiDataMap.set(p.id, p));
+                // 3. Get unique puzzle IDs and fetch AI data for each one
+        const uniquePuzzleIds = [...new Set(humanData.map(record => record.puzzleId))];
+        const aiDataPromises = uniquePuzzleIds.map(id => arcExplainerClient.getPuzzlePerformance(id));
+        const aiDataResults = await Promise.all(aiDataPromises);
+
+        const aiDataMap = new Map<string, PerformanceData | null>();
+        uniquePuzzleIds.forEach((id, index) => {
+          aiDataMap.set(id, aiDataResults[index]);
+        });
 
         // 4. Merge human and AI data
         const mergedData = humanData.map(humanRecord => ({

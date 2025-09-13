@@ -9,7 +9,7 @@
  * for a single ARC puzzle.
  */
 
-import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { PerformanceData } from '@/services/core/arcExplainerClient';
 
 interface HumanPerformanceRecord {
   puzzleId: string;
@@ -26,7 +26,7 @@ interface HumanPerformanceRecord {
 
 interface ComparisonCardProps {
   humanRecord: HumanPerformanceRecord;
-  aiRecord: OfficerPuzzle | null;
+  aiRecord: PerformanceData | null;
 }
 
 export function ComparisonCard({ humanRecord, aiRecord }: ComparisonCardProps) {

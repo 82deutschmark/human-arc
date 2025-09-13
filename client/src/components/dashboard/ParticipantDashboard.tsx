@@ -18,7 +18,7 @@ import { ComparisonCard } from './ComparisonCard';
 import { playFabAuthManager } from '@/services/playfab/authManager';
 import { playFabRequestManager } from '@/services/playfab/requestManager';
 import { playFabUserData } from '@/services/playfab/userData';
-import { getEvaluation2Puzzles, type OfficerPuzzle } from '@/services/officerArcAPI';
+import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 
 // Defines the structure of a single performance record
 interface HumanPerformanceRecord {
@@ -35,10 +35,9 @@ interface HumanPerformanceRecord {
 }
 
 
-// This will be the new data structure for our comparison
 interface ComparisonData {
   human: HumanPerformanceRecord;
-  ai: OfficerPuzzle | null;
+  ai: PerformanceData | null;
 }
 
 
@@ -48,7 +47,7 @@ export function ParticipantDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-        const loadDashboardData = async () => {
+            const loadDashboardData = async () => {
       try {
         setIsLoading(true);
 
@@ -60,20 +59,23 @@ export function ParticipantDashboard() {
         }
         await playFabAuthManager.ensureAuthenticated();
 
-        // 2. Fetch both human and AI data concurrently
-        const [humanPerformance, aiPuzzlesResponse] = await Promise.all([
-          playFabUserData.getHumanPerformanceData(),
-          getEvaluation2Puzzles() // Correct API call
-        ]);
+        // 2. Fetch human performance data
+        const humanPerformance = await playFabUserData.getHumanPerformanceData();
 
         if (!humanPerformance || humanPerformance.length === 0) {
           setIsLoading(false);
           return; // Nothing to compare
         }
 
-        // 3. Create a lookup map for AI data
-        const aiDataMap = new Map<string, OfficerPuzzle>();
-        aiPuzzlesResponse.puzzles.forEach(p => aiDataMap.set(p.id, p));
+        // 3. Get unique puzzle IDs and fetch AI data for each one
+        const uniquePuzzleIds = [...new Set(humanPerformance.map(record => record.puzzleId))];
+        const aiDataPromises = uniquePuzzleIds.map(id => arcExplainerClient.getPuzzlePerformance(id));
+        const aiDataResults = await Promise.all(aiDataPromises);
+
+        const aiDataMap = new Map<string, PerformanceData | null>();
+        uniquePuzzleIds.forEach((id, index) => {
+          aiDataMap.set(id, aiDataResults[index]);
+        });
 
         // 4. Merge human and AI data, taking the latest human record for each puzzle
         const latestHumanRecords = new Map<string, HumanPerformanceRecord>();
@@ -118,7 +120,7 @@ export function ParticipantDashboard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {comparisonData.map(data => (
-            <ComparisonCard key={data.human.puzzleId} humanRecord={data.human} aiRecord={data.ai as any} />
+            <ComparisonCard key={data.human.puzzleId} humanRecord={data.human} aiRecord={data.ai} />
           ))}
         </div>
       )}
