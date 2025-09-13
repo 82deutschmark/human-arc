@@ -7,7 +7,8 @@
 
 import { useState, useEffect } from 'react';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
-import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
+import { puzzleRepository, type EnhancedPuzzle } from '@/services/core/puzzleRepository';
+import type { PerformanceData } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { ComparisonSummary } from '@/components/comparison/ComparisonSummary';
@@ -18,6 +19,7 @@ interface ComparisonData {
   puzzleId: string;
   human: any; // Replace with a more specific type later
   ai: PerformanceData | null;
+  puzzle: EnhancedPuzzle | null;
 }
 
 export function HumanVsAiComparison() {
@@ -79,20 +81,19 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
               .filter((id): id is string => id !== null)
           )
         ];
-        const aiDataPromises = uniquePuzzleIds.map(id => arcExplainerClient.getPuzzlePerformance(id));
-        const aiDataResults = await Promise.all(aiDataPromises);
+        // 4. Fetch enhanced puzzle data (including AI performance) in a single batch
+        const enhancedPuzzlesMap = await puzzleRepository.findByIds(puzzleIds, true);
 
-        const aiDataMap = new Map<string, PerformanceData | null>();
-        uniquePuzzleIds.forEach((id, index) => {
-          aiDataMap.set(id, aiDataResults[index]);
+        // 5. Merge human and AI data
+        const mergedData = humanData.map(humanRecord => {
+          const enhancedPuzzle = enhancedPuzzlesMap.get(humanRecord.puzzleId) || null;
+          return {
+            puzzleId: humanRecord.puzzleId,
+            human: humanRecord,
+            ai: enhancedPuzzle?.aiPerformance || null,
+            puzzle: enhancedPuzzle,
+          };
         });
-
-        // 4. Merge human and AI data
-        const mergedData = humanData.map(humanRecord => ({
-          puzzleId: humanRecord.puzzleId,
-          human: humanRecord,
-                    ai: aiDataMap.get(idConverter.normalizeToArcId(humanRecord.puzzleId)!) || null,
-        }));
 
         setComparisonData(mergedData);
 
@@ -152,6 +153,7 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
               puzzleId={data.puzzleId}
               humanResult={data.human}
               aiResult={data.ai}
+              puzzle={data.puzzle}
             />
           ))}
         </div>
