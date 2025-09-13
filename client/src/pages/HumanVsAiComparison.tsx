@@ -50,8 +50,11 @@ export function HumanVsAiComparison() {
         // 2. Fetch human performance data from PlayFab
         let allHumanData = await playFabUserData.getHumanPerformanceData();
 
-        // Filter for assessment puzzles only
-        let humanData = allHumanData.filter(record => ASSESSMENT_PUZZLE_IDS.includes(record.puzzleId));
+        // Filter for assessment puzzles only - handle both ARC and PlayFab format IDs
+        let humanData = allHumanData.filter(record => {
+          const arcId = idConverter.normalizeToArcId(record.puzzleId);
+          return arcId && ASSESSMENT_PUZZLE_IDS.includes(arcId);
+        });
 
         // Filter out duplicates to prevent key errors
         if (humanData) {
@@ -72,9 +75,13 @@ export function HumanVsAiComparison() {
         const aiDataMap = await arcExplainerClient.getBatchPerformance(ASSESSMENT_PUZZLE_IDS);
 
         // 4. Merge human and AI data
+        console.log(`📊 AI data map contains:`, Array.from(aiDataMap.keys()));
+        console.log(`👤 Human data contains ${humanData.length} records`);
+
         const mergedData = humanData.map(humanRecord => {
           const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
           const aiData = arcId ? aiDataMap.get(arcId) : null;
+          console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${aiData ? 'HAS AI DATA' : 'NO AI DATA'}`);
           return {
             puzzleId: humanRecord.puzzleId,
             human: humanRecord,
