@@ -175,7 +175,8 @@ export class PuzzleRepository {
 
       // Step 3: Create enhanced puzzles
       let enhanced: EnhancedPuzzle[] = allPuzzles.map(puzzle => {
-        const performance = performanceMap.get(puzzle.id);
+        const arcId = idConverter.normalizeToArcId(puzzle.id);
+        const performance = arcId ? performanceMap.get(arcId) : undefined;
         const hasPerformanceData = !!performance;
 
         return {
