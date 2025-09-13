@@ -27,7 +27,7 @@ export function HumanVsAiComparison() {
   const [playFabId, setPlayFabId] = useState<string | null>(null);
 
   // Calculate summary statistics
-  const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
+  const humanCorrect = comparisonData.filter(d => d.human?.correct).length;
   // New: Use aggregated AI stats from explanations
   const totalAIAttempts = comparisonData.reduce((acc, d) => acc + (d.ai?.totalAttempts || 0), 0);
   const totalAICorrect = comparisonData.reduce((acc, d) => acc + (d.ai?.correctAttempts || 0), 0);

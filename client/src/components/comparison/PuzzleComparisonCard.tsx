@@ -10,7 +10,7 @@ import type { AggregatedAIStats } from '@/services/core/arcExplainerClient';
 // Define the detailed structure for a human performance record
 interface HumanPerformanceRecord {
   puzzleId: string;
-  isCorrect: boolean;
+  correct: boolean; // Changed from isCorrect to match CloudScript output
   timestamp: string;
   basePoints: number;
   speedBonus: number;
@@ -34,10 +34,10 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
   // DEBUG: Detailed logging of human result data
   console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult:`, humanResult);
   console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult type:`, typeof humanResult);
-  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult.isCorrect:`, humanResult?.isCorrect);
+  console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult.correct:`, humanResult?.correct);
   console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - humanResult keys:`, humanResult ? Object.keys(humanResult) : 'null/undefined');
 
-  const humanCorrect = humanResult?.isCorrect || false;
+  const humanCorrect = humanResult?.correct || false;
   console.log(`🔍 [DEBUG] PuzzleComparisonCard ${puzzleId} - final humanCorrect:`, humanCorrect);
 
   // Fix property mappings for AggregatedAIStats interface
