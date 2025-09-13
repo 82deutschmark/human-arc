@@ -82,6 +82,7 @@ setPlayFabId(playFabAuthManager.getPlayFabId());
           )
         ];
         // 4. Fetch enhanced puzzle data (including AI performance) in a single batch
+        // 4. Fetch enhanced puzzle data (including AI performance) in a single batch
         const enhancedPuzzlesMap = await puzzleRepository.findByIds(puzzleIds, true);
 
         // 5. Merge human and AI data
