@@ -6,7 +6,6 @@
  */
 
 import type { EmojiSet } from '@/constants/spaceEmojis';
-import type { SizingLogic } from '@/components/officer/SizingLogicControl';
 
 /** Display mode options for puzzle visualization */
 export type DisplayMode = 'emoji' | 'arc-colors' | 'hybrid';

@@ -17,7 +17,7 @@ import { TrainingExamplesSection } from '@/components/officer/TrainingExamplesSe
 import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
 import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
-import { DisplayModeControls } from '@/components/officer/DisplayModeControls';
+import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EmojiSet } from '@/constants/spaceEmojis';
@@ -746,7 +746,12 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                   </span>
                 )}
               </h2>
-              <DisplayModeControls displayMode={displayState.displayMode} onDisplayModeChange={handleDisplayModeChange} />
+              <DisplayModeToolbar 
+                displayMode={displayState.displayMode} 
+                onDisplayModeChange={handleDisplayModeChange}
+                emojiSet={displayState.emojiSet}
+                onEmojiSetChange={handleEmojiSetChange}
+              />
             </div>
             <div className="text-slate-300 text-xl font-medium">
               {isValidating ? '🔄 Validating with PlayFab...' : 
@@ -791,7 +796,6 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 displayMode={displayState.displayMode}
                 emojiSet={displayState.emojiSet}
                 selectedValue={displayState.selectedValue}
-                onEmojiSetChange={handleEmojiSetChange}
                 onValueSelect={handleValueSelect}
                 onCopyInput={copyInput}
                 onResetSolution={resetSolution}

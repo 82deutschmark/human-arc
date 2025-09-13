@@ -22,9 +22,6 @@ interface PuzzleToolsProps {
   displayMode: DisplayMode;
   emojiSet: EmojiSet;
   selectedValue: number;
-  
-  // Display control handlers
-  onEmojiSetChange: (emojiSet: EmojiSet) => void;
   onValueSelect: (value: number) => void;
   
   // Action handlers
@@ -46,7 +43,6 @@ export function PuzzleTools({
   displayMode,
   emojiSet,
   selectedValue,
-  onEmojiSetChange,
   onValueSelect,
   onCopyInput,
   onResetSolution,
@@ -70,24 +66,6 @@ export function PuzzleTools({
         displayMode={displayMode}
         className="bg-slate-800 border border-slate-600 rounded-lg p-5 w-full mb-4"
       />
-
-      {/* Emoji Set Dropdown - Only show when emoji or hybrid mode */}
-      {(displayMode === 'emoji' || displayMode === 'hybrid') && (
-        <div className="bg-slate-800 border border-slate-600 rounded-lg p-5 w-full">
-          <label className="text-slate-300 text-lg font-semibold mb-2 block">Emoji Theme:</label>
-          <select
-            value={emojiSet}
-            onChange={(e) => onEmojiSetChange(e.target.value as EmojiSet)}
-            className="w-full bg-slate-700 border border-slate-500 rounded px-4 py-3 text-amber-100 text-lg h-14"
-          >
-            {getEmojiSetOptions().map((option) => (
-              <option key={option.value} value={option.value}>
-                {getEmojiSetDropdownLabel(option.value)}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
 
       {/* Action Controls - Puzzle Actions */}
