@@ -10,6 +10,12 @@ import { idConverter } from '@/services/idConverter';
 import { apiCache, CacheManager } from './cacheManager';
 
 // Response types from arc-explainer API
+export interface ModelPerformance {
+  modelName: string;
+  accuracy: number;
+  avgConfidence?: number;
+}
+
 export interface PerformanceData {
   avgAccuracy: number;
   avgConfidence?: number;
@@ -20,6 +26,10 @@ export interface PerformanceData {
   latestAnalysis?: string;
   worstExplanationId?: number;
   compositeScore?: number;
+  totalAttempts: number;
+  modelPerformance: ModelPerformance[];
+  dataset: string;
+  dangerousOverconfidence?: boolean;
 }
 
 export interface PuzzleWithPerformance {

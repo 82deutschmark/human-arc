@@ -11,6 +11,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Badge } from '@/components/ui/badge';
 import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 import { SuccessModal } from '@/components/ui/SuccessModal';
+import { AssessmentStepSuccessModal } from '@/components/assessment/AssessmentStepSuccessModal';
 import { ResponsiveOfficerGrid, ResponsiveOfficerDisplayGrid } from '@/components/officer/ResponsiveOfficerGrid';
 import { TrainingExamplesSection } from '@/components/officer/TrainingExamplesSection';
 import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
@@ -922,19 +923,24 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
       </main>
 
       {/* Success Modal */}
-      <SuccessModal
-        open={showSuccessModal}
-        onClose={() => {
-          setShowSuccessModal(false);
-          // In assessment mode, trigger advancement when user clicks OK
-          if (isAssessmentMode && onAssessmentAdvance) {
-            onAssessmentAdvance();
-          }
-        }}
-        title="Excellent Work!"
-        message="Puzzle solved successfully! Click OK to continue to the next challenge..."
-        showDesignerNotes={true}
-      />
+      {isAssessmentMode ? (
+        <AssessmentStepSuccessModal
+          open={showSuccessModal}
+          puzzleId={puzzle.id}
+          onClose={() => setShowSuccessModal(false)} // onClose just closes the modal
+          onAssessmentAdvance={onAssessmentAdvance} // onAssessmentAdvance handles moving to the next puzzle
+        />
+      ) : (
+        <SuccessModal
+          open={showSuccessModal}
+          onClose={() => {
+            setShowSuccessModal(false);
+          }}
+          title="Excellent Work!"
+          message="Puzzle solved successfully! Click OK to continue to the next challenge..."
+          showDesignerNotes={true}
+        />
+      )}
     </div>
   );
 }
