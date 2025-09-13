@@ -11,7 +11,7 @@ import { useLocation } from 'wouter';
 
 interface DocumentMetaConfig {
   title: string;
-  favicon?: string;
+  favicon: string | null;
   description?: string;
 }
 
@@ -33,7 +33,10 @@ export function useDocumentMeta() {
   const [location] = useLocation();
 
   useEffect(() => {
-    const config = ROUTE_CONFIGS[location] || ROUTE_CONFIGS.default;
+    // Match paths that start with /assessment (including subpaths)
+    const config = location.startsWith('/assessment') 
+      ? ROUTE_CONFIGS['/assessment'] 
+      : ROUTE_CONFIGS[location] || ROUTE_CONFIGS.default;
 
     // Update title
     document.title = config.title;
