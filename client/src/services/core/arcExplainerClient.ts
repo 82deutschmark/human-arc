@@ -248,9 +248,13 @@ export class ArcExplainerClient {
     const performanceMap = new Map<string, PerformanceData>();
 
     // Create an array of promises to fetch performance for each puzzle
-    const performancePromises = puzzleIds.map(async (id) => {
-      const performance = await this.getPuzzlePerformance(id);
-      return { id, performance };
+    const performancePromises = puzzleIds.map(async (playFabId) => {
+      const arcId = idConverter.normalizeToArcId(playFabId);
+      if (!arcId) {
+        return { id: playFabId, arcId: null, performance: null };
+      }
+      const performance = await this.getPuzzlePerformance(arcId);
+      return { id: playFabId, arcId, performance };
     });
 
     // Wait for all promises to resolve
@@ -258,8 +262,8 @@ export class ArcExplainerClient {
 
     // Populate the map with the results
     for (const result of results) {
-      if (result.performance) {
-        performanceMap.set(result.id, result.performance);
+      if (result.arcId && result.performance) {
+        performanceMap.set(result.arcId, result.performance);
       }
     }
 
