@@ -399,7 +399,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         // Add new detailed performance record
         humanPerformanceData.push({
             puzzleId,
-            correct: true, // Use consistent field name "correct" throughout codebase
+            correct: boolean(validationResult.allCorrect), // Use consistent field name "correct" throughout codebase
             timestamp: new Date().toISOString(),
             ...scoreData,
             timeElapsed,
