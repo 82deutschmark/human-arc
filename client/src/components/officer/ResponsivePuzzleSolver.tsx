@@ -945,8 +945,21 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         <AssessmentStepSuccessModal
           open={showSuccessModal}
           puzzleId={puzzle.id}
-          onClose={() => setShowSuccessModal(false)} // onClose just closes the modal
-          onAssessmentAdvance={onAssessmentAdvance} // onAssessmentAdvance handles moving to the next puzzle
+          onClose={() => {
+            // In assessment mode, only allow closing via the OK button, not by clicking outside
+            console.log('🚫 [Assessment] Modal onClose called - ignoring in assessment mode');
+          }}
+          onAssessmentAdvance={() => {
+            console.log('🎯 [Assessment] onAssessmentAdvance called from modal - closing modal and advancing');
+            console.log('🎯 [Assessment] Current puzzle ID:', puzzle.id);
+            setShowSuccessModal(false);
+            if (onAssessmentAdvance) {
+              console.log('🎯 [Assessment] Calling parent onAssessmentAdvance...');
+              onAssessmentAdvance();
+            } else {
+              console.error('🚨 [Assessment] onAssessmentAdvance prop is not provided!');
+            }
+          }}
           fallbackMode={validationResult?.fallback || false}
         />
       ) : (
