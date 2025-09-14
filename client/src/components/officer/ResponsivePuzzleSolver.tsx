@@ -813,7 +813,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-amber-300 text-3xl font-bold text-center">Test Input</h3>
                 <div className="w-1/2">
-                  <SizeSlider value={inputCellSize} onChange={setInputCellSize} min={50} max={100} label="Grid Size" />
+                  <SizeSlider value={inputCellSize} onChange={setInputCellSize} min={25} max={75} label="Grid Size" />
                 </div>
               </div>
               <GridWithDimensions grid={testInput}>
@@ -867,7 +867,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                   )}
                 </h3>
                 <div className="w-1/2">
-                  <SizeSlider value={outputCellSize} onChange={setOutputCellSize} min={50} max={100} label="Grid Size" />
+                  <SizeSlider value={outputCellSize} onChange={setOutputCellSize} min={25} max={75} label="Grid Size" />
                 </div>
               </div>
 
