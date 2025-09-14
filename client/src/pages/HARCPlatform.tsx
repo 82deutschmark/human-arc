@@ -95,8 +95,8 @@ export default function HARCPlatform() {
     setLocation('/dashboard');
   };
 
-  const handleViewTrainingCenter = () => {
-    setLocation('/officer-track');
+  const handleViewPuzzleLibrary = () => {
+    setLocation('/puzzles');
   };
 
   return (
@@ -226,14 +226,14 @@ export default function HARCPlatform() {
           </Button>
 
           <Button
-            onClick={handleViewTrainingCenter}
+            onClick={handleViewPuzzleLibrary}
             variant="outline"
             className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-900 p-6 h-auto"
           >
             <div className="text-center">
-              <div className="text-2xl mb-2">🎯</div>
-              <div className="font-bold text-lg">Training Center</div>
-              <div className="text-sm opacity-90 mt-1">Practice with puzzle library</div>
+              <div className="text-2xl mb-2">🧩</div>
+              <div className="font-bold text-lg">Puzzle Library</div>
+              <div className="text-sm opacity-90 mt-1">Practice with research puzzles</div>
             </div>
           </Button>
         </div>
@@ -241,10 +241,21 @@ export default function HARCPlatform() {
         {/* Research Context */}
         <div className="mt-12 text-center">
           <p className="text-slate-400 text-sm max-w-2xl mx-auto">
-            The Abstract Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning. 
-            The HARC Platform extends this work by collecting systematic human performance data, 
+            The Abstract Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning.
+            The HARC Platform extends this work by collecting systematic human performance data,
             enabling direct human vs AI comparisons on identical reasoning tasks.
           </p>
+        </div>
+
+        {/* Space Force Easter Egg Link */}
+        <div className="mt-8 text-center">
+          <Button
+            onClick={() => setLocation('/space-force')}
+            variant="ghost"
+            className="text-slate-500 hover:text-slate-300 text-sm"
+          >
+            🚀 Looking for Space Force Mission Control?
+          </Button>
         </div>
       </main>
     </div>

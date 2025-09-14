@@ -25,6 +25,7 @@ import { useDocumentMeta } from "@/utils/useDocumentMeta";
 import MissionControl from "@/pages/MissionControl";
 import FIQTest from "@/pages/FIQTest";
 import OfficerTrackSimple from "@/pages/OfficerTrackSimple";
+import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
 import { TutorialPage } from '@/pages/TutorialPage';
 import { GridSizeTest } from "@/components/officer/GridSizeTest";
@@ -45,18 +46,20 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={MissionControl} />
-      <Route path="/harc" component={HARCPlatform} />
-      <Route path="/fiq-test" component={FIQTest} />
-      <Route path="/officer-track" component={OfficerTrackSimple} />
-      <Route path="/officer-track/solve/:puzzleId" component={PuzzleSolver} />
-      <Route path="/officer-track/ai-comparison" component={LLMComparisonPage} />
+      <Route path="/" component={HARCPlatform} />
+      <Route path="/space-force" component={MissionControl} />
+      <Route path="/space-force/officer-track" component={OfficerTrackSimple} />
+      <Route path="/space-force/officer-track/solve/:puzzleId" component={PuzzleSolver} />
+      <Route path="/space-force/officer-track/ai-comparison" component={LLMComparisonPage} />
+      <Route path="/space-force/tutorial" component={TutorialPage} />
+      <Route path="/space-force/fiq-test" component={FIQTest} />
       <Route path="/assessment" component={AssessmentInterface} />
+      <Route path="/puzzles" component={HARCPuzzleBrowser} />
+      <Route path="/puzzles/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/dashboard" component={ParticipantDashboard} />
       <Route path="/leaderboards" component={Leaderboards} />
       <Route path="/profile" component={Profile} />
       <Route path="/grid-test" component={GridSizeTest} />
-      <Route path="/tutorial" component={TutorialPage} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
       <Route component={NotFound} />
     </Switch>

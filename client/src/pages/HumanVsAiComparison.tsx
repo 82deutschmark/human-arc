@@ -44,7 +44,7 @@ export function HumanVsAiComparison() {
   };
 
   const handleBackToPuzzles = () => {
-    setLocation('/officer-track');
+    setLocation('/space-force/officer-track');
   };
 
   useEffect(() => {
@@ -196,14 +196,20 @@ export function HumanVsAiComparison() {
             variant="outline"
             className="border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900"
           >
-            ← Back to Assessment
+            ← Retake Assessment
+          </Button>
+          <Button
+            onClick={() => setLocation('/puzzles')}
+            className="bg-cyan-600 hover:bg-cyan-700 text-white"
+          >
+            🧩 Continue with More Puzzles
           </Button>
           <Button
             onClick={handleBackToPuzzles}
             variant="outline"
-            className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-900"
+            className="border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900"
           >
-            ← Back to Puzzles
+            🚀 Space Force Mode
           </Button>
         </div>
 
