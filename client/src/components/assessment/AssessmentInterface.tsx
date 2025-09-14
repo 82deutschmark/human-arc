@@ -390,6 +390,11 @@ export function AssessmentInterface() {
           </Button>
         </div>
       </div>
+
+      {/* Tiny PlayFab ID debug display */}
+      <div className="fixed bottom-2 right-2 text-xs text-slate-500 font-mono bg-slate-800 px-2 py-1 rounded opacity-75">
+        ID: {playFabAuthManager.getPlayFabId()?.slice(-8) || 'loading...'}
+      </div>
     </div>
   );
 }

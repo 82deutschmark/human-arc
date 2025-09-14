@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## Version 0.1.0 - Minimal Working Prototype (2025-09-13)
 
-**🎉 MILESTONE: First working human vs AI performance comparison system**
+**🎉 MILESTONE: Prototype Wrapper Page**
 
-This version represents the successful unification of PlayFab and arc-explainer APIs to create a functional minimal prototype. After months of development, we now have a working system that accurately compares human puzzle-solving performance against AI benchmarks.
+This version represents the successful unification of PlayFab and arc-explainer APIs to create a functional minimal prototype. After months of development on the two projects, we now have a working system that accurately compares human puzzle-solving performance against AI results on the same tasks.
 
 ### **Core Achievement: Unified API Integration**
-- **PlayFab Integration**: Complete human performance data collection and storage
+- **PlayFab Integration**: Partially finished human performance data collection and storage
 - **arc-explainer Integration**: Real AI performance statistics from explanation records
 - **Data Flow**: Assessment → Performance Comparison → Puzzle Discovery pipeline
 

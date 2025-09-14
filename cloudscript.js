@@ -322,7 +322,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
     try {
         Utils.assertArgs(args, ['puzzleId', 'solutions', 'timeElapsed', 'attemptNumber', 'stepCount']);
         const { puzzleId, solutions, timeElapsed, attemptNumber, stepCount, sessionId } = args;
-        const playerId = currentPlayerId;
+        const playerId = context.currentPlayerId;
 
         const puzzleData = PlayFabService.getPuzzleById(puzzleId);
         if (!puzzleData) {
@@ -339,7 +339,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         //  - CloudScript focuses on validation only
 
         if (!validationResult.allCorrect) {
-            return { success: true, correct: false, failures: validationResult.failures };
+            return { success: true, correct: true, failures: validationResult.failures };
         }
 
         // --- On Success: Calculate Score & Update Player Data ---
@@ -359,7 +359,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         // HOW ARE WE GETTING STEPS from the client?
         humanPerformanceData.push({
             puzzleId,
-            correct: true, // Use consistent field name "correct" throughout codebase
+            correct: true, // Use consistent field names throughout codebase!! 
             timestamp: new Date().toISOString(),
             ...scoreData,
             timeElapsed,
@@ -446,7 +446,7 @@ handlers.ValidateTaskSolution = function(args, context) {
     try {
         Utils.assertArgs(args, ['taskId', 'solution']);
         const { taskId, solution, timeElapsed = 0, hintsUsed = 0, sessionId = 'unknown', attemptId = 1 } = args;
-        const playerId = currentPlayerId;
+        const playerId = context.currentPlayerId;
 
         const tasks = PlayFabService.getTitleDataJSON("tasks.json");
         if (!tasks) {

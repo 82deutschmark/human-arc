@@ -1,7 +1,7 @@
 # Claude.md - Space Force Mission Control 2050 (ARC-AGI Puzzle Platform)
 Every file you create or edit should start with:
  * 
- * Author: Claude Code using Sonnet 4
+ * Author: Your NAME  (Example: Claude Code using Sonnet 4)
  * Date: `timestamp`
  * PURPOSE: VERBOSE DETAILS ABOUT HOW THIS WORKS AND WHAT ELSE IT TOUCHES
  * SRP and DRY check: Pass/Fail Is this file violating either? Do these things already exist in the project?
@@ -54,9 +54,9 @@ This project utilizes a **Backend-as-a-Service (BaaS)** model with PlayFab as th
 - **External APIs**: `arc-explainer` (for AI performance metadata and puzzle metadata)
 
 ### Guiding Principles
-- **Single Source of Truth**: All game data, puzzle data, and user data resides in PlayFab.
-- **No Local Fallbacks**: The application relies entirely on PlayFab for data. There are no local JSON files for puzzles used in production.
-- **Secure by Design**: Critical operations like solution validation and data updates are handled by server-side CloudScript to prevent client-side manipulation.
+- **Source of Truth**: ARC puzzle IDs are standardized, but stored in PlayFab with prefixes that we have a service to translate between PlayFab and arc-explainer API IDs. All game data, puzzle data, and user data resides in PlayFab.
+- **No Local Fallbacks**: The application relies entirely on PlayFab for data validation and storage. Metadata and statistics are easily available from the arc-explainer API.  There are no local JSON files for puzzles used in production.  We have services that translate the IDs between PlayFab and arc-explainer API IDs!!!
+- **Secure by Design**: Critical operations like solution validation and data updates are handled by server-side CloudScript to prevent client-side manipulation, even though this is a low concern and not a priority.
 
 ---
 
