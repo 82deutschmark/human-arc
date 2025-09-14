@@ -60,7 +60,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
 
   // Session tracking state
   const [sessionId] = useState(() => crypto.randomUUID());
-  const [sessionStartTime] = useState(() => Date.now());
+  const sessionStartTime = useRef(Date.now());
   const [stepIndex, setStepIndex] = useState(0);
   const [attemptNumber, setAttemptNumber] = useState(1);
 
@@ -108,6 +108,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     setIsAutoAdvancing(false);
     setAutoAdvanceMessage(null);
     setShowSuccessModal(false);
+    sessionStartTime.current = Date.now(); // Reset timer for the new puzzle
 
     // Reset assessment mode guidance state
     setAssessmentTestsCompleted([]);
@@ -190,7 +191,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     return () => {
       const logSessionEnd = async () => {
         try {
-          const sessionDuration = Date.now() - sessionStartTime;
+          const sessionDuration = Date.now() - sessionStartTime.current;
           await playFabEvents.logPuzzleEvent(
             "SFMC",                    // eventName
             sessionId,                 // sessionId
@@ -255,7 +256,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   ) => {
     try {
       const currentTime = Date.now();
-      const deltaMs = currentTime - sessionStartTime;
+      const deltaMs = currentTime - sessionStartTime.current;
       
       await playFabEvents.logPuzzleEvent(
         "SFMC",                    // eventName
@@ -375,7 +376,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
       const result = await playFabValidation.validateARCPuzzle({
         puzzleId: puzzle.id,
         solutions: solutions,
-        timeElapsed: Math.floor((Date.now() - sessionStartTime) / 1000), // Convert milliseconds to seconds
+        timeElapsed: Math.floor((Date.now() - sessionStartTime.current) / 1000), // Convert milliseconds to seconds
         attemptNumber: attemptNumber,
         sessionId: sessionId
       });
