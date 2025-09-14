@@ -162,7 +162,7 @@ export function PermanentHintSystem({
     const dimensions = puzzle.train.map(example => {
       const height = example.output?.length || 0;
       const width = example.output?.[0]?.length || 0;
-      return `${width}×${height}`;
+      return `${height}×${width}`;
     });
     
     const uniqueDimensions = Array.from(new Set(dimensions));

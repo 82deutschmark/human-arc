@@ -66,7 +66,7 @@ export function GridSizeSelector({
   const handleSizeChange = (newWidth: number, newHeight: number) => {
     if (hasExistingData && (newWidth !== width || newHeight !== height)) {
       const confirmed = confirm(
-        `Changing grid size from ${width}×${height} to ${newWidth}×${newHeight} will reset your current solution. Continue?`
+        `Changing grid size from ${height}×${width} to ${newHeight}×${newWidth} will reset your current solution. Continue?`
       );
       if (!confirmed) return;
     }
@@ -140,7 +140,7 @@ export function GridSizeSelector({
                 className="h-12 px-6 text-xl font-bold border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white"
                 onClick={() => handleSizeChange(suggestion.width, suggestion.height)}
               >
-                {suggestion.width}×{suggestion.height}
+                {suggestion.height}×{suggestion.width}
               </Button>
             ))}
           </div>
