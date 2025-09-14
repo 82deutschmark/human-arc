@@ -376,7 +376,8 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             return { success: false, error: validationResult.error };
         }
 
-        // Event logging is handled by the client - CloudScript focuses on validation only
+        // Event logging is handled by the client... but where?  And how does it get sent to PlayFab?
+        //  - CloudScript focuses on validation only
 
         if (!validationResult.allCorrect) {
             return { success: true, correct: false, failures: validationResult.failures };
@@ -397,6 +398,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         }
 
         // Add new detailed performance record
+        // HOW ARE WE GETTING STEPS from the client?
         humanPerformanceData.push({
             puzzleId,
             correct: boolean(validationResult.allCorrect), // Use consistent field name "correct" throughout codebase

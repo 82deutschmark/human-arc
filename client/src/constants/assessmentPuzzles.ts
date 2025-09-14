@@ -14,7 +14,7 @@ export const ASSESSMENT_PUZZLE_IDS = [
   '66e6c45b', // Expand!
 ];
 
-///
+// 'bc1d5164',    //  5x7 -> 3x3 where the grid is a rectangle, where a set of 2x2 grids are divided, solve by welding.
 // 'e7639916',    //  Connect the dots! Large!
   
  //  '0bb8deee',    //  Corral the shapes
