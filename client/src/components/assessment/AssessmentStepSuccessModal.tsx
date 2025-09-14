@@ -134,7 +134,7 @@ export function AssessmentStepSuccessModal({
         return `You solved something that AI models get wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
     };
 
-    const renderModelBreakdown = (models: typeof aiStats.modelBreakdown) => {
+    const renderModelBreakdown = (models: typeof aiStats?.modelBreakdown) => {
       if (!models || models.length === 0) return null;
 
       // Sort models by accuracy (worst first for prominence)
