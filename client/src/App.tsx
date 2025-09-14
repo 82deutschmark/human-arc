@@ -36,6 +36,7 @@ import HARCPlatform from "@/pages/HARCPlatform";
 import Leaderboards from "@/pages/Leaderboards";
 import Profile from "@/pages/Profile";
 import HumanVsAiComparison from "@/pages/HumanVsAiComparison";
+import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import { LoadingSplash } from "@/components/game/LoadingSplash";
 import { OnboardingModal } from "@/components/game/OnboardingModal";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/grid-test" component={GridSizeTest} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
+      <Route path="/about" component={About} />
       <Route component={NotFound} />
     </Switch>
   );
