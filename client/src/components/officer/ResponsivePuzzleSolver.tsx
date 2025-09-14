@@ -18,6 +18,7 @@ import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
 import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
+import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EventType } from '@/types/playfab';
@@ -717,6 +718,14 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
             title="Training Examples - Apply what you learn from them to solve the puzzle"
           />
         )}
+
+        {/* Hint System */}
+        <PermanentHintSystem
+          puzzle={puzzle}
+          onHintUsed={(hintLevel, totalHints) => {
+            console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);
+          }}
+        />
 
 
         {/* Test Case Navigation - SILVER THEME */}
