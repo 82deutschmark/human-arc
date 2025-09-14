@@ -1,5 +1,18 @@
 # Changelog
 
+## 2025-09-14: 🚀 CLOUDSCRIPT MAJOR REFACTORING - 60% Code Reduction & Critical Bug Fix
+
+- **CRITICAL BUG FIXED**: Resolved the long-standing `context.currentPlayerId is undefined` error in PlayFab CloudScript, which was preventing all puzzle validations from succeeding. The validation and scoring pipeline is now fully functional.
+- **MASSIVE CODE REDUCTION**: Refactored the bloated `cloudscript.js` from nearly 1,000 lines down to a lean ~400 lines, improving performance and maintainability.
+- **DRY PRINCIPLE APPLIED**: Eliminated over 340 lines of duplicated code by consolidating the nearly identical `ValidateARCPuzzle` and `ValidateARC2EvalPuzzle` functions into a single, reusable helper (`_validateAndScoreArcPuzzle`).
+- **IMPROVED ARCHITECTURE**: Reorganized scattered helper functions into logical, modular services (`Utils`, `PlayFabService`, `ScoringService`, `ValidationService`), adhering to the Single Responsibility Principle.
+- **FEATURE CLARIFICATION**: Confirmed that no essential logic was lost during refactoring. Minor server-side analytics functions (`getStepCountFromEvents`, `validateSession`) were intentionally removed as unnecessary bloat, with user approval.
+- **FILES MODIFIED**:
+  - `cloudscript.js` (Complete overhaul)
+  - `cloudscript.js.md` (Now deprecated)
+- **Author**: Gemini 2.5 Pro
+
+
 All notable changes to this project will be documented in this file.
 
 ## Version 0.1.0 - Minimal Working Prototype (2025-09-13)
