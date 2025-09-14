@@ -27,7 +27,7 @@ export function HumanVsAiComparison() {
   const [playFabId, setPlayFabId] = useState<string | null>(null);
 
   // Calculate summary statistics
-  const humanCorrect = comparisonData.filter(d => d.human?.isCorrect).length;
+  const humanCorrect = comparisonData.filter(d => d.human?.correct).length;
   // New: Use aggregated AI stats from explanations
   const totalAIAttempts = comparisonData.reduce((acc, d) => acc + (d.ai?.totalAttempts || 0), 0);
   const totalAICorrect = comparisonData.reduce((acc, d) => acc + (d.ai?.correctAttempts || 0), 0);
@@ -60,6 +60,21 @@ export function HumanVsAiComparison() {
           return arcId && ASSESSMENT_PUZZLE_IDS.includes(arcId);
         });
 
+        // DEBUG: Log the exact structure of human performance data
+        console.log('🔍 [DEBUG] Raw human performance data from PlayFab:', allHumanData);
+        console.log('🔍 [DEBUG] Filtered human data for assessment:', humanData);
+        if (humanData.length > 0) {
+          console.log('🔍 [DEBUG] Sample human record structure:', humanData[0]);
+          console.log('🔍 [DEBUG] Sample record keys:', Object.keys(humanData[0]));
+          console.log('🔍 [DEBUG] "correct" field value:', humanData[0].correct);
+          console.log('🔍 [DEBUG] "correct" field type:', typeof humanData[0].correct);
+          console.log('🔍 [DEBUG] finalScore value:', humanData[0].finalScore);
+          console.log('🔍 [DEBUG] All human records with scores:');
+          humanData.forEach((record, index) => {
+            console.log(`    Record ${index}: puzzleId=${record.puzzleId}, correct=${record.correct} (${typeof record.correct}), finalScore=${record.finalScore}`);
+          });
+        }
+
         // Filter out duplicates to prevent key errors
         if (humanData) {
           const seen = new Set();
@@ -86,14 +101,37 @@ export function HumanVsAiComparison() {
         const mergedData = humanData.map(humanRecord => {
           const arcId = idConverter.normalizeToArcId(humanRecord.puzzleId);
           const aiData = arcId ? aiDataMap.get(arcId) : null;
+
+          // Data Transformation Layer - FIX: Proper correctness determination
+          const transformedHumanData = {
+            puzzleId: humanRecord.puzzleId,
+            // FIX: If a record exists in humanPerformanceData with a score, the player was correct
+            // CloudScript only saves successful completions to this array
+            correct: humanRecord.correct !== undefined
+              ? humanRecord.correct
+              : (humanRecord.finalScore > 0 ? true : false), // Score-based fallback
+            timestamp: humanRecord.timestamp || new Date().toISOString(),
+            basePoints: humanRecord.basePoints || 0,
+            speedBonus: humanRecord.speedBonus || 0,
+            efficiencyBonus: humanRecord.efficiencyBonus || 0,
+            finalScore: humanRecord.finalScore || 0,
+            timeElapsed: humanRecord.timeElapsed || 0,
+            stepCount: humanRecord.stepCount || 0,
+            attemptNumber: humanRecord.attemptNumber || 1,
+          };
+
+          // DEBUG: Log transformation for each record
+          console.log(`🔄 [TRANSFORM] ${humanRecord.puzzleId}: correct=${humanRecord.correct} -> ${transformedHumanData.correct}, score=${transformedHumanData.finalScore}`);
+
           console.log(`🔗 Merging: ${humanRecord.puzzleId} -> ${arcId} -> ${
             aiData?.hasData
               ? `${aiData.correctAttempts}/${aiData.totalAttempts} (${aiData.accuracy.toFixed(1)}%)`
               : 'NO AI DATA'
           }`);
+
           return {
             puzzleId: humanRecord.puzzleId,
-            human: humanRecord,
+            human: transformedHumanData, // Use transformed data
             ai: aiData || null,
           };
         });

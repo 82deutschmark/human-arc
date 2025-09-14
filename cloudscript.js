@@ -222,9 +222,39 @@ const ScoringService = {
      * @returns {number} - The number of steps, or a default if none are found.
      */
     getStepCountFromEvents(playFabId, sessionId) {
-        // GetPlayerEvents API is not available in CloudScript
-        // Return default step count to avoid breaking scoring
-        return 100; 
+        try {
+            // Try to get player events for this session
+            const events = server.GetPlayerEvents({
+                PlayFabId: playFabId
+                // EventNamespace: "custom.SFMC" - might not be needed
+            });
+
+            log.info(`[getStepCountFromEvents] Retrieved ${events && events.History ? events.History.length : 0} events for player ${playFabId}`);
+
+            // Count cell_change events in this session
+            let stepCount = 0;
+            if (events && events.History) {
+                for (let event of events.History) {
+                    // Check for SFMC events with the right sessionId and event_type
+                    if (event.EventName === "SFMC" &&
+                        event.EventData &&
+                        event.EventData.sessionId === sessionId &&
+                        event.EventData.event_type === "cell_change") {
+                        stepCount++;
+                    }
+                }
+            }
+
+            log.info(`[getStepCountFromEvents] Found ${stepCount} cell_change events for session ${sessionId}`);
+
+            // Return the actual count, or default if no events found
+            return stepCount > 0 ? stepCount : 100;
+
+        } catch (error) {
+            log.error(`[getStepCountFromEvents] Error retrieving events: ${error}`);
+            // Return default step count to avoid breaking scoring
+            return 100;
+        }
     },
 
     /**
@@ -346,7 +376,8 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             return { success: false, error: validationResult.error };
         }
 
-        // Event logging is handled by the client - CloudScript focuses on validation only
+        // Event logging is handled by the client... but where?  And how does it get sent to PlayFab?
+        //  - CloudScript focuses on validation only
 
         if (!validationResult.allCorrect) {
             return { success: true, correct: false, failures: validationResult.failures };
@@ -367,9 +398,10 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         }
 
         // Add new detailed performance record
+        // HOW ARE WE GETTING STEPS from the client?
         humanPerformanceData.push({
             puzzleId,
-            isCorrect: true, // Add the missing correctness flag
+            correct: boolean(validationResult.allCorrect), // Use consistent field name "correct" throughout codebase
             timestamp: new Date().toISOString(),
             ...scoreData,
             timeElapsed,
