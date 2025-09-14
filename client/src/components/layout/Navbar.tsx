@@ -44,6 +44,18 @@ export function Navbar({ title = 'Human ARC', badges, showBackButton = false, on
             {children ? children : 
               <div className="hidden md:flex md:items-center md:space-x-8">
                 <Link 
+                  href="/leaderboard"
+                  className="text-lg font-medium text-slate-300 hover:text-amber-400 transition-colors"
+                >
+                  Leaderboard
+                </Link>
+                <Link 
+                  href="/puzzles"
+                  className="text-lg font-medium text-slate-300 hover:text-amber-400 transition-colors"
+                >
+                  Puzzles
+                </Link>
+                <Link 
                   href="/about"
                   className="text-lg font-medium text-slate-300 hover:text-amber-400 transition-colors"
                 >
