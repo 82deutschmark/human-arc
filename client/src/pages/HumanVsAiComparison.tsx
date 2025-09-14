@@ -297,6 +297,9 @@ export function HumanVsAiComparison() {
                         sessionStorage.removeItem('playfab_device_id');
                         localStorage.removeItem('debug_playfab_mapping');
 
+                        // Clear PlayFab cookies (fallback recovery mechanism)
+                        document.cookie = "playfab_device_id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
                         // Clear any other PlayFab-related localStorage
                         const keysToRemove = [];
                         for (let i = 0; i < localStorage.length; i++) {
