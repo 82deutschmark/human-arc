@@ -35,6 +35,7 @@ const CONSTANTS = {
         LEVEL_POINTS: "LevelPoints",
         OFFICER_TRACK_POINTS: "OfficerTrackPoints",
         ARC2_EVAL_POINTS: "ARC2EvalPoints",
+        HARC_TOTAL_POINTS: "HARCTotalPoints",
     },
     // Scoring Parameters
     SCORING: {
@@ -401,5 +402,57 @@ handlers.ValidateTaskSolution = function(args, context) {
     } catch (error) {
         log.error("ValidateTaskSolution error", { error: error.message, stack: error.stack, args });
         return { success: false, error: "Internal server error during validation" };
+    }
+};
+
+// =============================================================================
+// HARC LEADERBOARD FUNCTION
+// =============================================================================
+
+handlers.UpdateHARCTotalScore = function(args, context) {
+    try {
+        const playerId = context.currentPlayerId;
+        Utils.assert(playerId, "Player ID is required");
+
+        // Get player's humanPerformanceData
+        const userData = PlayFabService.getPlayerData(playerId, ["humanPerformanceData"]);
+        const humanPerformanceDataStr = userData.Data?.humanPerformanceData?.Value;
+
+        if (!humanPerformanceDataStr || humanPerformanceDataStr === "undefined") {
+            log.info(`[HARC] Player ${playerId} has no performance data yet`);
+            // Set initial score to 0
+            PlayFabService.updatePlayerStats(playerId, [
+                { StatisticName: CONSTANTS.STATS.HARC_TOTAL_POINTS, Value: 0 }
+            ]);
+            return { success: true, totalScore: 0 };
+        }
+
+        const humanPerformanceData = Utils.safeParseJSON(humanPerformanceDataStr, []);
+
+        // Calculate total score from all finalScore values
+        let totalScore = 0;
+        for (let i = 0; i < humanPerformanceData.length; i++) {
+            const record = humanPerformanceData[i];
+            if (record && record.finalScore && typeof record.finalScore === 'number') {
+                totalScore += record.finalScore;
+            }
+        }
+
+        // Update the HARC leaderboard statistic
+        PlayFabService.updatePlayerStats(playerId, [
+            { StatisticName: CONSTANTS.STATS.HARC_TOTAL_POINTS, Value: totalScore }
+        ]);
+
+        log.info(`[HARC] Updated total score for player ${playerId}: ${totalScore} (from ${humanPerformanceData.length} puzzles)`);
+
+        return {
+            success: true,
+            totalScore: totalScore,
+            puzzleCount: humanPerformanceData.length
+        };
+
+    } catch (error) {
+        log.error("UpdateHARCTotalScore error", { error: error.message, stack: error.stack, args });
+        return { success: false, error: "Failed to update HARC total score" };
     }
 };

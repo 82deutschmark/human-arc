@@ -22,6 +22,7 @@ export enum LeaderboardType {
   GLOBAL = 'GLOBAL',
   OFFICER_TRACK = 'OFFICER_TRACK',
   ARC2_EVALUATION = 'ARC2_EVALUATION',
+  HARC_LEADERBOARD = 'HARC_LEADERBOARD',
   // Future leaderboards can be added here without code changes:
   // SPEED = 'SPEED',
   // STREAK = 'STREAK',
@@ -64,6 +65,15 @@ export const LEADERBOARD_CONFIGS: Record<LeaderboardType, LeaderboardConfig> = {
     statisticName: PLAYFAB_CONSTANTS.STATISTIC_NAMES.ARC2_EVAL_POINTS,
     icon: '👑',
     category: 'specialty',
+    enabled: true
+  },
+  [LeaderboardType.HARC_LEADERBOARD]: {
+    type: LeaderboardType.HARC_LEADERBOARD,
+    displayName: 'HARC Participants',
+    description: 'All ARC puzzle performance rankings',
+    statisticName: PLAYFAB_CONSTANTS.STATISTIC_NAMES.HARC_TOTAL_POINTS,
+    icon: '🧩',
+    category: 'primary',
     enabled: true
   }
   // Future additions would go here - no code changes needed elsewhere
