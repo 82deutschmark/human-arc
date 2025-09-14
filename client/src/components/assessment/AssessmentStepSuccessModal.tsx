@@ -52,7 +52,7 @@ export function AssessmentStepSuccessModal({
           // Get AI stats using the same approach as HumanVsAiComparison
           const arcId = idConverter.normalizeToArcId(puzzleId);
           const aiData = arcId ? aiDataMap.get(arcId) : null;
-          setAiStats(aiData);
+          setAiStats(aiData || null);
 
         } catch (e) {
           console.error('Error loading assessment content:', e);
