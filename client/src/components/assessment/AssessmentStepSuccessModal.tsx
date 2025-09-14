@@ -8,7 +8,8 @@
 import { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Spinner } from '@nextui-org/react';
 import { assessmentContentService, type AssessmentContent } from '@/services/assessment/AssessmentContentService';
-import type { ModelPerformance } from '@/services/core/arcExplainerClient';
+import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance } from '@/services/core/arcExplainerClient';
+import { idConverter } from '@/services/idConverter';
 
 interface AssessmentStepSuccessModalProps {
   open: boolean;
@@ -26,6 +27,7 @@ export function AssessmentStepSuccessModal({
   fallbackMode = false,
 }: AssessmentStepSuccessModalProps) {
   const [content, setContent] = useState<AssessmentContent | null>(null);
+  const [aiStats, setAiStats] = useState<AggregatedAIStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,12 +37,23 @@ export function AssessmentStepSuccessModal({
         setIsLoading(true);
         setError(null);
         try {
-          const fetchedContent = await assessmentContentService.getAssessmentContent(puzzleId);
+          // Load content and AI stats in parallel, using the same method as HumanVsAiComparison
+          const [fetchedContent, aiDataMap] = await Promise.all([
+            assessmentContentService.getAssessmentContent(puzzleId),
+            arcExplainerClient.getBatchExplanationsStats([puzzleId])
+          ]);
+
           if (fetchedContent) {
             setContent(fetchedContent);
           } else {
             setError('Failed to load assessment content. The necessary data could not be found.');
           }
+
+          // Get AI stats using the same approach as HumanVsAiComparison
+          const arcId = idConverter.normalizeToArcId(puzzleId);
+          const aiData = arcId ? aiDataMap.get(arcId) : null;
+          setAiStats(aiData);
+
         } catch (e) {
           console.error('Error loading assessment content:', e);
           setError('An unexpected error occurred while loading content.');
@@ -57,6 +70,7 @@ export function AssessmentStepSuccessModal({
     onClose();
     // Reset state when modal is closed
     setContent(null);
+    setAiStats(null);
     setError(null);
   };
 
@@ -84,20 +98,26 @@ export function AssessmentStepSuccessModal({
     if (!content) return null;
 
     const { puzzle, title, explanation, aiDifficultyContext } = content;
-    const performance = puzzle.aiPerformance;
 
     const getPerformanceMessage = () => {
-        if (!performance || performance.totalAttempts < 10) {
-            return 'This is a new puzzle we are still analyzing. Your solution helps us understand it better!';
+        // Use the same AI stats structure as HumanVsAiComparison
+        if (!aiStats || !aiStats.hasData || aiStats.totalAttempts === 0) {
+            return 'This puzzle challenged various AI models. Your human insight solved what machines struggle with! 🧠 > 🤖';
         }
 
-        const worstModel = performance.modelPerformance.reduce((worst: ModelPerformance, current: ModelPerformance) => 
-            current.accuracy < worst.accuracy ? current : worst, performance.modelPerformance[0]
-        );
+        // Find the worst performing model from the breakdown
+        if (aiStats.modelBreakdown && aiStats.modelBreakdown.length > 0) {
+            const worstModel = aiStats.modelBreakdown.reduce((worst, current) =>
+                current.accuracy < worst.accuracy ? current : worst, aiStats.modelBreakdown[0]
+            );
 
-        const failureRate = (1 - worstModel.accuracy) * 100;
+            const failureRate = (1 - worstModel.accuracy) * 100;
+            return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
+        }
 
-        return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
+        // Fallback using overall accuracy
+        const failureRate = (1 - aiStats.accuracy) * 100;
+        return `You solved something that AI models get wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
     };
 
     return (
@@ -129,14 +149,17 @@ export function AssessmentStepSuccessModal({
           <div className="mb-4">
             <h4 className="font-bold text-md text-amber-500">What makes this hard for AI?</h4>
             <p className="text-slate-300">{aiDifficultyContext}</p>
-            {performance && (
+            {aiStats && aiStats.hasData && (
                 <div className="p-2 mt-2 text-sm border-l-2 border-amber-500 bg-slate-800/50">
                     <h5 className="font-semibold">AI Accuracy Breakdown:</h5>
-                    <ul className="list-disc list-inside">
-                        {performance.modelPerformance.map((model: ModelPerformance) => (
-                            <li key={model.modelName}>{model.modelName}: {(model.accuracy * 100).toFixed(1)}%</li>
-                        ))}
-                    </ul>
+                    <p className="mb-1">Overall: {(aiStats.accuracy * 100).toFixed(1)}% ({aiStats.correctAttempts}/{aiStats.totalAttempts})</p>
+                    {aiStats.modelBreakdown && aiStats.modelBreakdown.length > 0 && (
+                        <ul className="list-disc list-inside">
+                            {aiStats.modelBreakdown.map((model) => (
+                                <li key={model.modelName}>{model.modelName}: {(model.accuracy * 100).toFixed(1)}%</li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             )}
           </div>
