@@ -326,6 +326,124 @@ export class PlayFabUserData {
     }
   }
 
+  /**
+   * Check if a specific puzzle has been completed by the player
+   * Returns completion details if found, null otherwise
+   */
+  public async checkPuzzleCompletion(puzzleId: string): Promise<{
+    completed: boolean;
+    scoreData?: any;
+    completionDate?: string;
+    alreadySubmittedStrategy?: boolean;
+  }> {
+    const playFabId = playFabAuthManager.getPlayFabId();
+    if (!playFabId) {
+      console.log('[PlayFabUserData] No PlayFab ID - treating as not completed');
+      return { completed: false };
+    }
+
+    try {
+      const result = await playFabRequestManager.makeRequest<{ Keys: string[] }, GetUserDataResponse>(
+        'getUserData',
+        { Keys: ['humanPerformanceData', 'strategySubmissions'] }
+      );
+
+      // Check humanPerformanceData for completion
+      const performanceDataString = result?.Data?.humanPerformanceData?.Value;
+      const strategySubmissionsString = result?.Data?.strategySubmissions?.Value;
+
+      let completionRecord = null;
+      if (performanceDataString && performanceDataString !== 'undefined') {
+        const performanceData = JSON.parse(performanceDataString);
+        completionRecord = performanceData.find((record: any) => record.puzzleId === puzzleId);
+      }
+
+      // Check strategy submissions
+      let strategySubmitted = false;
+      if (strategySubmissionsString && strategySubmissionsString !== 'undefined') {
+        const strategySubmissions = JSON.parse(strategySubmissionsString);
+        strategySubmitted = strategySubmissions.includes(puzzleId);
+      }
+
+      const completed = !!completionRecord;
+
+      console.log(`[PlayFabUserData] Puzzle ${puzzleId} completion check:`, {
+        completed,
+        hasScoreData: !!completionRecord,
+        strategySubmitted
+      });
+
+      return {
+        completed,
+        scoreData: completionRecord || undefined,
+        completionDate: completionRecord?.timestamp || undefined,
+        alreadySubmittedStrategy: strategySubmitted
+      };
+
+    } catch (error) {
+      console.error('[PlayFabUserData] Failed to check puzzle completion:', error);
+      return { completed: false };
+    }
+  }
+
+  /**
+   * Award strategy bonus points via CloudScript
+   * Calls the AwardStrategyBonus CloudScript function
+   */
+  public async awardStrategyBonus(puzzleId: string): Promise<{
+    success: boolean;
+    bonusAwarded: boolean;
+    bonusPoints?: number;
+    updatedScores?: any;
+    message?: string;
+    error?: string;
+  }> {
+    const playFabId = playFabAuthManager.getPlayFabId();
+    if (!playFabId) {
+      return {
+        success: false,
+        bonusAwarded: false,
+        error: 'No PlayFab ID available'
+      };
+    }
+
+    try {
+      console.log(`[PlayFabUserData] Requesting strategy bonus for puzzle: ${puzzleId}`);
+
+      const result = await playFabRequestManager.makeRequest<
+        { FunctionName: string; FunctionParameter: any },
+        { FunctionResult: any }
+      >(
+        'executeCloudScript',
+        {
+          FunctionName: 'AwardStrategyBonus',
+          FunctionParameter: { puzzleId }
+        }
+      );
+
+      const functionResult = result?.FunctionResult;
+
+      console.log('[PlayFabUserData] Strategy bonus result:', functionResult);
+
+      return {
+        success: functionResult?.success || false,
+        bonusAwarded: functionResult?.bonusAwarded || false,
+        bonusPoints: functionResult?.bonusPoints,
+        updatedScores: functionResult?.updatedScores,
+        message: functionResult?.message,
+        error: functionResult?.error
+      };
+
+    } catch (error) {
+      console.error('[PlayFabUserData] Failed to award strategy bonus:', error);
+      return {
+        success: false,
+        bonusAwarded: false,
+        error: 'Failed to communicate with server'
+      };
+    }
+  }
+
   public getPlayerStats(): {
     totalPoints: number;
     completedMissions: number;

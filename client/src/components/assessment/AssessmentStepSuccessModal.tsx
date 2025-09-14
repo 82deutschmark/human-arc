@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { assessmentContentService, type AssessmentContent } from '@/services/assessment/AssessmentContentService';
 import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance, type ModelStats, type SolutionSubmissionRequest } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
+import { playFabUserData } from '@/services/playfab/userData';
 
 interface AssessmentStepSuccessModalProps {
   open: boolean;
@@ -38,6 +39,10 @@ export function AssessmentStepSuccessModal({
   const [isSubmittingStrategy, setIsSubmittingStrategy] = useState(false);
   const [strategySubmitted, setStrategySubmitted] = useState(false);
   const [strategyError, setStrategyError] = useState<string | null>(null);
+
+  // Strategy bonus state
+  const [bonusAwarded, setBonusAwarded] = useState(false);
+  const [bonusPoints, setBonusPoints] = useState<number | null>(null);
 
   useEffect(() => {
     const loadContent = async () => {
@@ -92,6 +97,7 @@ export function AssessmentStepSuccessModal({
     setStrategyError(null);
 
     try {
+      // First, submit strategy to community database
       const submissionData: SolutionSubmissionRequest = {
         strategy: strategyText.trim(),
         metadata: {
@@ -105,6 +111,23 @@ export function AssessmentStepSuccessModal({
       if (result) {
         setStrategySubmitted(true);
         console.log('✅ Strategy submitted successfully:', result);
+
+        // Second, award strategy bonus points via CloudScript
+        try {
+          const bonusResult = await playFabUserData.awardStrategyBonus(puzzleId);
+
+          if (bonusResult.success && bonusResult.bonusAwarded) {
+            setBonusAwarded(true);
+            setBonusPoints(bonusResult.bonusPoints || 0);
+            console.log('🎉 Strategy bonus awarded:', bonusResult.bonusPoints);
+          } else {
+            console.log('ℹ️ Strategy bonus not awarded:', bonusResult.message);
+          }
+        } catch (bonusError) {
+          console.error('⚠️ Strategy bonus failed (strategy still submitted):', bonusError);
+          // Don't show error to user since strategy was successfully submitted
+        }
+
       } else {
         setStrategyError('Failed to submit strategy. Please try again.');
       }
@@ -329,8 +352,15 @@ export function AssessmentStepSuccessModal({
             )}
 
             {strategySubmitted && (
-              <div className="mb-3 p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm flex items-center gap-2">
-                <span>✅</span> Strategy submitted successfully! Thank you for contributing.
+              <div className="mb-3 space-y-2">
+                <div className="p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm flex items-center gap-2">
+                  <span>✅</span> Strategy submitted successfully! Thank you for contributing.
+                </div>
+                {bonusAwarded && bonusPoints && (
+                  <div className="p-2 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-sm flex items-center gap-2">
+                    <span>🎉</span> Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
+                  </div>
+                )}
               </div>
             )}
 

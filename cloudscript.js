@@ -237,17 +237,29 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             return { success: true, correct: false, failures: validationResult.failures };
         }
 
-        const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
-
         const keysToFetch = [config.completedPuzzlesKey, config.pointsKey, 'humanPerformanceData'];
         const playerData = PlayFabService.getPlayerData(playerId, keysToFetch);
         const currentPoints = parseInt(playerData.Data[config.pointsKey]?.Value || '0');
         const completedPuzzles = Utils.safeParseJSON(playerData.Data[config.completedPuzzlesKey]?.Value, []);
         const humanPerformanceData = Utils.safeParseJSON(playerData.Data.humanPerformanceData?.Value, []);
 
-        if (!completedPuzzles.includes(puzzleId)) {
-            completedPuzzles.push(puzzleId);
+        // CRITICAL FIX: Check if puzzle already completed BEFORE awarding points
+        if (completedPuzzles.includes(puzzleId)) {
+            // Find the previous score for this puzzle
+            const previousRecord = humanPerformanceData.find(record => record.puzzleId === puzzleId);
+            return {
+                success: true,
+                correct: true,
+                alreadyCompleted: true,
+                message: "Puzzle solved correctly (already completed)",
+                previousScore: previousRecord || null
+            };
         }
+
+        // Only calculate score and award points for first completion
+        const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
+
+        completedPuzzles.push(puzzleId);
 
         humanPerformanceData.push({
             puzzleId,
@@ -454,5 +466,111 @@ handlers.UpdateHARCTotalScore = function(args, context) {
     } catch (error) {
         log.error("UpdateHARCTotalScore error", { error: error.message, stack: error.stack, args });
         return { success: false, error: "Failed to update HARC total score" };
+    }
+};
+
+// =============================================================================
+// STRATEGY BONUS FUNCTION - Universal 10K Bonus for All Scoring Systems
+// =============================================================================
+
+handlers.AwardStrategyBonus = function(args, context) {
+    try {
+        Utils.assertArgs(args, ['puzzleId']);
+        const { puzzleId } = args;
+        const playerId = context.currentPlayerId;
+        Utils.assert(playerId, 'context.currentPlayerId is missing or undefined.');
+
+        log.info(`[StrategyBonus] Processing request for puzzle ${puzzleId}, player ${playerId}`);
+
+        // Get current player data including strategy submissions tracking
+        const playerData = PlayFabService.getPlayerData(playerId, [
+            'strategySubmissions',
+            'officerTrackPoints',
+            'arc2EvalPoints',
+            'totalPoints',
+            'harcTotalPoints'
+        ]);
+
+        // Check if strategy bonus already awarded for this puzzle
+        const strategySubmissions = Utils.safeParseJSON(
+            playerData.Data.strategySubmissions?.Value,
+            []
+        );
+
+        if (strategySubmissions.includes(puzzleId)) {
+            log.info(`[StrategyBonus] Strategy bonus already claimed for puzzle ${puzzleId}`);
+            return {
+                success: true,
+                bonusAwarded: false,
+                message: "Strategy bonus already claimed for this puzzle",
+                alreadyClaimed: true
+            };
+        }
+
+        // Strategy bonus amount
+        const bonusPoints = 10000;
+        log.info(`[StrategyBonus] Awarding ${bonusPoints} bonus points for puzzle ${puzzleId}`);
+
+        // Get current point totals for all scoring systems
+        const currentOfficerPoints = parseInt(playerData.Data.officerTrackPoints?.Value || '0');
+        const currentArc2Points = parseInt(playerData.Data.arc2EvalPoints?.Value || '0');
+        const currentTotalPoints = parseInt(playerData.Data.totalPoints?.Value || '0');
+        const currentHarcPoints = parseInt(playerData.Data.harcTotalPoints?.Value || '0');
+
+        // Calculate new totals
+        const newOfficerPoints = currentOfficerPoints + bonusPoints;
+        const newArc2Points = currentArc2Points + bonusPoints;
+        const newTotalPoints = currentTotalPoints + bonusPoints;
+        const newHarcPoints = currentHarcPoints + bonusPoints;
+
+        // Track this strategy submission
+        strategySubmissions.push(puzzleId);
+
+        // Update ALL leaderboard statistics with bonus points
+        PlayFabService.updatePlayerStats(playerId, [
+            { StatisticName: CONSTANTS.STATS.OFFICER_TRACK_POINTS, Value: newOfficerPoints },
+            { StatisticName: CONSTANTS.STATS.ARC2_EVAL_POINTS, Value: newArc2Points },
+            { StatisticName: CONSTANTS.STATS.LEVEL_POINTS, Value: newTotalPoints },
+            { StatisticName: CONSTANTS.STATS.HARC_TOTAL_POINTS, Value: newHarcPoints }
+        ]);
+
+        // Update player data
+        PlayFabService.updatePlayerData(playerId, {
+            strategySubmissions: JSON.stringify(strategySubmissions),
+            officerTrackPoints: newOfficerPoints.toString(),
+            arc2EvalPoints: newArc2Points.toString(),
+            totalPoints: newTotalPoints.toString(),
+            harcTotalPoints: newHarcPoints.toString()
+        });
+
+        // Log the bonus award for analytics
+        PlayFabService.writePlayerEvent(playerId, "StrategyBonusAwarded", {
+            puzzleId,
+            bonusPoints,
+            newOfficerPoints,
+            newArc2Points,
+            newTotalPoints,
+            newHarcPoints,
+            timestamp: new Date().toISOString()
+        });
+
+        log.info(`[StrategyBonus] Successfully awarded ${bonusPoints} points to all scoring systems for player ${playerId}`);
+
+        return {
+            success: true,
+            bonusAwarded: true,
+            bonusPoints,
+            updatedScores: {
+                officerTrackPoints: newOfficerPoints,
+                arc2EvalPoints: newArc2Points,
+                totalPoints: newTotalPoints,
+                harcTotalPoints: newHarcPoints
+            },
+            message: `Strategy bonus of ${bonusPoints} points awarded to all scoring systems!`
+        };
+
+    } catch (error) {
+        log.error("AwardStrategyBonus error", { error: error.message, stack: error.stack, args });
+        return { success: false, error: "Failed to award strategy bonus" };
     }
 };

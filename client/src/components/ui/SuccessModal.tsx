@@ -14,6 +14,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { SPACE_EMOJIS, type EmojiSet } from '@/constants/spaceEmojis';
 import { arcExplainerClient, type AggregatedAIStats, type SolutionSubmissionRequest } from '@/services/core/arcExplainerClient';
+import { playFabUserData } from '@/services/playfab/userData';
 
 interface Props {
   open: boolean;
@@ -85,6 +86,10 @@ export function SuccessModal({
   const [isSubmittingStrategy, setIsSubmittingStrategy] = useState(false);
   const [strategySubmitted, setStrategySubmitted] = useState(false);
   const [strategyError, setStrategyError] = useState<string | null>(null);
+
+  // Strategy bonus state
+  const [bonusAwarded, setBonusAwarded] = useState(false);
+  const [bonusPoints, setBonusPoints] = useState<number | null>(null);
 
   // Generate new random emojis each time modal opens
   useEffect(() => {
@@ -158,6 +163,23 @@ export function SuccessModal({
       if (result) {
         setStrategySubmitted(true);
         console.log('✅ Strategy submitted successfully:', result);
+
+        // Award strategy bonus points via CloudScript
+        try {
+          const bonusResult = await playFabUserData.awardStrategyBonus(puzzleId);
+
+          if (bonusResult.success && bonusResult.bonusAwarded) {
+            setBonusAwarded(true);
+            setBonusPoints(bonusResult.bonusPoints || 0);
+            console.log('🎉 Strategy bonus awarded:', bonusResult.bonusPoints);
+          } else {
+            console.log('ℹ️ Strategy bonus not awarded:', bonusResult.message);
+          }
+        } catch (bonusError) {
+          console.error('⚠️ Strategy bonus failed (strategy still submitted):', bonusError);
+          // Don't show error to user since strategy was successfully submitted
+        }
+
       } else {
         setStrategyError('Failed to submit strategy. Please try again.');
       }
@@ -373,8 +395,15 @@ export function SuccessModal({
             )}
 
             {strategySubmitted && (
-              <div className="mb-3 p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm text-center flex items-center justify-center gap-2">
-                <span>✅</span> Strategy submitted! Thanks for contributing.
+              <div className="mb-3 space-y-2">
+                <div className="p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm text-center flex items-center justify-center gap-2">
+                  <span>✅</span> Strategy submitted! Thanks for contributing.
+                </div>
+                {bonusAwarded && bonusPoints && (
+                  <div className="p-2 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-sm text-center flex items-center justify-center gap-2">
+                    <span>🎉</span> Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
+                  </div>
+                )}
               </div>
             )}
 
