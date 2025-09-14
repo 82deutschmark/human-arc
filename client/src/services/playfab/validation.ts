@@ -472,7 +472,7 @@ export class PlayFabValidation {
       const newTotalPoints = currentPoints + scoreData.finalScore;
 
       // Update player statistics
-      await playFabRequestManager.makeRequest('updatePlayerStatistics', {
+      await playFabRequestManager.makeRequest('updateStatistics', {
         Statistics: [{
           StatisticName: 'OfficerTrackPoints',
           Value: newTotalPoints

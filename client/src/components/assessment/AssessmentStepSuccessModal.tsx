@@ -175,7 +175,15 @@ export function AssessmentStepSuccessModal({
   };
 
   return (
-    <Modal isOpen={open} onClose={handleClose} backdrop="blur" size="2xl">
+    <Modal
+      isOpen={open}
+      onClose={handleClose}
+      backdrop="blur"
+      size="2xl"
+      closeButton={false}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+    >
       <ModalContent className="bg-slate-900 text-white border border-slate-700">
         {isLoading ? renderLoadingState() : error ? renderErrorState() : renderContent()}
       </ModalContent>

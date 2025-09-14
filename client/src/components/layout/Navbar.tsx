@@ -10,7 +10,7 @@ interface NavbarProps {
   children?: React.ReactNode;
 }
 
-export function Navbar({ title = 'SFMC ARC-GPT', badges, showBackButton = false, onBack, children }: NavbarProps) {
+export function Navbar({ title = 'Human ARC', badges, showBackButton = false, onBack, children }: NavbarProps) {
   return (
     <header className="bg-slate-900 border-b-2 border-amber-500 shadow-lg sticky top-0 z-20">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,10 +27,8 @@ export function Navbar({ title = 'SFMC ARC-GPT', badges, showBackButton = false,
               </Button>
             )}
             <div className="flex items-center gap-4">
-              <Link href="/">
-                <a className="text-3xl font-bold text-amber-400 hover:text-amber-300 transition-colors">
-                  {title}
-                </a>
+              <Link href="/" className="text-3xl font-bold text-amber-400 hover:text-amber-300 transition-colors">
+                {title}
               </Link>
               {badges && badges.length > 0 && (
                 <div className="flex items-center gap-2">
@@ -42,25 +40,15 @@ export function Navbar({ title = 'SFMC ARC-GPT', badges, showBackButton = false,
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center px-8">
+          <div className="flex-1 flex items-center justify-end px-8">
             {children ? children : 
               <div className="hidden md:flex md:items-center md:space-x-8">
-                <a 
-                  href="https://github.com/82deutschmark"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link 
+                  href="/about"
                   className="text-lg font-medium text-slate-300 hover:text-amber-400 transition-colors"
                 >
-                  By 82deutschmark
-                </a>
-                <a 
-                  href="https://github.com/neoneye/ARC-Interactive"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-lg font-medium text-slate-300 hover:text-amber-400 transition-colors"
-                >
-                  Special Thanks: neoneye
-                </a>
+                  About
+                </Link>
               </div>
             }
           </div>

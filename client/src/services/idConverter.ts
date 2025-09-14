@@ -113,25 +113,60 @@ export class IDConverter {
       return { isValid: false, format: 'unknown' };
     }
 
-    // Check PlayFab format: ARC-XX-xxxxxxxx
-    const playFabMatch = id.match(/^ARC-(TR|EV|T2|E2)-([a-f0-9]{8})$/);
-    if (playFabMatch) {
-      const dataset = this.datasetMap[playFabMatch[1]];
+    const cleanId = id.trim().toLowerCase();
+
+    // Pattern 1: PlayFab officer-tasks format: officer-tasks-{dataset}-batch{N}-{arcId}
+    const officerTasksMatch = cleanId.match(/^officer-tasks-(training|training2|evaluation|evaluation2)-batch\d+-([a-f0-9]{8})$/);
+    if (officerTasksMatch) {
+      return {
+        isValid: true,
+        format: 'playfab',
+        dataset: officerTasksMatch[1] as ARCDatasetType,
+        arcId: officerTasksMatch[2],
+        prefix: `officer-tasks-${officerTasksMatch[1]}`
+      };
+    }
+
+    // Pattern 2: PlayFab ARC format: ARC-XX-xxxxxxxx (legacy format if it exists)
+    const arcPlayFabMatch = cleanId.match(/^ARC-(TR|EV|T2|E2)-([a-f0-9]{8})$/);
+    if (arcPlayFabMatch) {
+      const dataset = this.datasetMap[arcPlayFabMatch[1]];
       return {
         isValid: true,
         format: 'playfab',
         dataset,
-        arcId: playFabMatch[2],
-        prefix: playFabMatch[1]
+        arcId: arcPlayFabMatch[2],
+        prefix: arcPlayFabMatch[1]
       };
     }
 
-    // Check ARC format: 8 hex characters
-    if (id.match(/^[a-f0-9]{8}$/)) {
+    // Pattern 3: Any string ending with 8 hex characters (catch-all for unknown formats)
+    const endWithArcMatch = cleanId.match(/([a-f0-9]{8})$/);
+    if (endWithArcMatch) {
+      return {
+        isValid: true,
+        format: 'playfab', // Assume it's some PlayFab variant
+        arcId: endWithArcMatch[1]
+      };
+    }
+
+    // Pattern 4: Pure ARC format: 8 hex characters only
+    if (cleanId.match(/^[a-f0-9]{8}$/)) {
       return {
         isValid: true,
         format: 'arc',
-        arcId: id
+        arcId: cleanId
+      };
+    }
+
+    // Pattern 5: Try to extract any 8-character hex sequence from anywhere in the string
+    const anyHexMatch = cleanId.match(/([a-f0-9]{8})/);
+    if (anyHexMatch) {
+      console.warn(`[IDConverter] Fallback extraction of ARC ID from: "${id}" -> "${anyHexMatch[1]}"`);
+      return {
+        isValid: true,
+        format: 'unknown',
+        arcId: anyHexMatch[1]
       };
     }
 

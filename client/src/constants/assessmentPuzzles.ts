@@ -8,7 +8,7 @@
 
 export const ASSESSMENT_PUZZLE_IDS = [
 
-  //'e7dd8335', // Easy answer, fill the bottom half of the symmetrical shape
+  'e7dd8335', // Easy answer, fill the bottom half of the symmetrical shape
   //'fc754716', // Make the outline whatever the dot is
   'a699fb00', // Connect the dots
   //'ea786f4a', // Make an X

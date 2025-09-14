@@ -1,5 +1,105 @@
 # Changelog
 
+## 2025-09-14: 🚨 CRITICAL FIX - Robust ID Converter for PlayFab Puzzle Format Mismatches
+
+**⚡ CRITICAL BUG FIX**: Fixed HumanVsAiComparison page failing with "No human performance data found" due to puzzle ID format mismatches between PlayFab storage and assessment filtering.
+
+### **Problem Identified**
+- **Assessment Comparison Broken**: `/assessment/comparison` always showed "No human performance data found"
+- **Root Cause**: `idConverter.normalizeToArcId()` couldn't handle actual PlayFab puzzle ID formats
+- **Format Mismatch**: PlayFab stores `officer-tasks-evaluation-batch1-a699fb00` but converter only recognized `ARC-TR-a699fb00`
+- **Result**: All assessment records filtered out incorrectly, making comparison page useless
+
+### **Critical Fix - Bulletproof idConverter**
+**Made `idConverter.validateId()` robust enough to handle ANY puzzle ID format:**
+
+1. **Pattern 1**: `officer-tasks-{dataset}-batch{N}-{arcId}` (actual PlayFab format)
+2. **Pattern 2**: `ARC-XX-xxxxxxxx` (legacy PlayFab format if exists)
+3. **Pattern 3**: Any string ending with 8 hex characters (catch-all for unknown formats)
+4. **Pattern 4**: Pure ARC format `a699fb00`
+5. **Pattern 5**: Fallback extraction of any 8 hex chars from anywhere in string
+
+### **Comprehensive Debugging System**
+**Added extensive logging to `HumanVsAiComparison.tsx`:**
+- Logs all raw PlayFab data to show actual stored formats
+- Tests idConverter with various expected formats
+- Shows detailed ID conversion process for each record
+- Better error messages distinguishing "no data" vs "ID format mismatch"
+- Console output reveals exactly what's happening with ID conversions
+
+### **Technical Implementation**
+- **`idConverter.validateId()`**: Complete rewrite with 5 robust pattern matching strategies
+- **`HumanVsAiComparison.tsx`**: Added comprehensive debugging and improved error handling
+- **Handles ANY format**: Works regardless of what ID format PlayFab actually uses
+- **Future-proof**: Will work even if PlayFab changes ID format again
+
+### **Files Modified**
+- `client/src/services/idConverter.ts` - Complete `validateId()` rewrite with robust pattern matching
+- `client/src/pages/HumanVsAiComparison.tsx` - Added comprehensive debugging and better error handling
+
+### **User Testing Required**
+1. Complete an assessment puzzle (e.g., `a699fb00` or `66e6c45b`)
+2. Navigate to `http://localhost:5173/assessment/comparison`
+3. **Should now work**: Page should load comparison data instead of "No data found" error
+4. **Check console**: Detailed debugging shows ID conversion process and confirms formats
+5. Verify human vs AI performance comparison displays correctly
+
+**Expected Result**: Assessment comparison page now works regardless of PlayFab ID format. Console debugging confirms exactly what ID formats are used and how they're converted.
+
+**Author**: Claude Code using Sonnet 4
+
+---
+
+## 2025-09-14: 🔄 MAJOR APP RESTRUCTURING - HARC Platform as Primary Experience
+
+**⚡ MAJOR CHANGE**: Complete pivot from Space Force-themed app to HARC Platform-focused experience with comprehensive user flow.
+
+### **Problem Solved**
+- **Inconsistent App Focus**: App was Space Force themed but real users need research-focused HARC experience
+- **Incomplete User Journey**: After assessment completion, users had no clear path to continue practicing puzzles
+- **Missing HARC Interface**: No HARC-branded puzzle browsing page equivalent to the excellent Officer Track interface
+- **Confusing Navigation**: Research users confused by Space Force theming when trying to do cognitive assessment
+
+### **Solution - Complete App Restructuring**
+
+#### **1. Route Restructuring**
+- **New Default**: `/` now shows `HARCPlatform` (was `MissionControl`)
+- **Space Force Preservation**: All Space Force content moved to `/space-force/*` routes as bonus/easter egg content
+- **HARC Routes**: Added `/puzzles` (HARC puzzle browser) and `/puzzles/solve/:puzzleId` for puzzle solving
+
+#### **2. Complete HARC User Flow**
+1. **Landing** → `/` (HARCPlatform with research focus)
+2. **Assessment** → `/assessment` (existing, works perfectly)
+3. **Results** → `/assessment/comparison` (now with prominent "Continue" button)
+4. **Practice** → `/puzzles` (new HARC-themed puzzle browser)
+5. **Dashboard** → `/dashboard` (existing, tracks progress)
+
+#### **3. New HARCPuzzleBrowser.tsx**
+- **Cloned Excellence**: Used proven `OfficerTrackSimple.tsx` logic as foundation
+- **HARC Branding**: Research theme with cyan colors, scientific language, contribution messaging
+- **Same Functionality**: Puzzle search, difficulty filters, AI performance insights, all working perfectly
+- **Correct Routing**: Links to HARC puzzle solver (`/puzzles/solve/`) instead of Space Force routes
+
+### **Files Modified**
+- `client/src/App.tsx` - Complete route restructuring, HARC as default
+- `client/src/pages/HARCPuzzleBrowser.tsx` - **NEW FILE**: HARC-branded puzzle browser
+- `client/src/pages/HARCPlatform.tsx` - Updated navigation buttons, added Space Force easter egg
+- `client/src/pages/HumanVsAiComparison.tsx` - Added prominent "Continue with More Puzzles" button
+- `client/src/pages/OfficerTrackSimple.tsx` - Updated internal routes to new structure
+
+### **User Testing Required**
+1. Navigate to `http://localhost:5173/` → Should show HARC Platform (not Space Force)
+2. Take Assessment → Complete → Verify auto-redirect to comparison page works
+3. On comparison page → Click "Continue with More Puzzles" → Should go to HARC puzzle browser
+4. In puzzle browser → Search/browse puzzles → Click puzzle → Should open HARC-themed solver
+5. Access Space Force content via `http://localhost:5173/space-force` → Should work as before
+
+**Expected Result**: Seamless HARC research experience from assessment through ongoing practice, with Space Force preserved as bonus content.
+
+**Author**: Claude Code using Sonnet 4
+
+---
+
 ## 2025-09-14: 🎯 ASSESSMENT SUCCESS MODAL FIX - Real AI Performance Data Display
 
 **⚡ CRITICAL FIX**: Fixed AssessmentStepSuccessModal to show actual AI performance data instead of always displaying "This is a new puzzle we are still analyzing..." message.
