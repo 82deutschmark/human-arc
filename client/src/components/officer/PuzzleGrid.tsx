@@ -23,10 +23,10 @@ export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps
   // Difficulty colors
   const getDifficultyBadge = (difficulty: string) => {
     const colorMap = {
-      'impossible': 'bg-red-600 text-white',
-      'extremely_hard': 'bg-orange-600 text-white', 
-      'very_hard': 'bg-yellow-600 text-black',
-      'challenging': 'bg-blue-600 text-white'
+      'impossible': 'bg-red-500 text-white',
+      'extremely_hard': 'bg-orange-500 text-white', 
+      'very_hard': 'bg-amber-500 text-black',
+      'challenging': 'bg-sky-500 text-white'
     };
     
     const displayName = {
@@ -37,7 +37,7 @@ export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps
     };
     
     return {
-      className: colorMap[difficulty as keyof typeof colorMap] || 'bg-gray-600',
+      className: colorMap[difficulty as keyof typeof colorMap] || 'bg-slate-600',
       label: displayName[difficulty as keyof typeof displayName] || difficulty
     };
   };
@@ -87,11 +87,26 @@ export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps
     const attempts = puzzle.totalExplanations;
     const hasData = attempts > 0;
     
-    if (!hasData) return { label: 'No Analysis', className: 'bg-gray-600 text-white' };
-    if (attempts >= 50) return { label: 'Extensively Analyzed', className: 'bg-green-600 text-white' };
-    if (attempts >= 20) return { label: 'Well Analyzed', className: 'bg-blue-600 text-white' };
-    if (attempts >= 5) return { label: 'Analyzed', className: 'bg-orange-600 text-white' };
-    return { label: 'Limited Data', className: 'bg-red-600 text-white' };
+    if (!hasData) return { label: 'No Analysis', className: 'bg-slate-600 text-slate-100' };
+    if (attempts >= 50) return { label: 'Extensive', className: 'bg-green-500 text-white' };
+    if (attempts >= 20) return { label: 'Well-Analyzed', className: 'bg-cyan-500 text-white' };
+    if (attempts >= 5) return { label: 'Analyzed', className: 'bg-sky-500 text-white' };
+    return { label: 'Limited Data', className: 'bg-amber-600 text-white' };
+  };
+
+  // Get dataset badge style
+  const getDatasetBadge = (dataset?: string) => {
+    const defaultStyle = { label: 'ARC-AGI', className: 'bg-slate-600 text-slate-100' };
+    if (!dataset) return defaultStyle;
+
+    const styleMap: { [key: string]: { label: string; className: string } } = {
+      evaluation: { label: 'Evaluation', className: 'bg-amber-500 text-black' },
+      training: { label: 'Training', className: 'bg-green-500 text-white' },
+      community: { label: 'Community', className: 'bg-purple-500 text-white' },
+      evaluation2: { label: 'Eval 2.0', className: 'bg-amber-600 text-white' },
+    };
+
+    return styleMap[dataset] || { label: dataset, className: defaultStyle.className };
   };
 
   return (
@@ -99,108 +114,78 @@ export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps
       {puzzles.map((puzzle) => {
         const difficultyBadge = getDifficultyBadge(puzzle.difficulty);
         const analysisQualityBadge = getAnalysisQualityBadge(puzzle);
-        
+        const datasetBadge = getDatasetBadge(puzzle.dataset);
+
         return (
-          <Card 
+          <Card
             key={puzzle.id}
-            className="bg-slate-800 border-slate-600 hover:border-amber-500 transition-all duration-200 cursor-pointer group min-h-[280px] hover:scale-[1.02] hover:shadow-lg hover:shadow-amber-500/20"
+            className="bg-slate-800/50 border-slate-700 hover:border-cyan-500 transition-all duration-200 cursor-pointer group min-h-[280px] hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 flex flex-col"
             onClick={() => onSelectPuzzle(puzzle)}
           >
-            <CardContent className="p-3 lg:p-4">
-              {/* Puzzle ID - Most prominent */}
+            <CardContent className="p-3 flex flex-col flex-grow">
+              {/* Header */}
               <div className="mb-2">
-                <div className="text-amber-200 font-mono text-lg lg:text-xl font-bold tracking-wide truncate">
+                <div className="text-cyan-300 font-mono text-lg font-bold tracking-tighter truncate">
                   {puzzle.id}
                 </div>
               </div>
 
-              {/* Analysis Badges - Horizontal layout */}
-              <div className="flex flex-wrap gap-1 lg:gap-2 mb-2">
-                <Badge className={`text-xs px-1 py-0.5 lg:px-2 lg:py-1 ${analysisQualityBadge.className} font-semibold`}>
-                  🤖 {analysisQualityBadge.label}
+              {/* Badges */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                <Badge className={`text-xs px-2 py-0.5 ${analysisQualityBadge.className} font-semibold`}>
+                  {analysisQualityBadge.label}
                 </Badge>
-                <Badge className={`text-xs px-1 py-0.5 lg:px-2 lg:py-1 ${difficultyBadge.className}`}>
-                  💀 {difficultyBadge.label}
+                <Badge className={`text-xs px-2 py-0.5 ${difficultyBadge.className} font-semibold`}>
+                  {difficultyBadge.label}
                 </Badge>
-              </div>
-
-              {/* Puzzle Structure Badges - Horizontal layout */}
-              <div className="flex flex-wrap gap-1 lg:gap-2 mb-3">
-                <Badge className="text-xs px-1 py-0.5 lg:px-2 lg:py-1 bg-blue-600 text-white">
-                  📐 {puzzle.gridSize || 'unknown'}
-                </Badge>
-                <Badge className="text-xs px-1 py-0.5 lg:px-2 lg:py-1 bg-purple-600 text-white">
-                  📊 {puzzle.dataset || 'arc-agi'}
+                <Badge className={`text-xs px-2 py-0.5 ${datasetBadge.className} font-semibold`}>
+                  {datasetBadge.label}
                 </Badge>
               </div>
 
-              {/* AI Performance Section */}
-              <div className="mb-2">
-                <div className="text-amber-300 text-xs lg:text-sm font-semibold mb-1 lg:mb-2">🤖 AI Performance</div>
-                <div className="grid grid-cols-2 gap-1 lg:gap-2">
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Success Rate</div>
-                    <div className={`text-xs lg:text-sm font-bold ${
-                      puzzle.avgAccuracy === 0 ? 'text-red-400' :
-                      puzzle.avgAccuracy <= 0.25 ? 'text-orange-400' :
-                      puzzle.avgAccuracy <= 0.50 ? 'text-yellow-400' :
-                      'text-blue-400'
-                    }`}>
-                      {puzzle.avgAccuracy === 0 ? 'Never' : `${(puzzle.avgAccuracy * 100).toFixed(0)}%`}
-                    </div>
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+                <div className="bg-slate-700/50 rounded p-1.5">
+                  <div className="text-slate-400">Success</div>
+                  <div
+                    className={`font-bold ${
+                      puzzle.avgAccuracy === 0
+                        ? 'text-red-400'
+                        : puzzle.avgAccuracy < 0.5
+                        ? 'text-amber-400'
+                        : 'text-green-400'
+                    }`}
+                  >
+                    {(puzzle.avgAccuracy * 100).toFixed(0)}%
                   </div>
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Attempts</div>
-                    <div className="text-xs lg:text-sm font-bold text-amber-400">
-                      {puzzle.totalExplanations}
-                    </div>
+                </div>
+                <div className="bg-slate-700/50 rounded p-1.5">
+                  <div className="text-slate-400">Attempts</div>
+                  <div className="font-bold text-sky-300">
+                    {puzzle.totalExplanations.toLocaleString()}
                   </div>
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Confidence</div>
-                    <div className="text-xs lg:text-sm font-bold text-cyan-400">
-                      {puzzle.avgConfidence ? `${Math.round(puzzle.avgConfidence)}%` : 'N/A'}
-                    </div>
+                </div>
+                <div className="bg-slate-700/50 rounded p-1.5">
+                  <div className="text-slate-400">Confidence</div>
+                  <div className="font-bold text-sky-300">
+                    {puzzle.avgConfidence ? `${Math.round(puzzle.avgConfidence)}%` : 'N/A'}
                   </div>
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Failures</div>
-                    <div className="text-xs lg:text-sm font-bold text-purple-400">
-                      {puzzle.wrongCount?.toLocaleString() || '0'}
-                    </div>
-                  </div>
+                </div>
+                <div className="bg-slate-700/50 rounded p-1.5">
+                  <div className="text-slate-400">Grid Size</div>
+                  <div className="font-bold text-sky-300">{puzzle.gridSize || 'N/A'}</div>
                 </div>
               </div>
 
-              {/* Puzzle Structure Section */}
-              <div className="mb-2 lg:mb-3">
-                <div className="text-amber-300 text-xs lg:text-sm font-semibold mb-1 lg:mb-2">🧩 Puzzle Structure</div>
-                <div className="grid grid-cols-3 gap-1 lg:gap-2">
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Test Cases</div>
-                    <div className="text-xs lg:text-sm font-bold text-cyan-400">
-                      {puzzle.testCaseCount || 1}
-                    </div>
-                  </div>
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Examples</div>
-                    <div className="text-xs lg:text-sm font-bold text-green-400">
-                      {puzzle.trainingExampleCount || 3}
-                    </div>
-                  </div>
-                  <div className="bg-slate-700 rounded p-1 lg:p-2">
-                    <div className="text-xs text-slate-400 mb-0.5 lg:mb-1">Feedback</div>
-                    <div className="text-xs lg:text-sm font-bold text-pink-400">
-                      {puzzle.totalFeedback ? `${puzzle.negativeFeedback || 0}/${puzzle.totalFeedback}` : '0/0'}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Spacer to push button down */}
+              <div className="flex-grow"></div>
 
-              {/* Action Button - Compact and prominent */}
-              <Button 
-                size="sm" 
-                className="w-full bg-amber-600 hover:bg-amber-700 text-slate-900 group-hover:bg-amber-500 font-semibold text-xs lg:text-sm py-2 lg:py-3 mt-2"
+              {/* Action Button */}
+              <Button
+                size="sm"
+                className="w-full bg-cyan-600 hover:bg-cyan-500 text-white group-hover:bg-cyan-500 font-semibold text-sm py-2 mt-2 transition-colors"
               >
-                🎯 Accept Challenge
+                Solve Puzzle
               </Button>
             </CardContent>
           </Card>
