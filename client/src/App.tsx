@@ -70,31 +70,32 @@ function Router() {
 
 function App() {
   // State to control which screen is shown
-  const [showSplash, setShowSplash] = useState(true);
+  // const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  
+
   // When splash screen completes, show onboarding modal
-  const handleSplashComplete = () => {
-    setShowSplash(false);
-    setShowOnboarding(true);
-  };
-  
+  // const handleSplashComplete = () => {
+  //   setShowSplash(false);
+  //   setShowOnboarding(true);
+  // };
+
   // When onboarding completes, continue to main app
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
   };
-  
+
   return (
     <TooltipProvider>
-      {showSplash ? (
+      {/* Splash screen temporarily disabled */}
+      {/* {showSplash ? (
         <LoadingSplash onComplete={handleSplashComplete} duration={1000} />
-      ) : (
+      ) : ( */}
         <>
           <Toaster />
           <Router />
           <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
         </>
-      )}
+      {/* )} */}
     </TooltipProvider>
   );
 }
