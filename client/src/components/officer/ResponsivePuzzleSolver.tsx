@@ -720,31 +720,6 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           />
         )}
 
-        {/* Hint System */}
-        <PermanentHintSystem
-          puzzle={puzzle}
-          currentTestOutput={expectedOutput}
-          onAutoResizeGrid={(width, height) => {
-            handleSizeChange(width, height);
-          }}
-          onHintUsed={(hintLevel, totalHints) => {
-            console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);
-            // Log hint usage for analytics
-            logPlayerAction(
-              "hint_used",
-              0,
-              hintLevel,
-              {
-                hintLevel,
-                totalHintsUsed: totalHints,
-                testCase: currentTestIndex,
-                puzzleId: puzzle.id
-              }
-            );
-          }}
-        />
-
-
         {/* Test Case Navigation - SILVER THEME */}
         {totalTests > 1 && (
           <div className="bg-gradient-to-r from-slate-200 via-gray-100 to-slate-200 border-2 border-slate-400 rounded-lg p-4 shadow-lg">
@@ -949,6 +924,33 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                   fixedCellSize={outputCellSize}
                 />
               </GridWithDimensions>
+
+              {/* Hint System */}
+              <div className="mt-4">
+                <PermanentHintSystem
+                  puzzle={puzzle}
+                  currentTestOutput={expectedOutput}
+                  onAutoResizeGrid={(width, height) => {
+                    handleSizeChange(width, height);
+                  }}
+                  onHintUsed={(hintLevel, totalHints) => {
+                    console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);
+                    // Log hint usage for analytics
+                    logPlayerAction(
+                      "hint_used",
+                      0,
+                      hintLevel,
+                      {
+                        hintLevel,
+                        totalHintsUsed: totalHints,
+                        testCase: currentTestIndex,
+                        puzzleId: puzzle.id
+                      }
+                    );
+                  }}
+                />
+              </div>
+
             </div>
           </div>
 
