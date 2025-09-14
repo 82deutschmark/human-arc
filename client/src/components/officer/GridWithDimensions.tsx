@@ -42,13 +42,8 @@ export function GridWithDimensions({
             {label}
           </div>
         )}
-        <div className={`text-xs font-mono ${isCorrectSize ? 'text-slate-400' : 'text-red-400'}`}>
+        <div className={`text-lg font-mono ${isCorrectSize ? 'text-slate-400' : 'text-red-400'}`}>
           {currentHeight} × {currentWidth}
-          {showExpected && expectedDimensions && !isCorrectSize && (
-            <span className="text-green-400 ml-2">
-              (Expected: {expectedDimensions.height} × {expectedDimensions.width})
-            </span>
-          )}
         </div>
       </div>
       {children}
