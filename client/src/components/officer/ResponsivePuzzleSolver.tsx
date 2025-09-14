@@ -20,6 +20,7 @@ import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
+import type { EventType } from '@/types/playfab';
 import type { EmojiSet } from '@/constants/spaceEmojis';
 import { getRandomEmojiSet } from '@/constants/spaceEmojis';
 import { playFabValidation } from '@/services/playfab/validation';
@@ -269,7 +270,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         "Officer Track Puzzle",    // game_title
         status,                    // status
         "officer-track",           // category
-        "player_action",           // event_type
+        eventType as EventType,    // event_type
         displayState.selectedValue,// selection_value
         new Date().toISOString()   // game_time
       );
