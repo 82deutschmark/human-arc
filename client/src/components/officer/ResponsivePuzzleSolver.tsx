@@ -972,6 +972,10 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           message="Puzzle solved successfully! Click OK to continue to the next challenge..."
           showDesignerNotes={true}
           fallbackMode={validationResult?.fallback || false}
+          // Enable new features
+          puzzleId={puzzle.id}
+          enableAIComparison={true}
+          enableStrategySubmission={true}
           scoreDetails={validationResult ? {
             basePoints: validationResult.basePoints,
             speedBonus: validationResult.speedBonus || validationResult.efficiencyBonus,
