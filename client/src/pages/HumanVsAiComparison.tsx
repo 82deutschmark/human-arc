@@ -6,6 +6,8 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { Button } from '@/components/ui/button';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 import { arcExplainerClient, type AggregatedAIStats } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
@@ -21,6 +23,7 @@ interface ComparisonData {
 }
 
 export function HumanVsAiComparison() {
+  const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
@@ -35,6 +38,14 @@ export function HumanVsAiComparison() {
   const aiAccuracy = totalAIAttempts > 0 ? (totalAICorrect / totalAIAttempts) * 100 : 0;
   const totalPuzzles = comparisonData.length;
   const puzzlesWithAIData = comparisonData.filter(d => d.ai?.hasData).length;
+
+  const handleBackToAssessment = () => {
+    setLocation('/assessment');
+  };
+
+  const handleBackToPuzzles = () => {
+    setLocation('/officer-track');
+  };
 
   useEffect(() => {
     const fetchComparisonData = async () => {
@@ -177,6 +188,24 @@ export function HumanVsAiComparison() {
     <div className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-amber-400 mb-6 text-center">Human vs. AI Performance</h1>
+        
+        {/* Navigation Buttons */}
+        <div className="flex justify-center gap-4 mb-6">
+          <Button
+            onClick={handleBackToAssessment}
+            variant="outline"
+            className="border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900"
+          >
+            ← Back to Assessment
+          </Button>
+          <Button
+            onClick={handleBackToPuzzles}
+            variant="outline"
+            className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-900"
+          >
+            ← Back to Puzzles
+          </Button>
+        </div>
 
         {/* Player Identity Section */}
         {playFabId && (

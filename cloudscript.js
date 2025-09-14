@@ -1,12 +1,12 @@
 /**Author: Gemini 2.5 Pro
  * Date: September 10, 2025
- * Last Modified: September 10, 2025
- * Last Modified By: Gemini 2.5 Pro
+ * Last Modified: September 14, 2025
+ * Last Modified By: Claude Sonnet 4 - FORCED DEPLOYMENT
  * Refactored from cloudscript.js.md
- * 
+ *
  * PlayFab CloudScript Functions
  * Server-side functions for Mission Control 2050 React application
- * 
+ *
  * SECURITY CRITICAL: These functions run on PlayFab servers and cannot be hacked by clients
  */
 
@@ -385,7 +385,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
 
     } catch (error) {
         log.error(`Error in ${config.handlerName}`, { error: error.message, stack: error.stack, args });
-        return { success: false, error: `DEBUG: ${error.message} | Args: ${JSON.stringify(args)} | Context: ${JSON.stringify(context)} | Stack: ${error.stack}` };
+        return { success: false, error: `DEBUG: ${error.message} | PuzzleId: ${args?.puzzleId} | Solutions: ${args?.solutions?.length} items | TimeElapsed: ${args?.timeElapsed} | AttemptNumber: ${args?.attemptNumber} | StepCount: ${args?.stepCount} | SessionId: ${args?.sessionId}` };
     }
 }
 
