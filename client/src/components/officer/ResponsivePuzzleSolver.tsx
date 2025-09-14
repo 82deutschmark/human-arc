@@ -109,6 +109,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     setAutoAdvanceMessage(null);
     setShowSuccessModal(false);
     sessionStartTime.current = Date.now(); // Reset timer for the new puzzle
+    console.log(`[TIMER] New puzzle ${puzzle.id}. Start time reset to: ${sessionStartTime.current}`);
 
     // Reset assessment mode guidance state
     setAssessmentTestsCompleted([]);
@@ -373,12 +374,16 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     
     try {
       const validationStartTime = Date.now();
+      const timeElapsedInSeconds = Math.floor((validationStartTime - sessionStartTime.current) / 1000);
+
+      console.log(`[TIMER] Validation for ${puzzle.id}:\n  Start Time: ${sessionStartTime.current}\n  End Time:   ${validationStartTime}\n  Elapsed (s): ${timeElapsedInSeconds}`);
+
       const result = await playFabValidation.validateARCPuzzle({
         puzzleId: puzzle.id,
         solutions: solutions,
-        timeElapsed: Math.floor((Date.now() - sessionStartTime.current) / 1000), // Convert milliseconds to seconds
+        timeElapsed: timeElapsedInSeconds,
         attemptNumber: attemptNumber,
-        stepCount: stepIndex, // Pass the client-side step count
+        stepCount: stepIndex,
         sessionId: sessionId
       });
       

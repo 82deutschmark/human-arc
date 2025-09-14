@@ -4,6 +4,7 @@
  * Displays a side-by-side comparison for a single puzzle.
  */
 
+import { useState } from 'react';
 import { Link } from 'wouter';
 import type { AggregatedAIStats } from '@/services/core/arcExplainerClient';
 
@@ -26,6 +27,21 @@ interface PuzzleComparisonCardProps {
   humanResult: HumanPerformanceRecord;
   aiResult: AggregatedAIStats | null;
 }
+
+const formatTime = (totalSeconds: number): string => {
+  if (isNaN(totalSeconds) || totalSeconds < 0) {
+    return '00:00:00';
+  }
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+
+  const paddedHours = hours.toString().padStart(2, '0');
+  const paddedMinutes = minutes.toString().padStart(2, '0');
+  const paddedSeconds = seconds.toString().padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
+};
 
 export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
   // Add debugging to see exact data structure
@@ -59,6 +75,7 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
   };
 
   const qualityTier = getExplanationQualityTier();
+  const [showScoreBreakdown, setShowScoreBreakdown] = useState(false);
 
 
   return (
@@ -83,22 +100,51 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Score:</span>
-              <span className="font-bold text-xl text-amber-300">{humanResult.finalScore?.toLocaleString() || 'N/A'}</span>
+              <button 
+                onClick={() => setShowScoreBreakdown(!showScoreBreakdown)}
+                className="font-bold text-xl text-amber-300 hover:underline focus:outline-none text-right"
+                aria-label="Toggle score breakdown"
+              >
+                {humanResult.finalScore?.toLocaleString() || 'N/A'}
+                <span className="ml-1 text-xs text-slate-400">
+                  {showScoreBreakdown ? '▲' : '▼'}
+                </span>
+              </button>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Time:</span>
               <span className="font-bold text-xl">
-                {humanResult.timeElapsed ? humanResult.timeElapsed.toFixed(1) : 'N/A'}s
-                {/* DEBUG: timeElapsed is in seconds, no conversion needed */}
-                {/* Debug values - uncomment if needed for debugging:
-                  console.log(`🔍 [DEBUG] ${puzzleId} - timeElapsed (seconds):`, humanResult.timeElapsed)
-                */}
+                {humanResult.timeElapsed ? formatTime(humanResult.timeElapsed) : 'N/A'}
               </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-300">Steps:</span>
               <span className="font-bold text-xl">{humanResult.stepCount || 'N/A'}</span>
             </div>
+            
+            {showScoreBreakdown && (
+              <div className="mt-3 pt-2 border-t border-slate-600 text-sm">
+                <p className="text-slate-400 mb-1">Score Breakdown:</p>
+                <div className="space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Base Points:</span>
+                    <span className="font-medium">{humanResult.basePoints?.toLocaleString() || '0'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Speed Bonus:</span>
+                    <span className="font-medium text-green-400">+{humanResult.speedBonus?.toLocaleString() || '0'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-300">Efficiency Bonus:</span>
+                    <span className="font-medium text-green-400">+{humanResult.efficiencyBonus?.toLocaleString() || '0'}</span>
+                  </div>
+                  <div className="flex justify-between pt-1 border-t border-slate-600 mt-1">
+                    <span className="text-slate-100 font-medium">Total:</span>
+                    <span className="font-bold text-amber-300">{humanResult.finalScore?.toLocaleString() || '0'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
