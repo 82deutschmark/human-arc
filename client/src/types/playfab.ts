@@ -196,6 +196,7 @@ export const PLAYFAB_CONSTANTS = {
     LEVEL_POINTS: 'LevelPoints',
     OFFICER_TRACK_POINTS: 'OfficerTrackPoints',
     ARC2_EVAL_POINTS: 'ARC2EvalPoints',
+    HARC_TOTAL_POINTS: 'HARCTotalPoints',
   },
   TITLE_DATA_KEYS: {
     TASKS: 'tasks.json',
@@ -206,6 +207,7 @@ export const PLAYFAB_CONSTANTS = {
     VALIDATE_ARC_PUZZLE: 'ValidateARCPuzzle',
     VALIDATE_ARC2_EVAL_PUZZLE: 'ValidateARC2EvalPuzzle',
     GENERATE_ANONYMOUS_NAME: 'GenerateAnonymousName',
+    UPDATE_HARC_TOTAL_SCORE: 'UpdateHARCTotalScore',
   },
   USER_DATA_KEYS: {
     OFFICER_PLAYER_DATA: 'officer-player-data',

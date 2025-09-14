@@ -1,16 +1,11 @@
-/**AUTHOR: Claude Sonnet 4
- * DATE: 2025-09-12
- * PURPOSE: TOTALLY UNKNOWN!!!!  
- * SRP and DRY check: ????
- * HARC Platform - Participant Dashboard
- * =====================================
- * Displays a participant's cognitive performance score (CPS) and compares it
- * directly against AI benchmark data for the same puzzles.
- * 
- * 
- * THIS PAGE SOUNDS LIKE IT WAS LARGELY HALLUCINATED BY THE AI
- * NEEDS Audit!
- * Cognitive Performance Score (CPS) is not a real thing and I am worried about how it is being used
+/**
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-09-14
+ * Purpose: HARC Participant Dashboard showing real puzzle performance data
+ * SRP and DRY check: Pass - Single responsibility (dashboard display), uses existing PlayFab services
+ *
+ * Displays participant's actual puzzle performance using real finalScore data
+ * from humanPerformanceData, comparing against AI benchmark data for completed puzzles.
  */
 
 import { useState, useEffect } from 'react';
@@ -118,18 +113,47 @@ export function ParticipantDashboard() {
     return <div className="p-4 text-center text-red-500">Error: {error}</div>;
   }
 
+  // Calculate summary statistics
+  const totalScore = comparisonData.reduce((sum, data) => sum + data.human.finalScore, 0);
+  const averageTime = comparisonData.length > 0
+    ? (comparisonData.reduce((sum, data) => sum + data.human.timeElapsed, 0) / comparisonData.length).toFixed(1)
+    : '0';
+
   return (
-    <div className="p-6 bg-slate-800 text-white">
-      <h1 className="text-3xl font-bold text-amber-400 mb-6">Participant Dashboard</h1>
-      
+    <div className="p-6 bg-slate-900 text-white min-h-screen">
+      <h1 className="text-3xl font-bold text-amber-400 mb-6">HARC Participant Dashboard</h1>
+
       {comparisonData.length === 0 ? (
-        <p>No performance data found. Complete some puzzles in the Assessment section to see your results.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {comparisonData.map(data => (
-            <ComparisonCard key={data.human.puzzleId} humanRecord={data.human} aiRecord={data.ai} />
-          ))}
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">🧩</div>
+          <h2 className="text-xl text-slate-300 mb-2">No Performance Data</h2>
+          <p className="text-slate-400">Complete some ARC puzzles to see your performance metrics and AI comparisons.</p>
         </div>
+      ) : (
+        <>
+          {/* Summary Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
+              <h3 className="text-lg font-semibold text-amber-400 mb-2">Puzzles Completed</h3>
+              <div className="text-3xl font-bold text-white">{comparisonData.length}</div>
+            </div>
+            <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
+              <h3 className="text-lg font-semibold text-cyan-400 mb-2">Total Score</h3>
+              <div className="text-3xl font-bold text-white">{totalScore.toLocaleString()} pts</div>
+            </div>
+            <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
+              <h3 className="text-lg font-semibold text-green-400 mb-2">Average Time</h3>
+              <div className="text-3xl font-bold text-white">{averageTime}s</div>
+            </div>
+          </div>
+
+          {/* Puzzle Comparisons */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {comparisonData.map(data => (
+              <ComparisonCard key={data.human.puzzleId} humanRecord={data.human} aiRecord={data.ai} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

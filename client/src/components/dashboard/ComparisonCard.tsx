@@ -1,12 +1,8 @@
 /**
- * AUTHOR:
- * Date:
- * PURPOSE:
- * SRP and DRY check?  
- * HARC Platform - Comparison Card
- * ===============================
- * A card that displays a side-by-side comparison of human vs. AI performance
- * for a single ARC puzzle.
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-09-14
+ * Purpose: Fixed comparison card showing real puzzle scores instead of fake CPS
+ * SRP and DRY check: Pass - Single responsibility (comparison display), reuses PerformanceData types
  */
 
 import type { PerformanceData } from '@/services/core/arcExplainerClient';
@@ -40,9 +36,9 @@ export function ComparisonCard({ humanRecord, aiRecord }: ComparisonCardProps) {
         {/* Human Performance */}
         <div className="bg-slate-800 p-3 rounded">
           <h4 className="font-bold text-cyan-400 mb-2">Your Performance</h4>
-          <div className="text-2xl font-bold">{humanRecord.finalScore.toLocaleString()} <span className="text-sm">CPS</span></div>
+          <div className="text-2xl font-bold">{humanRecord.finalScore.toLocaleString()} <span className="text-sm">pts</span></div>
           <div className="text-xs text-slate-400 mt-1">
-            {humanTime}s / {humanRecord.stepCount} steps
+            {humanTime}s / {humanRecord.stepCount} steps / attempt #{humanRecord.attemptNumber}
           </div>
         </div>
 
