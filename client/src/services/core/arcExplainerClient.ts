@@ -673,7 +673,7 @@ export class ArcExplainerClient {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ...solutionData,
+          explanation: solutionData.strategy, // API expects 'explanation' field
           metadata: {
             userAgent: navigator.userAgent,
             timestamp: new Date().toISOString(),
