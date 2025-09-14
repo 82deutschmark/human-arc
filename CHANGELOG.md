@@ -1,5 +1,45 @@
 # Changelog
 
+## 2025-09-14: 💭 Strategy Submission Feature for Assessment Onboarding
+
+### **Version 0.1.2**
+
+**🎯 NEW FEATURE**: Added user strategy submission to assessment success modal for community knowledge sharing.
+
+### **Strategy Submission Features**
+- **Community Solutions**: Users can share their solving strategies after completing assessment puzzles
+- **Optional Input**: Non-blocking text area allows users to describe their approach without forcing participation
+- **Arc-Explainer Integration**: Submissions are posted to `/api/puzzles/:puzzleId/solutions` endpoint for community access
+- **Smart Submit Flow**: Auto-submits strategy when user clicks "Continue" with unsubmitted text
+- **Real-time Feedback**: Loading states, success confirmation, and error handling with visual indicators
+- **Assessment Context**: Submissions include metadata marking them as assessment-mode contributions
+
+### **Technical Implementation**
+- **New Service Methods**: Added `submitUserSolution()` and `getUserSolutions()` to `arcExplainerClient.ts`
+- **Enhanced Modal UI**: Added strategy input section to `AssessmentStepSuccessModal` with Textarea component
+- **State Management**: Proper loading, success, and error state handling with visual feedback
+- **ID Conversion**: Uses existing `idConverter` service for PlayFab ↔ ARC ID format conversion
+- **Data Validation**: Input limits (1000 chars), trimming, and proper error boundary handling
+
+### **User Experience**
+- **Contextual Prompt**: Clear explanation that strategy sharing helps other solvers
+- **Smart Button Logic**: Main button changes from "Continue" to "Submit & Continue" based on input state
+- **Immediate Feedback**: Success checkmarks, error messages, and loading spinners provide clear status
+- **Optional Participation**: Users can skip strategy input without affecting assessment progression
+- **Professional Design**: Consistent with existing modal styling using amber/slate theme
+
+### **Testing Instructions**
+1. Start an assessment and complete a puzzle to trigger the success modal
+2. Verify the "Share Your Strategy" section appears below AI performance data
+3. Test entering a strategy description and clicking "Submit Strategy"
+4. Test clicking "Continue" with unsubmitted strategy (should auto-submit)
+5. Test skipping strategy input entirely (should advance normally)
+6. Verify proper loading states, success messages, and error handling
+7. Check browser network tab to confirm POST requests to arc-explainer API
+8. Verify strategies are properly stored and retrievable via the API
+
+---
+
 ## 2025-09-14: 🧩 HARC Leaderboard Implementation & ParticipantDashboard Fixes
 
 ### **Version 0.1.1**

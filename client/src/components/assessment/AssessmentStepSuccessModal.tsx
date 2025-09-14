@@ -302,10 +302,71 @@ export function AssessmentStepSuccessModal({
             )}
           </div>
 
+          {/* Strategy Submission Section */}
+          <div className="mt-6 pt-4 border-t border-slate-700">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-amber-400 text-lg">💭</span>
+              <h4 className="font-bold text-md text-amber-500">Share Your Strategy</h4>
+              <span className="text-xs text-slate-500 ml-auto">(Optional)</span>
+            </div>
+            <p className="text-slate-400 text-sm mb-3">
+              Help other solvers by sharing how you approached this puzzle. Your strategy will be added to the community solutions.
+            </p>
+
+            <Textarea
+              placeholder="Describe your solving approach, what patterns you noticed, or the steps you took..."
+              value={strategyText}
+              onChange={(e) => setStrategyText(e.target.value)}
+              className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder-slate-500"
+              rows={3}
+              maxLength={1000}
+            />
+
+            {strategyError && (
+              <div className="mb-3 p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-sm">
+                {strategyError}
+              </div>
+            )}
+
+            {strategySubmitted && (
+              <div className="mb-3 p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm flex items-center gap-2">
+                <span>✅</span> Strategy submitted successfully! Thank you for contributing.
+              </div>
+            )}
+
+            {strategyText.trim() && !strategySubmitted && (
+              <div className="flex gap-2 mb-3">
+                <Button
+                  size="sm"
+                  color="warning"
+                  variant="bordered"
+                  onPress={handleSubmitStrategy}
+                  isLoading={isSubmittingStrategy}
+                  isDisabled={isSubmittingStrategy}
+                >
+                  {isSubmittingStrategy ? 'Submitting...' : 'Submit Strategy'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onPress={() => setStrategyText('')}
+                  isDisabled={isSubmittingStrategy}
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
+          </div>
+
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onPress={handleAdvance}>
-            OK
+          <Button
+            color="primary"
+            onPress={handleAdvance}
+            isLoading={isSubmittingStrategy}
+            isDisabled={isSubmittingStrategy}
+          >
+            {isSubmittingStrategy ? 'Submitting...' : (strategyText.trim() && !strategySubmitted ? 'Submit & Continue' : 'Continue')}
           </Button>
         </ModalFooter>
       </>
