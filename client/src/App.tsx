@@ -55,6 +55,7 @@ function Router() {
       <Route path="/space-force/tutorial" component={TutorialPage} />
       <Route path="/space-force/fiq-test" component={FIQTest} />
       <Route path="/assessment" component={AssessmentInterface} />
+      <Route path="/officer-track/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/puzzles" component={HARCPuzzleBrowser} />
       <Route path="/puzzles/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/dashboard" component={ParticipantDashboard} />
