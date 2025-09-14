@@ -67,15 +67,43 @@ export function HumanVsAiComparison() {
         // 2. Fetch human performance data from PlayFab
         let allHumanData = await playFabUserData.getHumanPerformanceData();
 
+        // COMPREHENSIVE DEBUG: Log all data before filtering
+        console.log('🔍 [DEBUG] Raw human performance data from PlayFab:', allHumanData);
+        console.log('🔍 [DEBUG] ASSESSMENT_PUZZLE_IDS:', ASSESSMENT_PUZZLE_IDS);
+
+        // Test the robust idConverter with expected formats
+        console.log('🔧 [DEBUG] Testing robust idConverter with various formats:');
+        const testIds = [
+          'a699fb00', // Pure ARC
+          'officer-tasks-evaluation-batch1-a699fb00', // Actual PlayFab format
+          'ARC-EV-a699fb00', // Legacy PlayFab format
+          'some-weird-prefix-a699fb00', // Unknown but ending with ARC ID
+          '66e6c45b', // Second assessment puzzle
+          'officer-tasks-evaluation-batch2-66e6c45b'
+        ];
+        testIds.forEach(testId => {
+          const result = idConverter.normalizeToArcId(testId);
+          console.log(`    "${testId}" -> "${result}" (matches assessment: ${ASSESSMENT_PUZZLE_IDS.includes(result || '')})`);
+        });
+
+        // Debug each record's ID conversion
+        console.log('🔍 [DEBUG] Testing ID conversion for each record:');
+        allHumanData.forEach((record, index) => {
+          const arcId = idConverter.normalizeToArcId(record.puzzleId);
+          const isAssessmentPuzzle = arcId && ASSESSMENT_PUZZLE_IDS.includes(arcId);
+          console.log(`    Record ${index}: puzzleId="${record.puzzleId}" -> arcId="${arcId}" -> isAssessment=${isAssessmentPuzzle}`);
+        });
+
         // Filter for assessment puzzles only - handle both ARC and PlayFab format IDs
         let humanData = allHumanData.filter(record => {
           const arcId = idConverter.normalizeToArcId(record.puzzleId);
           return arcId && ASSESSMENT_PUZZLE_IDS.includes(arcId);
         });
 
-        // DEBUG: Log the exact structure of human performance data
-        console.log('🔍 [DEBUG] Raw human performance data from PlayFab:', allHumanData);
+        // DEBUG: Log the filtering results
         console.log('🔍 [DEBUG] Filtered human data for assessment:', humanData);
+        console.log('🔍 [DEBUG] Filtering result: Found', humanData.length, 'assessment records out of', allHumanData.length, 'total records');
+
         if (humanData.length > 0) {
           console.log('🔍 [DEBUG] Sample human record structure:', humanData[0]);
           console.log('🔍 [DEBUG] Sample record keys:', Object.keys(humanData[0]));
@@ -86,6 +114,14 @@ export function HumanVsAiComparison() {
           humanData.forEach((record, index) => {
             console.log(`    Record ${index}: puzzleId=${record.puzzleId}, correct=${record.correct} (${typeof record.correct}), finalScore=${record.finalScore}`);
           });
+        } else if (allHumanData.length > 0) {
+          console.log('🚨 [DEBUG] NO ASSESSMENT RECORDS FOUND! This suggests ID conversion issue.');
+          console.log('🚨 [DEBUG] Testing idConverter directly with sample puzzleId:');
+          const sampleId = allHumanData[0].puzzleId;
+          console.log(`    Sample ID: "${sampleId}"`);
+          console.log(`    normalizeToArcId result: "${idConverter.normalizeToArcId(sampleId)}"`);
+          console.log(`    ASSESSMENT_PUZZLE_IDS[0]: "${ASSESSMENT_PUZZLE_IDS[0]}"`);
+          console.log(`    Manual test - does "${idConverter.normalizeToArcId(sampleId)}" === "${ASSESSMENT_PUZZLE_IDS[0]}"?`, idConverter.normalizeToArcId(sampleId) === ASSESSMENT_PUZZLE_IDS[0]);
         }
 
         // Filter out duplicates to prevent key errors
@@ -98,7 +134,11 @@ export function HumanVsAiComparison() {
           });
         }
         if (!humanData || humanData.length === 0) {
-          setError('No human performance data found. Please complete the assessment first.');
+          if (allHumanData.length === 0) {
+            setError('No performance data found. Please complete some puzzles first - you can start with the assessment or browse the puzzle library.');
+          } else {
+            setError(`Found ${allHumanData.length} completed puzzles, but none match the assessment puzzles. Please complete the assessment first, or check if your puzzle IDs are being converted correctly.`);
+          }
           setIsLoading(false);
           return;
         }
