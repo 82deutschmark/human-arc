@@ -1,5 +1,37 @@
 # Changelog
 
+## 2025-09-14: 🧩 HARC Leaderboard Implementation & ParticipantDashboard Fixes
+
+**🎯 NEW FEATURE**: Added comprehensive HARC leaderboard for ALL ARC puzzle performance rankings.
+
+### **HARC Leaderboard Features**
+- **Complete ARC Coverage**: Ranks participants across ALL 1,920+ puzzles from all datasets (training, training2, evaluation, evaluation2)
+- **Real Scoring System**: Uses actual `finalScore` values from `humanPerformanceData`, not limited to assessment puzzles
+- **Robust Infrastructure**: Built on existing proven leaderboard components (tabs, table, player rows)
+- **CloudScript Integration**: Server-side `UpdateHARCTotalScore` function calculates total scores securely
+- **Simple Configuration**: Added `HARC_LEADERBOARD` type to existing enum system
+
+### **ParticipantDashboard Improvements**
+- **Fixed Fake Scoring**: Removed questionable "Cognitive Performance Score (CPS)" with real `finalScore` data
+- **Enhanced UI**: Added summary statistics showing puzzles completed, total score, average time
+- **Better Visuals**: Improved layout with proper HARC branding and professional appearance
+- **Real Metrics**: Display actual performance data including attempt numbers and puzzle details
+
+### **Technical Implementation**
+- **New PlayFab Statistic**: `HARCTotalPoints` tracks cumulative score across all puzzles
+- **CloudScript Function**: `UpdateHARCTotalScore` sums all puzzle scores from performance data
+- **Updated Constants**: Added statistic names and function references to PlayFab constants
+- **Data Integrity**: Uses existing validated scoring system from puzzle completion
+
+### **Testing Instructions**
+1. Complete some ARC puzzles to generate performance data
+2. Check `/dashboard` page shows real scores instead of fake CPS
+3. Verify summary statistics calculate correctly (total score, average time)
+4. Visit `/leaderboards` page and check for new "HARC Participants" tab
+5. Confirm leaderboard ranks by total ARC puzzle performance scores
+
+---
+
 ## 2025-09-14: 🎨 Assessment Modal Visual Improvements & Data Validation
 
 **✨ ENHANCEMENT**: Significantly improved `AssessmentStepSuccessModal` visual design and fixed percentage display issues.
