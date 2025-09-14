@@ -88,6 +88,51 @@ export class PlayFabUserData {
   }
 
   /**
+   * Update custom user data fields in PlayFab (for storing arbitrary data like ELO ratings)
+   * September 14, 2025 - Added for ExplanationArena ELO storage
+   */
+  public async updateCustomUserData(customData: Record<string, string>): Promise<void> {
+    try {
+      const request: UpdateUserDataRequest = {
+        Data: customData
+      };
+
+      await playFabRequestManager.makeRequest<UpdateUserDataRequest, {}>(
+        'updateUserData',
+        request
+      );
+
+      console.log('[PlayFabUserData] Custom User Data Updated:', Object.keys(customData));
+    } catch (error) {
+      console.error('[PlayFabUserData] Custom User Data Update Failed:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get custom user data fields from PlayFab
+   * September 14, 2025 - Added for ExplanationArena ELO storage
+   */
+  public async getCustomUserData(keys: string[]): Promise<Record<string, string | undefined>> {
+    try {
+      const result = await playFabRequestManager.makeRequest<{ Keys: string[] }, GetUserDataResponse>(
+        'getUserData',
+        { Keys: keys }
+      );
+
+      const customData: Record<string, string | undefined> = {};
+      keys.forEach(key => {
+        customData[key] = result?.Data?.[key]?.Value;
+      });
+
+      return customData;
+    } catch (error) {
+      console.error('[PlayFabUserData] Failed to get custom user data:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Update player data in PlayFab User Data (HTTP implementation)
    */
   public async updatePlayerData(updates: Partial<PlayFabPlayer>): Promise<void> {

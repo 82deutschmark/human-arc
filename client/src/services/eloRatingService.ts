@@ -107,20 +107,15 @@ export class ELORatingService {
    */
   public async getELORatings(): Promise<ELORatings> {
     try {
-      const result = await playFabUserData.getPlayerData();
-      // ELO ratings will be stored in a separate userData field
-      const userData = await this.getELOUserData();
+      const userData = await playFabUserData.getCustomUserData(['explanationELORatings']);
 
-      if (userData.explanationELORatings) {
-        const ratingsString = userData.explanationELORatings;
-        if (ratingsString && ratingsString !== 'undefined') {
-          return JSON.parse(ratingsString);
-        }
+      if (userData.explanationELORatings && userData.explanationELORatings !== 'undefined') {
+        return JSON.parse(userData.explanationELORatings);
       }
 
       return {};
     } catch (error) {
-      console.error('Failed to get ELO ratings:', error);
+      console.error('[ELORatingService] Failed to get ELO ratings:', error);
       return {};
     }
   }
@@ -130,12 +125,12 @@ export class ELORatingService {
    */
   public async saveELORatings(ratings: ELORatings): Promise<void> {
     try {
-      await playFabUserData.updatePlayerData({
+      await playFabUserData.updateCustomUserData({
         explanationELORatings: JSON.stringify(ratings)
-      } as any);
-      console.log('ELO ratings saved successfully');
+      });
+      console.log('[ELORatingService] ELO ratings saved successfully');
     } catch (error) {
-      console.error('Failed to save ELO ratings:', error);
+      console.error('[ELORatingService] Failed to save ELO ratings:', error);
       throw error;
     }
   }
@@ -277,22 +272,6 @@ export class ELORatingService {
     return ((rating.wins + rating.ties * 0.5) / rating.games) * 100;
   }
 
-  /**
-   * Get ELO-specific user data from PlayFab
-   */
-  private async getELOUserData(): Promise<{ explanationELORatings?: string }> {
-    try {
-      // This is a simplified version - in real implementation we'd need to call PlayFab getUserData
-      // with specific keys for ELO data
-      const playerData = await playFabUserData.getPlayerData();
-      return {
-        explanationELORatings: (playerData as any).explanationELORatings
-      };
-    } catch (error) {
-      console.error('Failed to get ELO user data:', error);
-      return {};
-    }
-  }
 
   /**
    * Reset all ELO ratings (for testing/admin purposes)
