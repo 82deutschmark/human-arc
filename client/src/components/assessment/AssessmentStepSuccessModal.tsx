@@ -7,8 +7,9 @@
 
 import { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Spinner } from '@nextui-org/react';
+import { Textarea } from '@/components/ui/textarea';
 import { assessmentContentService, type AssessmentContent } from '@/services/assessment/AssessmentContentService';
-import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance, type ModelStats } from '@/services/core/arcExplainerClient';
+import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance, type ModelStats, type SolutionSubmissionRequest } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
 
 interface AssessmentStepSuccessModalProps {
@@ -31,6 +32,12 @@ export function AssessmentStepSuccessModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAllModels, setShowAllModels] = useState(false);
+
+  // Strategy submission state
+  const [strategyText, setStrategyText] = useState('');
+  const [isSubmittingStrategy, setIsSubmittingStrategy] = useState(false);
+  const [strategySubmitted, setStrategySubmitted] = useState(false);
+  const [strategyError, setStrategyError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadContent = async () => {
@@ -73,9 +80,48 @@ export function AssessmentStepSuccessModal({
     setContent(null);
     setAiStats(null);
     setError(null);
+    setStrategyText('');
+    setStrategySubmitted(false);
+    setStrategyError(null);
   };
 
-  const handleAdvance = () => {
+  const handleSubmitStrategy = async () => {
+    if (!strategyText.trim()) return;
+
+    setIsSubmittingStrategy(true);
+    setStrategyError(null);
+
+    try {
+      const submissionData: SolutionSubmissionRequest = {
+        strategy: strategyText.trim(),
+        metadata: {
+          assessmentMode: true,
+          sessionId: `assessment_${Date.now()}`
+        }
+      };
+
+      const result = await arcExplainerClient.submitUserSolution(puzzleId, submissionData);
+
+      if (result) {
+        setStrategySubmitted(true);
+        console.log('✅ Strategy submitted successfully:', result);
+      } else {
+        setStrategyError('Failed to submit strategy. Please try again.');
+      }
+    } catch (error) {
+      console.error('❌ Strategy submission error:', error);
+      setStrategyError('An error occurred while submitting your strategy.');
+    } finally {
+      setIsSubmittingStrategy(false);
+    }
+  };
+
+  const handleAdvance = async () => {
+    // If user has entered strategy but not submitted, submit it first
+    if (strategyText.trim() && !strategySubmitted && !isSubmittingStrategy) {
+      await handleSubmitStrategy();
+    }
+
     handleClose();
     if (onAssessmentAdvance) {
       onAssessmentAdvance();
@@ -117,7 +163,7 @@ export function AssessmentStepSuccessModal({
     const getPerformanceMessage = () => {
         // Use the same AI stats structure as HumanVsAiComparison
         if (!aiStats || !aiStats.hasData || aiStats.totalAttempts === 0) {
-            return 'This puzzle challenged various AI models. Your human insight solved what machines struggle with! 🧠 > 🤖';
+            return 'This puzzle challenged various AI models. 🧠 > 🤖';
         }
 
         // Find the worst performing model from the breakdown
@@ -127,7 +173,7 @@ export function AssessmentStepSuccessModal({
             );
 
             const failureRate = 100 - parseFloat(formatAccuracy(worstModel.accuracy));
-            return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
+            return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time.`;
         }
 
         // Fallback using overall accuracy

@@ -1,6 +1,8 @@
 /**
- * PuzzleSolver Page
+ * PuzzleSolver Page  - VERY BAD NAME!!!
+ * Not sure if this has been deprecated for ResponsivePuzzleSolver ???
  * Author: Cascade
+ * Date: 2025-UNKNOWN
  * 
  * PURPOSE:
  * Dedicated page for solving individual ARC puzzles accessed via URL
@@ -29,9 +31,12 @@ import { puzzleRepository } from '@/services/core/puzzleRepository';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 
 export default function PuzzleSolver() {
-  const [match, params] = useRoute('/officer-track/solve/:puzzleId');
   const [location, setLocation] = useLocation();
-  
+
+  // Determine the base path from the current location
+  const basePath = location.startsWith('/puzzles') ? '/puzzles' : '/officer-track';
+  const [match, params] = useRoute(`${basePath}/solve/:puzzleId`);
+
   const [puzzle, setPuzzle] = useState<OfficerTrackPuzzle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,15 +102,20 @@ export default function PuzzleSolver() {
     initializeAndLoadPuzzle();
   }, [puzzleId]);
 
-  // Navigate back to puzzle list
+  // Navigate back to the correct puzzle list
   const handleBack = () => {
-    setLocation('/officer-track');
+    setLocation(basePath);
   };
 
-  // If no route match, redirect to officer track
+  // If no route match, redirect to the appropriate base path after render
+  useEffect(() => {
+    if (!loading && !match) {
+      setLocation(basePath);
+    }
+  }, [match, loading, setLocation, basePath]);
+
   if (!match) {
-    setLocation('/officer-track');
-    return null;
+    return null; // Render nothing while redirecting
   }
 
   // Loading state

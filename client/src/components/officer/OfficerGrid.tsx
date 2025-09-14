@@ -1,4 +1,5 @@
-/**
+/** DEPRECATED???
+ * Probably superceded by ResponsiveOfficerGrid
  * Officer Grid Component
  * ======================
  * Interactive grid component for ARC puzzle solving with military academy styling

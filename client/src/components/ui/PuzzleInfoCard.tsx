@@ -41,24 +41,26 @@ const getDifficultyBadge = (difficulty: string) => {
 const getAnalysisQualityBadge = (puzzle: OfficerPuzzle) => {
   const attempts = puzzle.totalExplanations;
   if (attempts <= 0) return { label: 'No Analysis', className: 'bg-slate-600 text-slate-100' };
-  if (attempts >= 50) return { label: 'Extensive', className: 'bg-green-500 text-white' };
+  if (attempts >= 40) return { label: 'Extensive', className: 'bg-green-500 text-white' };
   if (attempts >= 20) return { label: 'Well-Analyzed', className: 'bg-cyan-500 text-white' };
-  if (attempts >= 5) return { label: 'Analyzed', className: 'bg-sky-500 text-white' };
+  if (attempts >= 5) return { label: 'Minimal', className: 'bg-sky-500 text-white' };
   return { label: 'Limited Data', className: 'bg-amber-600 text-white' };
 };
 
 const getDatasetBadge = (dataset?: string) => {
-  const defaultStyle = { label: 'ARC-AGI', className: 'bg-slate-600 text-slate-100' };
+  const defaultStyle = { label: 'ARC AGI', className: 'bg-slate-500 text-white' };
   if (!dataset) return defaultStyle;
 
   const styleMap: { [key: string]: { label: string; className: string } } = {
-    evaluation: { label: 'Evaluation', className: 'bg-amber-500 text-black' },
-    training: { label: 'Training', className: 'bg-green-500 text-white' },
-    community: { label: 'Community', className: 'bg-purple-500 text-white' },
-    evaluation2: { label: 'Eval 2.0', className: 'bg-amber-600 text-white' },
+    'training': { label: 'ARC 1 Training', className: 'bg-yellow-500 text-black' },
+    'evaluation': { label: 'ARC 1 Evaluation', className: 'bg-yellow-600 text-black' },
+    'training2': { label: 'ARC 2 Training', className: 'bg-orange-500 text-white' },
+    'evaluation2': { label: 'ARC 2 Evaluation', className: 'bg-orange-800 text-white' },
+    'community': { label: 'Community', className: 'bg-purple-500 text-white' },
+    'arc-agi': { label: 'ARC AGI', className: 'bg-slate-500 text-white' },
   };
 
-  return styleMap[dataset] || { label: dataset, className: defaultStyle.className };
+  return styleMap[dataset] || { label: dataset.toUpperCase(), className: defaultStyle.className };
 };
 
 export function PuzzleInfoCard({ puzzle, onSelectPuzzle }: PuzzleInfoCardProps) {

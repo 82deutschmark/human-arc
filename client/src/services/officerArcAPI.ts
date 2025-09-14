@@ -218,7 +218,7 @@ export async function getEvaluation2Puzzles(limit: number = 50): Promise<Officer
         let gridSize = 'unknown';
         let testCaseCount = 0;
         let trainingExampleCount = 0;
-        let dataset = 'evaluation2';
+        let dataset = 'arc-agi'; // Default
         
         // Set realistic defaults based on ARC puzzle characteristics
         // Individual grid sizes will be fetched on-demand when puzzle is selected
@@ -228,7 +228,12 @@ export async function getEvaluation2Puzzles(limit: number = 50): Promise<Officer
         gridSize = randomSize; // Varied grid sizes for visual variety
         testCaseCount = 1; // ARC puzzles typically have 1 test case
         trainingExampleCount = Math.floor(Math.random() * 3) + 2; // 2-4 training examples
-        dataset = 'arc-agi'; // These come from the main ARC dataset
+
+        // Find the actual dataset from PlayFab, with caching
+        const foundDataset = await findPuzzleInPlayFabTitleData_cached(puzzle.id);
+        if (foundDataset) {
+          dataset = foundDataset;
+        }
         
         return {
           id: puzzle.id, // Keep original arc ID (e.g., "007bbfb7")  
@@ -515,6 +520,20 @@ export async function loadPuzzleFromLocalFiles(puzzleId: string): Promise<any | 
  * Intelligently determine where puzzle actually exists in PlayFab Title Data
  * Searches all batches to find the actual dataset, no hardcoded priorities
  */
+// Cached version of the function to avoid repeated lookups during a session
+const findPuzzleInPlayFabTitleData_cached = async (arcId: string): Promise<'training' | 'evaluation' | 'training2' | 'evaluation2' | null> => {
+  const cacheKey = `dataset-lookup-${arcId}`;
+  if (isCached(cacheKey)) {
+    return getFromCache(cacheKey);
+  }
+
+  const result = await findPuzzleInPlayFabTitleData(arcId);
+  if (result) {
+    setCache(cacheKey, result);
+  }
+  return result;
+};
+
 async function findPuzzleInPlayFabTitleData(arcId: string): Promise<'training' | 'evaluation' | 'training2' | 'evaluation2' | null> {
   console.log(`🔍 Searching PlayFab Title Data for puzzle ${arcId}...`);
   

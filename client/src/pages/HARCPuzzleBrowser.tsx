@@ -12,8 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
-import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';
-import { PuzzleGrid } from '@/components/officer/PuzzleGrid';
+import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';  //  WHY?  
+import { PuzzleGrid } from '@/components/officer/PuzzleGrid';   // THIS IS NOT ACTUALLY FOR GRIDS!!!  It is the CARD!!  Also possibly deprecated by PuzzleInfoCard !!!
 import {
   playFabRequestManager,
   playFabAuthManager,
@@ -419,11 +419,11 @@ export default function HARCPuzzleBrowser() {
           )}
 
           <div className="mt-4 text-center text-sm text-slate-400 bg-slate-900/50 rounded-lg p-3">
-            🧠 <strong>HARC Research:</strong> Every puzzle you solve helps us understand the unique strengths of human reasoning compared to artificial intelligence.
+            🧠 <strong>Human - ARC Research:</strong> Will your advantage slip as the state of the art advances?
           </div>
         </div>
 
-          {/* Footer Info */}
+          {/* Footer Info */} 
           <div className="order-4 text-center text-slate-400 text-base bg-slate-800/50 rounded-lg p-4">
             <p>🤖 Puzzle performance data sourced from arc-explainer AI analysis</p>
             <p className="mt-2">Practice on puzzles that challenge the most advanced AI systems</p>
