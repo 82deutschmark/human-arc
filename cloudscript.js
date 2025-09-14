@@ -215,47 +215,6 @@ const PlayFabService = {
 // =============================================================================
 
 const ScoringService = {
-    /**
-     * Retrieves the number of steps (cell_change events) for a given session.
-     * @param {string} playFabId - The player's PlayFab ID.
-     * @param {string} sessionId - The session ID to query events for.
-     * @returns {number} - The number of steps, or a default if none are found.
-     */
-    getStepCountFromEvents(playFabId, sessionId) {
-        try {
-            // Try to get player events for this session
-            const events = server.GetPlayerEvents({
-                PlayFabId: playFabId
-                // EventNamespace: "custom.SFMC" - might not be needed
-            });
-
-            log.info(`[getStepCountFromEvents] Retrieved ${events && events.History ? events.History.length : 0} events for player ${playFabId}`);
-
-            // Count cell_change events in this session
-            let stepCount = 0;
-            if (events && events.History) {
-                for (let event of events.History) {
-                    // Check for SFMC events with the right sessionId and event_type
-                    if (event.EventName === "SFMC" &&
-                        event.EventData &&
-                        event.EventData.sessionId === sessionId &&
-                        event.EventData.event_type === "cell_change") {
-                        stepCount++;
-                    }
-                }
-            }
-
-            log.info(`[getStepCountFromEvents] Found ${stepCount} cell_change events for session ${sessionId}`);
-
-            // Return the actual count, or default if no events found
-            return stepCount > 0 ? stepCount : 100;
-
-        } catch (error) {
-            log.error(`[getStepCountFromEvents] Error retrieving events: ${error}`);
-            // Return default step count to avoid breaking scoring
-            return 100;
-        }
-    },
 
     /**
      * Calculates a speed bonus based on time elapsed.
@@ -361,8 +320,8 @@ const ValidationService = {
  */
 function _validateAndScoreArcPuzzle(args, context, config) {
     try {
-        Utils.assertArgs(args, ['puzzleId', 'solutions', 'timeElapsed', 'attemptNumber']);
-        const { puzzleId, solutions, timeElapsed, attemptNumber, sessionId } = args;
+        Utils.assertArgs(args, ['puzzleId', 'solutions', 'timeElapsed', 'attemptNumber', 'stepCount']);
+        const { puzzleId, solutions, timeElapsed, attemptNumber, stepCount, sessionId } = args;
         const playerId = currentPlayerId;
 
         const puzzleData = PlayFabService.getPuzzleById(puzzleId);
@@ -384,8 +343,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         }
 
         // --- On Success: Calculate Score & Update Player Data ---
-        const stepCount = ScoringService.getStepCountFromEvents(playerId, sessionId);
-        const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
+                const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
 
         const keysToFetch = [config.completedPuzzlesKey, config.pointsKey, 'humanPerformanceData'];
         const playerData = PlayFabService.getPlayerData(playerId, keysToFetch);
@@ -401,7 +359,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         // HOW ARE WE GETTING STEPS from the client?
         humanPerformanceData.push({
             puzzleId,
-            correct: boolean(validationResult.allCorrect), // Use consistent field name "correct" throughout codebase
+            correct: true, // Use consistent field name "correct" throughout codebase
             timestamp: new Date().toISOString(),
             ...scoreData,
             timeElapsed,

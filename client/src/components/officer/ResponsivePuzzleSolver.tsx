@@ -378,6 +378,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         solutions: solutions,
         timeElapsed: Math.floor((Date.now() - sessionStartTime.current) / 1000), // Convert milliseconds to seconds
         attemptNumber: attemptNumber,
+        stepCount: stepIndex, // Pass the client-side step count
         sessionId: sessionId
       });
       
