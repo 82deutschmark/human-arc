@@ -135,7 +135,10 @@ export class PlayFabAuthManager {
     const deviceId = this.getOrCreateDeviceId();
     const request = {
       CustomId: deviceId,
-      CreateAccount: true
+      CreateAccount: true,
+      InfoRequestParameters: {
+        GetPlayerProfile: true
+      }
     };
 
     console.log('[PlayFabAuth] Attempting login with deviceId:', deviceId);
@@ -152,6 +155,14 @@ export class PlayFabAuthManager {
           NewlyCreated: result.NewlyCreated,
           deviceId: deviceId,
           hasDisplayName: !!result.InfoResultPayload?.PlayerProfile?.DisplayName
+        });
+
+        // ENHANCED DEBUG: Log complete DisplayName info
+        console.log('[PlayFabAuth] DisplayName Debug Info:', {
+          InfoResultPayload: result.InfoResultPayload,
+          PlayerProfile: result.InfoResultPayload?.PlayerProfile,
+          DisplayName: result.InfoResultPayload?.PlayerProfile?.DisplayName,
+          DisplayNameType: typeof result.InfoResultPayload?.PlayerProfile?.DisplayName
         });
 
         this.authState = {
@@ -172,9 +183,12 @@ export class PlayFabAuthManager {
         localStorage.setItem('debug_playfab_mapping', JSON.stringify(debugMapping));
         console.log('[PlayFabAuth] Stored debug mapping:', debugMapping);
 
-        // Handle display name generation for new users
+        // Handle display name generation - only if PlayFab doesn't have one stored
         if (!this.authState.displayName) {
+          console.log('[PlayFabAuth] No DisplayName found in PlayFab response, generating new one...');
           await this.generateDisplayName();
+        } else {
+          console.log('[PlayFabAuth] Using existing DisplayName from PlayFab:', this.authState.displayName);
         }
 
         return {
