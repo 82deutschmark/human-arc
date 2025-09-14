@@ -1,7 +1,7 @@
 /**Author: Gemini 2.5 Pro
  * Date: September 10, 2025
  * Last Modified: September 14, 2025
- * Last Modified By: Claude Sonnet 4 - FORCED DEPLOYMENT
+ * Last Modified By: Gemini 2.5 Pro
  * Refactored from cloudscript.js.md
  *
  * PlayFab CloudScript Functions
@@ -9,6 +9,8 @@
  *
  * SECURITY CRITICAL: These functions run on PlayFab servers and cannot be hacked by clients
  */
+
+var handlers = {};
 
 // =============================================================================
 // REFACTOR CONSTANTS & HELPERS
@@ -54,12 +56,6 @@ const CONSTANTS = {
 // =============================================================================
 
 const Utils = {
-    /**
-     * Safely parses a JSON string, returning a fallback value on error.
-     * @param {string} str - The JSON string to parse.
-     * @param {*} [fallback=null] - The value to return if parsing fails.
-     * @returns {Object|null}
-     */
     safeParseJSON(str, fallback = null) {
         try {
             return JSON.parse(str);
@@ -67,33 +63,16 @@ const Utils = {
             return fallback;
         }
     },
-
-    /**
-     * Throws an error if a condition is not met.
-     * @param {boolean} condition - The condition to check.
-     * @param {string} message - The error message to throw if the condition is false.
-     */
     assert(condition, message) {
         if (!condition) throw new Error(message);
     },
-
-    /**
-     * Validates that an object contains all required keys.
-     * @param {Object} obj - The object to check.
-     * @param {string[]} requiredKeys - An array of required key names.
-     */
     assertArgs(obj, requiredKeys) {
         for (const key of requiredKeys) {
-            this.assert(obj[key] !== undefined && obj[key] !== null, `Missing required argument: ${key}`);
+            if (obj[key] === undefined || obj[key] === null) {
+                throw new Error(`Missing required argument: ${key} (value: ${obj[key]})`);
+            }
         }
     },
-
-    /**
-     * Compares two 2D arrays for equality.
-     * @param {Array<Array<any>>} a - The first array.
-     * @param {Array<Array<any>>} b - The second array.
-     * @returns {boolean}
-     */
     arraysEqual(a, b, testIndex) {
         if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) {
             log.error(`[Test ${testIndex}] Array structure mismatch (level 1). A is array: ${Array.isArray(a)}, B is array: ${Array.isArray(b)}, A.length: ${a?.length}, B.length: ${b?.length}`);
@@ -113,12 +92,6 @@ const Utils = {
         }
         return true;
     },
-
-    /**
-     * Get rank name based on rank level (matches Unity and React)
-     * @param {number} rankLevel - The player's rank level.
-     * @returns {string}
-     */
     getRankName(rankLevel) {
         const ranks = [
             'Specialist 1', 'Specialist 2', 'Specialist 3', 'Specialist 4',
@@ -134,26 +107,14 @@ const Utils = {
 // =============================================================================
 
 const PlayFabService = {
-    /**
-     * Retrieves and parses a JSON object from Title Data.
-     * @param {string} key - The key for the Title Data entry.
-     * @returns {Object|null}
-     */
     getTitleDataJSON(key) {
         const res = server.GetTitleData({ Keys: [key] });
         return res.Data && res.Data[key] ? Utils.safeParseJSON(res.Data[key]) : null;
     },
-
-    /**
-     * Finds a puzzle by its ID across all configured data batches.
-     * @param {string} puzzleId - The ID of the puzzle to find.
-     * @returns {{puzzle: Object, batchKey: string}|null}
-     */
     getPuzzleById(puzzleId) {
         for (const key of CONSTANTS.BATCH_KEYS) {
             const puzzles = this.getTitleDataJSON(key);
             if (puzzles) {
-                // Normalize IDs for robust matching (e.g., "ARC-TR-123" vs "123")
                 const cleanPuzzleId = puzzleId.replace(/^ARC-(TR|T2|EV|E2)-/, '');
                 for (const puzzle of puzzles) {
                     const cleanStoredId = puzzle.id.replace(/^ARC-(TR|T2|EV|E2)-/, '');
@@ -167,44 +128,15 @@ const PlayFabService = {
         log.error(`Puzzle ${puzzleId} not found in any batch`, { puzzleId });
         return null;
     },
-
-    /**
-     * Gets user data from PlayFab.
-     * @param {string} playFabId - The player's PlayFab ID.
-     * @param {string[]} keys - The keys of the data to retrieve.
-     * @returns {Object}
-     */
     getPlayerData(playFabId, keys) {
         return server.GetUserData({ PlayFabId: playFabId, Keys: keys });
     },
-
-    /**
-     * Updates user data in PlayFab.
-     * @param {string} playFabId - The player's PlayFab ID.
-     * @param {Object} dataObj - A key-value object of data to update.
-     * @returns {Object}
-     */
     updatePlayerData(playFabId, dataObj) {
         return server.UpdateUserData({ PlayFabId: playFabId, Data: dataObj });
     },
-
-    /**
-     * Updates player statistics for leaderboards.
-     * @param {string} playFabId - The player's PlayFab ID.
-     * @param {Array<{StatisticName: string, Value: number}>} statsArray - An array of statistics to update.
-     * @returns {Object}
-     */
     updatePlayerStats(playFabId, statsArray) {
         return server.UpdatePlayerStatistics({ PlayFabId: playFabId, Statistics: statsArray });
     },
-
-    /**
-     * Writes a custom player event.
-     * @param {string} playFabId - The player's PlayFab ID.
-     * @param {string} eventName - The name of the event.
-     * @param {Object} body - The event data payload.
-     * @returns {Object}
-     */
     writePlayerEvent(playFabId, eventName, body) {
         return server.WritePlayerEvent({ PlayFabId: playFabId, EventName: eventName, Body: body });
     }
@@ -215,31 +147,13 @@ const PlayFabService = {
 // =============================================================================
 
 const ScoringService = {
-
-    /**
-     * Calculates a speed bonus based on time elapsed.
-     * @param {{time: number, perMinute: number, underMinutes: number}} params - Scoring parameters.
-     * @returns {number}
-     */
     speedBonusFor({ time, perMinute, underMinutes }) {
         const timeInMinutes = Math.ceil((time || 0) / 60);
         return timeInMinutes < underMinutes ? (underMinutes - timeInMinutes) * perMinute : 0;
     },
-
-    /**
-     * Calculates an efficiency bonus based on the number of steps.
-     * @param {{steps: number, perAction: number, underActions: number}} params - Scoring parameters.
-     * @returns {number}
-     */
     efficiencyBonusFor({ steps, perAction, underActions }) {
         return steps < underActions ? (underActions - steps) * perAction : 0;
     },
-
-    /**
-     * Calculates the total score for an Officer Track puzzle.
-     * @param {{timeElapsed: number, stepCount: number}} params - Player performance metrics.
-     * @returns {Object} Detailed score breakdown.
-     */
     calculateOfficerTrackScore({ timeElapsed, stepCount }) {
         const params = CONSTANTS.SCORING.OFFICER_TRACK;
         const speedBonus = this.speedBonusFor({ time: timeElapsed, ...params.SPEED_BONUS });
@@ -247,12 +161,6 @@ const ScoringService = {
         const finalScore = params.BASE_POINTS + speedBonus + efficiencyBonus;
         return { basePoints: params.BASE_POINTS, speedBonus, efficiencyBonus, finalScore };
     },
-
-    /**
-     * Calculates the total score for an ARC-2 Evaluation puzzle.
-     * @param {{timeElapsed: number, stepCount: number, attemptNumber: number}} params - Player performance metrics.
-     * @returns {Object} Detailed score breakdown.
-     */
     calculateArc2EvalScore({ timeElapsed, stepCount, attemptNumber }) {
         const params = CONSTANTS.SCORING.ARC2_EVAL;
         const speedBonus = this.speedBonusFor({ time: timeElapsed, ...params.SPEED_BONUS });
@@ -268,12 +176,6 @@ const ScoringService = {
 // =============================================================================
 
 const ValidationService = {
-    /**
-     * Compares a player's solutions against the puzzle's test cases.
-     * @param {Object} puzzle - The puzzle object from Title Data.
-     * @param {Array<Array<Array<any>>>} solutions - The player's submitted solutions.
-     * @returns {{allCorrect: boolean, failures: Array, error?: string}}
-     */
     compareSolutions(puzzle, solutions) {
         log.info("--- Entering compareSolutions ---");
         log.info("Puzzle ID: " + puzzle.id);
@@ -309,25 +211,20 @@ const ValidationService = {
 // TASK HANDLERS (CloudScript Entry Points)
 // =============================================================================
 
-/**
- * Private helper to handle the core logic for ARC puzzle validation and scoring.
- * This function is designed to be called by specific public handlers.
- * @param {Object} args - The arguments passed to the handler.
- * @param {Object} context - The PlayFab context object.
- * @param {Object} config - Configuration for the specific puzzle type.
- * @returns {Object} The result of the validation and scoring.
- * @private
- */
 function _validateAndScoreArcPuzzle(args, context, config) {
     try {
         Utils.assertArgs(args, ['puzzleId', 'solutions', 'timeElapsed', 'attemptNumber', 'stepCount']);
         const { puzzleId, solutions, timeElapsed, attemptNumber, stepCount, sessionId } = args;
         const playerId = context.currentPlayerId;
+        Utils.assert(playerId, 'context.currentPlayerId is missing or undefined.');
 
+        log.info(`Searching for puzzle: ${puzzleId}`);
         const puzzleData = PlayFabService.getPuzzleById(puzzleId);
         if (!puzzleData) {
+            log.error(`Puzzle ${puzzleId} not found in any batch`);
             return { success: false, error: `Puzzle ${puzzleId} not found.` };
         }
+        log.info(`Found puzzle ${puzzleId} in batch ${puzzleData.batchKey}`);
         const { puzzle } = puzzleData;
 
         const validationResult = ValidationService.compareSolutions(puzzle, solutions);
@@ -335,15 +232,11 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             return { success: false, error: validationResult.error };
         }
 
-        // Event logging is handled by the client... but where?  And how does it get sent to PlayFab?
-        //  - CloudScript focuses on validation only
-
         if (!validationResult.allCorrect) {
             return { success: true, correct: false, failures: validationResult.failures };
         }
 
-        // --- On Success: Calculate Score & Update Player Data ---
-                const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
+        const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
 
         const keysToFetch = [config.completedPuzzlesKey, config.pointsKey, 'humanPerformanceData'];
         const playerData = PlayFabService.getPlayerData(playerId, keysToFetch);
@@ -355,11 +248,9 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             completedPuzzles.push(puzzleId);
         }
 
-        // Add new detailed performance record
-        // HOW ARE WE GETTING STEPS from the client?
         humanPerformanceData.push({
             puzzleId,
-            correct: true, // Use consistent field names throughout codebase!! 
+            correct: true,
             timestamp: new Date().toISOString(),
             ...scoreData,
             timeElapsed,
@@ -376,10 +267,8 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         PlayFabService.updatePlayerData(playerId, {
             [config.completedPuzzlesKey]: JSON.stringify(completedPuzzles),
             [config.pointsKey]: newTotalPoints.toString(),
-            'humanPerformanceData': JSON.stringify(humanPerformanceData) // Save the detailed metrics
+            'humanPerformanceData': JSON.stringify(humanPerformanceData)
         });
-
-        // High score event logging is handled by the client
 
         return { success: true, correct: true, ...scoreData };
 
@@ -514,4 +403,3 @@ handlers.ValidateTaskSolution = function(args, context) {
         return { success: false, error: "Internal server error during validation" };
     }
 };
-
