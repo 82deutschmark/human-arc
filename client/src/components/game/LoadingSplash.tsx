@@ -40,13 +40,13 @@ export function LoadingSplash({ onComplete, duration = 3000 }: LoadingSplashProp
 
   // Skip splash screen for specific pages that don't need splash
   useEffect(() => {
-    if (pathname.startsWith('/officer-track/solve/') || pathname.startsWith('/harc') || pathname.startsWith('/assessment') || pathname.startsWith('/dashboard')) {
+    if (pathname === '/' || pathname.startsWith('/officer-track/solve/') || pathname.startsWith('/harc') || pathname.startsWith('/assessment') || pathname.startsWith('/dashboard')) {
       onComplete();
       return;
     }
   }, [pathname, onComplete]);
 
-  if (pathname.startsWith('/officer-track/solve/') || pathname.startsWith('/harc') || pathname.startsWith('/assessment') || pathname.startsWith('/dashboard')) {
+  if (pathname === '/' || pathname.startsWith('/officer-track/solve/') || pathname.startsWith('/harc') || pathname.startsWith('/assessment') || pathname.startsWith('/dashboard')) {
     return null;
   }
   const [progress, setProgress] = useState(0);
