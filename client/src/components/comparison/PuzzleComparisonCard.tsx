@@ -43,6 +43,27 @@ const formatTime = (totalSeconds: number): string => {
   return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 };
 
+const formatTimestamp = (timestamp: string): string => {
+  try {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return 'Invalid Date';
+  }
+};
+
+const getOrdinalSuffix = (num: number): string => {
+  const remainder = num % 100;
+  if (remainder >= 11 && remainder <= 13) return 'th';
+
+  switch (num % 10) {
+    case 1: return 'st';
+    case 2: return 'nd';
+    case 3: return 'rd';
+    default: return 'th';
+  }
+};
+
 export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
   // Add debugging to see exact data structure
   console.log(`🧩 PuzzleComparisonCard for ${puzzleId}:`, aiResult);
@@ -76,6 +97,7 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
 
   const qualityTier = getExplanationQualityTier();
   const [showScoreBreakdown, setShowScoreBreakdown] = useState(false);
+  const [showDebugData, setShowDebugData] = useState(false);
 
 
   return (
@@ -121,6 +143,18 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
               <span className="text-slate-300">Steps:</span>
               <span className="font-bold text-xl">{humanResult.stepCount || 'N/A'}</span>
             </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-300">Attempt:</span>
+              <span className="font-bold text-xl text-purple-300">
+                {humanResult.attemptNumber ? `${humanResult.attemptNumber}${getOrdinalSuffix(humanResult.attemptNumber)} Try` : 'N/A'}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-300">Completed:</span>
+              <span className="font-bold text-sm text-slate-300">
+                {humanResult.timestamp ? formatTimestamp(humanResult.timestamp) : 'N/A'}
+              </span>
+            </div>
             
             {showScoreBreakdown && (
               <div className="mt-3 pt-2 border-t border-slate-600 text-sm">
@@ -145,6 +179,29 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
                 </div>
               </div>
             )}
+
+            {/* Debug Data Section */}
+            <div className="mt-3 pt-2 border-t border-slate-600">
+              <button
+                onClick={() => setShowDebugData(!showDebugData)}
+                className="w-full text-left text-xs text-slate-400 hover:text-slate-300 transition-colors flex justify-between items-center"
+                aria-label="Toggle debug data display"
+              >
+                <span>Debug Data</span>
+                <span className="ml-1">
+                  {showDebugData ? '▲' : '▼'}
+                </span>
+              </button>
+
+              {showDebugData && (
+                <div className="mt-2 p-2 bg-slate-900/50 rounded text-xs">
+                  <p className="text-slate-400 mb-2">Raw humanPerformanceData:</p>
+                  <pre className="text-slate-300 overflow-x-auto whitespace-pre-wrap break-words">
+                    {JSON.stringify(humanResult, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
