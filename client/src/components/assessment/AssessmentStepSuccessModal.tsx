@@ -1,8 +1,8 @@
 /**
- * @author Gemini 2.5 Pro
- * @date 2025-09-13
- * @description A specialized success modal for the assessment flow that provides educational context.
- * It displays a combination of designer-crafted notes and real-time AI performance data.
+ * @author Claude Code using Sonnet 4
+ * @date 2025-09-14
+ * @purpose Enhanced assessment success modal with improved AI model performance display and data validation
+ * SRP and DRY check: Pass - Single responsibility (assessment success display), reuses existing UI components
  */
 
 import { useEffect, useState } from 'react';
@@ -99,6 +99,20 @@ export function AssessmentStepSuccessModal({
 
     const { puzzle, title, explanation, aiDifficultyContext } = content;
 
+    // Helper function to safely format accuracy as percentage
+    const formatAccuracy = (accuracy: number): string => {
+      // Defensive programming: handle edge cases
+      if (typeof accuracy !== 'number' || isNaN(accuracy)) return '0';
+
+      // If accuracy > 1, it's likely already a percentage
+      if (accuracy > 1) {
+        return Math.min(accuracy, 100).toFixed(1);
+      }
+
+      // Otherwise, convert from decimal to percentage
+      return (accuracy * 100).toFixed(1);
+    };
+
     const getPerformanceMessage = () => {
         // Use the same AI stats structure as HumanVsAiComparison
         if (!aiStats || !aiStats.hasData || aiStats.totalAttempts === 0) {
@@ -111,13 +125,88 @@ export function AssessmentStepSuccessModal({
                 current.accuracy < worst.accuracy ? current : worst, aiStats.modelBreakdown[0]
             );
 
-            const failureRate = (1 - worstModel.accuracy) * 100;
+            const failureRate = 100 - parseFloat(formatAccuracy(worstModel.accuracy));
             return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
         }
 
         // Fallback using overall accuracy
-        const failureRate = (1 - aiStats.accuracy) * 100;
+        const failureRate = 100 - parseFloat(formatAccuracy(aiStats.accuracy));
         return `You solved something that AI models get wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
+    };
+
+    const renderModelBreakdown = (models: typeof aiStats.modelBreakdown) => {
+      if (!models || models.length === 0) return null;
+
+      // Sort models by accuracy (worst first for prominence)
+      const sortedModels = [...models].sort((a, b) => a.accuracy - b.accuracy);
+
+      // Get performance color class
+      const getPerformanceColor = (accuracy: number) => {
+        const accPercentage = parseFloat(formatAccuracy(accuracy));
+        if (accPercentage >= 70) return 'text-green-400';
+        if (accPercentage >= 40) return 'text-yellow-400';
+        return 'text-red-400';
+      };
+
+      // Get performance icon
+      const getPerformanceIcon = (accuracy: number) => {
+        const accPercentage = parseFloat(formatAccuracy(accuracy));
+        if (accPercentage >= 70) return '✅';
+        if (accPercentage >= 40) return '⚠️';
+        return '❌';
+      };
+
+      const [showAllModels, setShowAllModels] = useState(false);
+      const displayModels = showAllModels ? sortedModels : sortedModels.slice(0, 4);
+
+      return (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400 text-sm font-medium">Individual Model Performance:</span>
+            {sortedModels.length > 4 && (
+              <button
+                onClick={() => setShowAllModels(!showAllModels)}
+                className="text-xs text-amber-400 hover:text-amber-300 transition-colors"
+              >
+                {showAllModels ? `Show Less` : `Show All ${sortedModels.length}`}
+              </button>
+            )}
+          </div>
+
+          {/* Highlight worst performer */}
+          {sortedModels.length > 0 && (
+            <div className="p-2 border-l-2 border-red-400 bg-red-900/20 rounded">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-red-400">👎</span>
+                  <span className="text-slate-300 text-sm font-medium">Worst: {sortedModels[0].modelName}</span>
+                </div>
+                <span className={`font-bold ${getPerformanceColor(sortedModels[0].accuracy)}`}>
+                  {formatAccuracy(sortedModels[0].accuracy)}%
+                </span>
+              </div>
+              <div className="text-xs text-slate-500 mt-1">
+                {sortedModels[0].correct}/{sortedModels[0].attempts} attempts
+              </div>
+            </div>
+          )}
+
+          {/* Grid display for other models */}
+          <div className="grid grid-cols-2 gap-2">
+            {displayModels.slice(1).map((model) => (
+              <div key={model.modelName} className="flex items-center justify-between p-2 bg-slate-700/30 rounded text-sm">
+                <div className="flex items-center gap-1 min-w-0 flex-1">
+                  <span className="text-xs">{getPerformanceIcon(model.accuracy)}</span>
+                  <span className="text-slate-300 truncate">{model.modelName}</span>
+                </div>
+                <span className={`font-medium ${getPerformanceColor(model.accuracy)} ml-2 whitespace-nowrap`}>
+                  {formatAccuracy(model.accuracy)}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     };
 
     return (
@@ -150,16 +239,19 @@ export function AssessmentStepSuccessModal({
             <h4 className="font-bold text-md text-amber-500">What makes this hard for AI?</h4>
             <p className="text-slate-300">{aiDifficultyContext}</p>
             {aiStats && aiStats.hasData && (
-                <div className="p-2 mt-2 text-sm border-l-2 border-amber-500 bg-slate-800/50">
-                    <h5 className="font-semibold">AI Accuracy Breakdown:</h5>
-                    <p className="mb-1">Overall: {(aiStats.accuracy * 100).toFixed(1)}% ({aiStats.correctAttempts}/{aiStats.totalAttempts})</p>
-                    {aiStats.modelBreakdown && aiStats.modelBreakdown.length > 0 && (
-                        <ul className="list-disc list-inside">
-                            {aiStats.modelBreakdown.map((model) => (
-                                <li key={model.modelName}>{model.modelName}: {(model.accuracy * 100).toFixed(1)}%</li>
-                            ))}
-                        </ul>
-                    )}
+                <div className="p-3 mt-3 border border-amber-500/30 bg-slate-800/50 rounded-lg">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="text-amber-400 text-lg">🤖</span>
+                        <h5 className="font-semibold text-amber-400">AI Performance Analysis</h5>
+                    </div>
+
+                    <div className="mb-3 p-2 bg-slate-700/50 rounded">
+                        <span className="text-slate-400 text-sm">Overall AI Success Rate: </span>
+                        <span className="font-bold text-white">{formatAccuracy(aiStats.accuracy)}%</span>
+                        <span className="text-slate-500 text-sm ml-2">({aiStats.correctAttempts}/{aiStats.totalAttempts} attempts)</span>
+                    </div>
+
+                    {aiStats.modelBreakdown && aiStats.modelBreakdown.length > 0 && renderModelBreakdown(aiStats.modelBreakdown)}
                 </div>
             )}
           </div>
