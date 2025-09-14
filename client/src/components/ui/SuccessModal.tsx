@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { SPACE_EMOJIS, type EmojiSet } from '@/constants/spaceEmojis';
 
-interface SuccessModalProps {
+interface Props {
   open: boolean;
   onClose: () => void;
   title?: string;
@@ -59,7 +59,7 @@ export function SuccessModal({
   showDesignerNotes = true,
   fallbackMode = false,
   scoreDetails
-}: SuccessModalProps) {
+}: Props) {
   const [celebrationEmojis, setCelebrationEmojis] = useState<string[]>([]);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -93,7 +93,7 @@ export function SuccessModal({
           ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
         `}
         style={{
-          animation: isVisible ? 'successModalEntrance 0.6s ease-out' : undefined
+          animation: isVisible ? 'Entrance 0.6s ease-out' : undefined
         }}
       >
         {/* Large celebration emojis */}
@@ -177,7 +177,7 @@ export function SuccessModal({
 
         {/* Custom CSS for entrance animation */}
         <style>{`
-          @keyframes successModalEntrance {
+          @keyframes Entrance {
             0% {
               transform: scale(0.8) translateY(-20px);
               opacity: 0;
