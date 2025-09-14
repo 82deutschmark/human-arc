@@ -26,7 +26,9 @@ import { useRoute, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { ResponsivePuzzleSolver } from '@/components/officer/ResponsivePuzzleSolver';
+import { SuccessModal } from '@/components/ui/SuccessModal';
 import { playFabRequestManager, playFabAuthManager } from '@/services/playfab';
+import { playFabUserData } from '@/services/playfab/userData';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 
@@ -41,6 +43,10 @@ export default function PuzzleSolver() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [playFabReady, setPlayFabReady] = useState(false);
+
+  // Already completed state
+  const [showAlreadyCompletedModal, setShowAlreadyCompletedModal] = useState(false);
+  const [completionData, setCompletionData] = useState<any>(null);
 
   const puzzleId = params?.puzzleId;
 
@@ -71,9 +77,21 @@ export default function PuzzleSolver() {
         
         setPlayFabReady(true);
 
+        // Check if user has already completed this puzzle
+        console.log('🔍 Checking puzzle completion status for:', puzzleId);
+        const completionStatus = await playFabUserData.checkPuzzleCompletion(puzzleId);
+
+        if (completionStatus.completed) {
+          console.log('✅ Puzzle already completed, showing completion modal');
+          setCompletionData(completionStatus);
+          setShowAlreadyCompletedModal(true);
+          setLoading(false);
+          return; // Don't load puzzle for solving
+        }
+
         // Use the centralized service to find the puzzle
         const puzzleData = await puzzleRepository.findById(puzzleId, true);
-        
+
         if (puzzleData) {
           setPuzzle(puzzleData);
           console.log('✅ Puzzle loaded successfully:', puzzleData.id);
@@ -105,6 +123,28 @@ export default function PuzzleSolver() {
   // Navigate back to the correct puzzle list
   const handleBack = () => {
     setLocation(basePath);
+  };
+
+  // Handle actions when puzzle is already completed
+  const handleViewComparison = () => {
+    setShowAlreadyCompletedModal(false);
+    setLocation(`/comparison/${puzzleId}`); // Navigate to comparison page
+  };
+
+  const handleSolveAgain = () => {
+    setShowAlreadyCompletedModal(false);
+    // Continue loading the puzzle for solving (no points awarded)
+    puzzleRepository.findById(puzzleId!, true).then(puzzleData => {
+      if (puzzleData) {
+        setPuzzle(puzzleData);
+        console.log('✅ Puzzle loaded for re-solving (no points):', puzzleData.id);
+      }
+    });
+  };
+
+  const handleAlreadyCompletedClose = () => {
+    setShowAlreadyCompletedModal(false);
+    handleBack(); // Go back to puzzle list by default
   };
 
   // If no route match, redirect to the appropriate base path after render
@@ -177,6 +217,69 @@ export default function PuzzleSolver() {
           </div>
         </main>
       </div>
+    );
+  }
+
+  // Already completed modal
+  if (showAlreadyCompletedModal) {
+    const completionDate = completionData?.completionDate
+      ? new Date(completionData.completionDate).toLocaleDateString()
+      : 'recently';
+
+    const score = completionData?.scoreData?.finalScore?.toLocaleString() || 'N/A';
+
+    return (
+      <>
+        <div className="min-h-screen bg-slate-900 text-amber-50 flex items-center justify-center">
+          <div className="text-center p-8">
+            <h2 className="text-2xl font-semibold text-amber-400 mb-4">Loading...</h2>
+            <p className="text-slate-400">Checking completion status...</p>
+          </div>
+        </div>
+
+        <SuccessModal
+          open={true}
+          onClose={handleAlreadyCompletedClose}
+          title="Already Solved! 🎯"
+          message={`You completed this puzzle on ${completionDate} and earned ${score} points.`}
+          scoreDetails={completionData?.scoreData}
+          puzzleId={puzzleId}
+          enableAIComparison={true}
+          enableStrategySubmission={!completionData?.alreadySubmittedStrategy}
+        />
+
+        {/* Custom action buttons overlay */}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-slate-800 border border-amber-400 rounded-lg p-6 max-w-md mx-4">
+            <h3 className="text-xl font-bold text-amber-400 mb-4 text-center">What would you like to do?</h3>
+
+            <div className="space-y-3">
+              <Button
+                onClick={handleViewComparison}
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                🔍 View AI Comparison
+              </Button>
+
+              <Button
+                onClick={handleSolveAgain}
+                variant="outline"
+                className="w-full border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900"
+              >
+                🧩 Solve Again (No Points)
+              </Button>
+
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                className="w-full border-slate-500 text-slate-400 hover:bg-slate-600 hover:text-white"
+              >
+                ← Back to Puzzle List
+              </Button>
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
 
