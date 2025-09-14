@@ -19,6 +19,7 @@ import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls'
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
+import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EventType } from '@/types/playfab';
@@ -722,8 +723,24 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         {/* Hint System */}
         <PermanentHintSystem
           puzzle={puzzle}
+          currentTestOutput={expectedOutput}
+          onAutoResizeGrid={(width, height) => {
+            handleSizeChange(width, height);
+          }}
           onHintUsed={(hintLevel, totalHints) => {
             console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);
+            // Log hint usage for analytics
+            logPlayerAction(
+              "hint_used",
+              0,
+              hintLevel,
+              {
+                hintLevel,
+                totalHintsUsed: totalHints,
+                testCase: currentTestIndex,
+                puzzleId: puzzle.id
+              }
+            );
           }}
         />
 
@@ -799,14 +816,16 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                   <SizeSlider value={inputCellSize} onChange={setInputCellSize} min={50} max={100} label="Grid Size" />
                 </div>
               </div>
-              <ResponsiveOfficerDisplayGrid
-                grid={testInput}
-                containerType="solver"
-                emojiSet={displayState.emojiSet}
-                displayMode={displayState.displayMode}
-                className="w-full h-full"
-                fixedCellSize={inputCellSize}
-              />
+              <GridWithDimensions grid={testInput}>
+                <ResponsiveOfficerDisplayGrid
+                  grid={testInput}
+                  containerType="solver"
+                  emojiSet={displayState.emojiSet}
+                  displayMode={displayState.displayMode}
+                  className="w-full h-full"
+                  fixedCellSize={inputCellSize}
+                />
+              </GridWithDimensions>
             </div>
 
             {/* Central Controls Wrapper - Full width on mobile, center column on large screens */}
@@ -909,18 +928,27 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                    '🎯 Submit for Official Validation'}
                 </button>
               </div>
-              <ResponsiveOfficerGrid
-                initialGrid={currentSolution}
-                containerType="solver"
-                emojiSet={displayState.emojiSet}
-                displayMode={displayState.displayMode}
-                selectedValue={displayState.selectedValue}
-                onCellInteraction={handleCellInteraction}
-                enableDragToPaint={true}
-                className="w-full h-full"
-                onChange={updateCurrentSolution}
-                fixedCellSize={outputCellSize}
-              />
+              <GridWithDimensions
+                grid={currentSolution}
+                expectedDimensions={expectedOutput.length > 0 ? {
+                  width: expectedOutput[0]?.length || 0,
+                  height: expectedOutput.length
+                } : undefined}
+                showExpected={true}
+              >
+                <ResponsiveOfficerGrid
+                  initialGrid={currentSolution}
+                  containerType="solver"
+                  emojiSet={displayState.emojiSet}
+                  displayMode={displayState.displayMode}
+                  selectedValue={displayState.selectedValue}
+                  onCellInteraction={handleCellInteraction}
+                  enableDragToPaint={true}
+                  className="w-full h-full"
+                  onChange={updateCurrentSolution}
+                  fixedCellSize={outputCellSize}
+                />
+              </GridWithDimensions>
             </div>
           </div>
 

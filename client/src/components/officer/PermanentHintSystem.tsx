@@ -18,6 +18,8 @@ import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 interface PermanentHintSystemProps {
   puzzle: OfficerTrackPuzzle;
   onHintUsed?: (hintLevel: number, hintsUsedTotal: number) => void;
+  onAutoResizeGrid?: (width: number, height: number) => void;
+  currentTestOutput?: number[][];
   className?: string;
 }
 
@@ -31,10 +33,12 @@ interface HintState {
   totalHintsUsed: number;
 }
 
-export function PermanentHintSystem({ 
-  puzzle, 
+export function PermanentHintSystem({
+  puzzle,
   onHintUsed,
-  className = "" 
+  onAutoResizeGrid,
+  currentTestOutput,
+  className = ""
 }: PermanentHintSystemProps) {
   const [hintState, setHintState] = useState<HintState>({
     level1Revealed: false,
@@ -62,14 +66,23 @@ export function PermanentHintSystem({
   // Level 1 Hint: Output Grid Size
   const revealLevel1Hint = () => {
     if (hintState.level1Revealed) return;
-    
+
     const newHintsUsed = hintState.totalHintsUsed + 1;
-    setHintState(prev => ({ 
-      ...prev, 
-      level1Revealed: true, 
-      totalHintsUsed: newHintsUsed 
+    setHintState(prev => ({
+      ...prev,
+      level1Revealed: true,
+      totalHintsUsed: newHintsUsed
     }));
-    
+
+    // Auto-resize grid to correct dimensions
+    if (currentTestOutput && currentTestOutput.length > 0 && onAutoResizeGrid) {
+      const correctHeight = currentTestOutput.length;
+      const correctWidth = currentTestOutput[0]?.length || 0;
+      if (correctWidth > 0) {
+        onAutoResizeGrid(correctWidth, correctHeight);
+      }
+    }
+
     onHintUsed?.(1, newHintsUsed);
   };
 
@@ -193,6 +206,11 @@ export function PermanentHintSystem({
             {hintState.level1Revealed && (
               <div className="text-slate-200 text-sm bg-slate-700 p-2 rounded">
                 <strong>Grid Size Hint:</strong> {getExpectedOutputDimensions()}
+                {currentTestOutput && currentTestOutput.length > 0 && (
+                  <div className="mt-2 p-2 bg-green-900 border border-green-600 rounded text-green-200">
+                    ✅ <strong>Auto-resized your grid to {currentTestOutput[0]?.length || 0} × {currentTestOutput.length}</strong>
+                  </div>
+                )}
               </div>
             )}
           </div>
