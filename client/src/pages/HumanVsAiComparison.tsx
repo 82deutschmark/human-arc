@@ -206,6 +206,43 @@ export function HumanVsAiComparison() {
                   </div>
                 </div>
               </div>
+
+              {/* Dev Tool: Get New Player ID */}
+              <div className="mt-4 pt-3 border-t border-slate-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-slate-400 text-sm">Debug Tool:</p>
+                    <p className="text-xs text-slate-500">Generate new anonymous player account</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('⚠️ This will create a new player account and reset ALL progress.\n\nYour current progress will be lost. Continue?')) {
+                        // Clear all PlayFab storage
+                        localStorage.removeItem('playfab_device_id');
+                        sessionStorage.removeItem('playfab_device_id');
+                        localStorage.removeItem('debug_playfab_mapping');
+
+                        // Clear any other PlayFab-related localStorage
+                        const keysToRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                          const key = localStorage.key(i);
+                          if (key && key.includes('playfab')) {
+                            keysToRemove.push(key);
+                          }
+                        }
+                        keysToRemove.forEach(key => localStorage.removeItem(key));
+
+                        // Force page refresh to create new player
+                        window.location.reload();
+                      }
+                    }}
+                    className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded transition-colors font-medium"
+                    title="Clear all data and generate new PlayFab ID"
+                  >
+                    🔄 Get New Player ID
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
