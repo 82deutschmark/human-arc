@@ -1,5 +1,43 @@
 # Changelog
 
+## 2025-09-14: 🚨 CRITICAL SECURITY & UX FIXES + 10K Strategy Bonus System
+
+### **Version 0.2.0 - MAJOR RELEASE**
+
+**🚨 CRITICAL BUG FIXES**: Fixed infinite scoring exploit and implemented smart puzzle completion detection.
+
+### **🔒 Security & Scoring Fixes**
+- **CRITICAL**: Fixed duplicate scoring bug allowing infinite points by re-solving same puzzle
+- **CloudScript Enhancement**: Only award points on first puzzle completion, return `alreadyCompleted` status for repeats
+- **Data Integrity**: Prevent scoring system exploitation while maintaining valid re-solve capability
+
+### **🎉 Universal 10K Strategy Bonus System**
+- **New CloudScript Function**: `AwardStrategyBonus` awards 10,000 points across ALL scoring systems
+- **Universal Application**: Bonus applies to Officer Track, ARC2 Eval, Main Game, and HARC leaderboards simultaneously
+- **Community Incentive**: Massive point boost encourages strategy sharing and community growth
+- **Duplicate Prevention**: Tracks strategy submissions per puzzle to prevent bonus farming
+- **Robust Integration**: Works seamlessly with existing arc-explainer submission flow
+
+### **🎯 Smart UX Enhancement - Completion Detection**
+- **Intelligent Loading**: Check completion status before loading puzzle for solving
+- **Time Saver**: Immediately show users they've already solved a puzzle with previous score/date
+- **Clear Choices**: Modal with "View AI Comparison", "Solve Again (No Points)", or "Back to List"
+- **No Wasted Time**: Prevents users from unknowingly re-solving completed puzzles
+- **Smooth Flow**: Maintains all functionality while adding smart detection layer
+
+### **🏆 Enhanced Success Modals**
+- **Strategy Bonus Integration**: Both AssessmentStepSuccessModal and SuccessModal show 10K bonus awards
+- **Visual Celebration**: Amber bonus notification with points formatting when strategy submitted
+- **Dual Submission Flow**: Submit to community database AND award CloudScript bonus simultaneously
+- **Error Resilience**: Strategy still submits to community even if bonus fails
+- **Progress Feedback**: Clear success states and bonus award confirmations
+
+### **📊 PlayFab Service Enhancements**
+- **Completion Check Service**: New `checkPuzzleCompletion()` function in playFabUserData
+- **Strategy Bonus Service**: New `awardStrategyBonus()` function for CloudScript integration
+- **Comprehensive Data**: Returns completion status, score data, dates, and strategy submission status
+- **Performance Optimized**: Efficient single API calls for multi-data queries
+
 ## 2025-09-14: 🏆 Enhanced SuccessModal with AI Comparison & Strategy Submission
 
 ### **Version 0.1.3**
