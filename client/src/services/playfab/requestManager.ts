@@ -87,12 +87,12 @@ export class PlayFabRequestManager {
     // Ensure authentication for operations that require it
     const requiresAuth = !['loginWithCustomId'].includes(operation);
     if (requiresAuth) {
-      await playFabAuthManager.ensureAuthenticated(this.makeRequest.bind(this));
+      await playFabAuthManager.ensureAuthenticated();
     }
 
     // Create request using appropriate strategy
     const sessionToken = playFabAuthManager.getSessionToken();
-    const apiRequest = this.strategyManager.createRequest(operation, requestData, sessionToken);
+    const apiRequest = this.strategyManager.createRequest(operation, requestData, sessionToken || undefined);
     const url = this.strategyManager.getApiUrl(apiRequest);
 
     // Apply retry configuration

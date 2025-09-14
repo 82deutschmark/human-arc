@@ -20,6 +20,7 @@ import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
+import type { EventType } from '@/types/playfab';
 import type { EmojiSet } from '@/constants/spaceEmojis';
 import { getRandomEmojiSet } from '@/constants/spaceEmojis';
 import { playFabValidation } from '@/services/playfab/validation';
@@ -59,7 +60,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
 
   // Session tracking state
   const [sessionId] = useState(() => crypto.randomUUID());
-  const [sessionStartTime] = useState(() => Date.now());
+  const sessionStartTime = useRef(Date.now());
   const [stepIndex, setStepIndex] = useState(0);
   const [attemptNumber, setAttemptNumber] = useState(1);
 
@@ -107,6 +108,8 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     setIsAutoAdvancing(false);
     setAutoAdvanceMessage(null);
     setShowSuccessModal(false);
+    sessionStartTime.current = Date.now(); // Reset timer for the new puzzle
+    console.log(`[TIMER] New puzzle ${puzzle.id}. Start time reset to: ${sessionStartTime.current}`);
 
     // Reset assessment mode guidance state
     setAssessmentTestsCompleted([]);
@@ -189,7 +192,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     return () => {
       const logSessionEnd = async () => {
         try {
-          const sessionDuration = Date.now() - sessionStartTime;
+          const sessionDuration = Date.now() - sessionStartTime.current;
           await playFabEvents.logPuzzleEvent(
             "SFMC",                    // eventName
             sessionId,                 // sessionId
@@ -254,7 +257,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   ) => {
     try {
       const currentTime = Date.now();
-      const deltaMs = currentTime - sessionStartTime;
+      const deltaMs = currentTime - sessionStartTime.current;
       
       await playFabEvents.logPuzzleEvent(
         "SFMC",                    // eventName
@@ -269,7 +272,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         "Officer Track Puzzle",    // game_title
         status,                    // status
         "officer-track",           // category
-        "player_action",           // event_type
+        eventType as EventType,    // event_type
         displayState.selectedValue,// selection_value
         new Date().toISOString()   // game_time
       );
@@ -371,11 +374,16 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     
     try {
       const validationStartTime = Date.now();
+      const timeElapsedInSeconds = Math.floor((validationStartTime - sessionStartTime.current) / 1000);
+
+      console.log(`[TIMER] Validation for ${puzzle.id}:\n  Start Time: ${sessionStartTime.current}\n  End Time:   ${validationStartTime}\n  Elapsed (s): ${timeElapsedInSeconds}`);
+
       const result = await playFabValidation.validateARCPuzzle({
         puzzleId: puzzle.id,
         solutions: solutions,
-        timeElapsed: Math.floor((Date.now() - sessionStartTime) / 1000), // Convert milliseconds to seconds
+        timeElapsed: timeElapsedInSeconds,
         attemptNumber: attemptNumber,
+        stepCount: stepIndex,
         sessionId: sessionId
       });
       

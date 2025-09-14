@@ -247,6 +247,7 @@ export class PlayFabValidation {
     timeElapsed: number;
     attemptNumber: number;
     sessionId: string;
+    stepCount: number;
   }): Promise<any> {
     // Authentication handled automatically by requestManager
     
