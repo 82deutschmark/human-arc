@@ -30,6 +30,7 @@ export function AssessmentStepSuccessModal({
   const [aiStats, setAiStats] = useState<AggregatedAIStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAllModels, setShowAllModels] = useState(false);
 
   useEffect(() => {
     const loadContent = async () => {
@@ -156,7 +157,6 @@ export function AssessmentStepSuccessModal({
         return '❌';
       };
 
-      const [showAllModels, setShowAllModels] = useState(false);
       const displayModels = showAllModels ? sortedModels : sortedModels.slice(0, 4);
 
       return (
