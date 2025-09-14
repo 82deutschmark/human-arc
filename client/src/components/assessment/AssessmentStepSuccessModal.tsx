@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Spinner } from '@nextui-org/react';
 import { assessmentContentService, type AssessmentContent } from '@/services/assessment/AssessmentContentService';
-import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance } from '@/services/core/arcExplainerClient';
+import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance, type ModelStats } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
 
 interface AssessmentStepSuccessModalProps {
@@ -134,7 +134,7 @@ export function AssessmentStepSuccessModal({
         return `You solved something that AI models get wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
     };
 
-    const renderModelBreakdown = (models: typeof aiStats?.modelBreakdown) => {
+    const renderModelBreakdown = (models: ModelStats[]) => {
       if (!models || models.length === 0) return null;
 
       // Sort models by accuracy (worst first for prominence)
