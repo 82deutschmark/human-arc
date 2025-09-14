@@ -27,10 +27,8 @@ export function Navbar({ title = 'SFMC ARC-GPT', badges, showBackButton = false,
               </Button>
             )}
             <div className="flex items-center gap-4">
-              <Link href="/">
-                <a className="text-3xl font-bold text-amber-400 hover:text-amber-300 transition-colors">
-                  {title}
-                </a>
+              <Link href="/" className="text-3xl font-bold text-amber-400 hover:text-amber-300 transition-colors">
+                {title}
               </Link>
               {badges && badges.length > 0 && (
                 <div className="flex items-center gap-2">
