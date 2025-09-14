@@ -25,6 +25,7 @@ import type { EmojiSet } from '@/constants/spaceEmojis';
 import { getRandomEmojiSet } from '@/constants/spaceEmojis';
 import { playFabValidation } from '@/services/playfab/validation';
 import { playFabEvents } from '@/services/playfab/events';
+import { idConverter } from '@/services/idConverter';
 import { SizeSlider } from '@/components/ui/SizeSlider';
 
 interface ResponsivePuzzleSolverProps {
@@ -93,9 +94,13 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   const trainingExamples = puzzle.train || [];
 
 
+  // Convert puzzle ID to PlayFab format - use the first variant (CloudScript will search all batches)
+  const playFabVariants = idConverter.getAllPlayFabVariants(puzzle.id);
+  const playFabPuzzleId = playFabVariants[0] || puzzle.id;
+
   // Reset component state when the puzzle prop changes
   useEffect(() => {
-    console.log(`[Effect] New puzzle received: ${puzzle.id}. Resetting component state.`);
+    console.log(`[Effect] New puzzle received: ${puzzle.id} -> PlayFab ID: ${playFabPuzzleId}. Resetting component state.`);
     setCurrentTestIndex(0);
     setValidationResult(null);
     setValidationError(null);
@@ -164,7 +169,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           "SFMC",                    // eventName
           sessionId,                 // sessionId
           attemptNumber,             // attemptNumber
-          puzzle.id,                 // game_id (puzzle ID)
+          playFabPuzzleId,           // game_id (PlayFab format puzzle ID)
           stepIndex,                 // stepIndex (starts at 0)
           0,                         // positionX
           0,                         // positionY
@@ -197,7 +202,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
             "SFMC",                    // eventName
             sessionId,                 // sessionId
             attemptNumber,             // attemptNumber
-            puzzle.id,                 // game_id (puzzle ID)
+            playFabPuzzleId,           // game_id (PlayFab format puzzle ID)
             stepIndex + 1,             // stepIndex (increment for final step)
             0,                         // positionX
             0,                         // positionY
@@ -221,7 +226,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
 
       logSessionEnd();
     };
-  }, [sessionId, attemptNumber, puzzle.id, stepIndex, totalTests, trainingExamples.length, sessionStartTime]);
+  }, [sessionId, puzzle.id]); // Only re-run when puzzle changes, not on every step
 
 
   // Get suggested sizes from training examples
@@ -263,7 +268,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         "SFMC",                    // eventName
         sessionId,                 // sessionId
         attemptNumber,             // attemptNumber
-        puzzle.id,                 // game_id (puzzle ID)
+        playFabPuzzleId,           // game_id (PlayFab format puzzle ID)
         stepIndex,                 // stepIndex (current step)
         positionX,                 // positionX
         positionY,                 // positionY
@@ -378,14 +383,20 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
 
       console.log(`[TIMER] Validation for ${puzzle.id}:\n  Start Time: ${sessionStartTime.current}\n  End Time:   ${validationStartTime}\n  Elapsed (s): ${timeElapsedInSeconds}`);
 
-      const result = await playFabValidation.validateARCPuzzle({
-        puzzleId: puzzle.id,
+      console.log(`🔄 Using PlayFab ID: ${playFabPuzzleId} (converted from ${puzzle.id})`);
+
+      const validationArgs = {
+        puzzleId: playFabPuzzleId,
         solutions: solutions,
         timeElapsed: timeElapsedInSeconds,
         attemptNumber: attemptNumber,
-        stepCount: stepIndex,
+        stepCount: Math.max(stepIndex, 1), // Ensure stepCount is at least 1
         sessionId: sessionId
-      });
+      };
+
+      console.log('🚀 DEBUG - Sending to CloudScript:', JSON.stringify(validationArgs, null, 2));
+
+      const result = await playFabValidation.validateARCPuzzle(validationArgs);
       
       // Increment attempt number for the next try
       setAttemptNumber(prev => prev + 1);
@@ -936,6 +947,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           puzzleId={puzzle.id}
           onClose={() => setShowSuccessModal(false)} // onClose just closes the modal
           onAssessmentAdvance={onAssessmentAdvance} // onAssessmentAdvance handles moving to the next puzzle
+          fallbackMode={validationResult?.fallback || false}
         />
       ) : (
         <SuccessModal
@@ -946,6 +958,13 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           title="Excellent Work!"
           message="Puzzle solved successfully! Click OK to continue to the next challenge..."
           showDesignerNotes={true}
+          fallbackMode={validationResult?.fallback || false}
+          scoreDetails={validationResult ? {
+            basePoints: validationResult.basePoints,
+            speedBonus: validationResult.speedBonus || validationResult.efficiencyBonus,
+            efficiencyBonus: validationResult.efficiencyBonus,
+            finalScore: validationResult.finalScore
+          } : undefined}
         />
       )}
     </div>

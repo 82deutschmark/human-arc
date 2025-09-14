@@ -98,6 +98,39 @@ export const SPACE_EMOJIS = {
 
  // Medieval 
     medieval: ['⬛','🗡️','🛡️','🐎','👑','🏰','🏹','⚔️','📜','🗝'],
+
+ // New sets September 14, 2025
+
+// Insects & Small Creatures
+insects_small: ['⬛', '🦗', '🐛', '🦋', '🐞', '🐝', '🐜', '🕷️', '🦟', '🦠'],
+
+// Tools & Crafts  
+tools_crafts: ['⬛', '🔨', '🪓', '🔩', '🧰', '📏', '📐', '✂️', '🖇️', '📎'],
+
+// Musical Instruments
+musical_instruments: ['⬛', '🎸', '🎹', '🥁', '🎺', '🎷', '🎻', '🪗', '🎤', '🎵'],
+
+// Vegetables
+vegetables: ['⬛', '🥕', '🥒', '🥬', '🥦', '🧄', '🧅', '🌶️', '🥔', '🍅'],
+
+// Beverages & Drinks
+beverages: ['⬛', '🍷', '🍾', '🥂', '🍻', '🍺', '☕', '💧', '🧃', '🥤'],
+
+// Sports & Activities
+sports_activities: ['⬛', '⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏓', '🏸', '🥊'],
+
+// Transportation Vehicles
+transportation: ['⬛', '🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒'],
+
+// Clothing & Accessories
+clothing_accessories: ['⬛', '👕', '👔', '👗', '👠', '👟', '🧢', '🎩', '👒', '🧤'],
+
+// Home & Furniture
+home_furniture: ['⬛', '🏠', '🪑', '🛏️', '🚿', '🛁', '🎪', '🖼️', '🕯️', '🔦'],
+
+// Geometric Shapes  - Very hard!
+geometric_shapes: ['⬛', '⭕', '🟡', '🟠', '🔴', '🟢', '🔵', '🟣', '⚫', '⚪'],
+
   };
 
 
@@ -238,6 +271,60 @@ export const EMOJI_SET_INFO = {
     description: 'Various medieval symbols',
     theme: 'Medieval'
   },
+
+// Add these to your EMOJI_SET_INFO object:
+
+insects_small: {
+  name: 'Insects & Small Creatures',
+  description: 'Bugs, insects, and tiny creatures',
+  theme: 'Natural World'
+},
+tools_crafts: {
+  name: 'Tools & Crafts',
+  description: 'Workshop tools and crafting equipment',
+  theme: 'Workshop'
+},
+musical_instruments: {
+  name: 'Musical Instruments',
+  description: 'Various musical instruments and notes',
+  theme: 'Entertainment'
+},
+vegetables: {
+  name: 'Vegetables',
+  description: 'Fresh vegetables and garden produce',
+  theme: 'Food & Nutrition'
+},
+beverages: {
+  name: 'Beverages & Drinks',
+  description: 'Various drinks and beverages',
+  theme: 'Food & Nutrition'
+},
+sports_activities: {
+  name: 'Sports & Activities',
+  description: 'Sports equipment and recreational activities',
+  theme: 'Entertainment'
+},
+transportation: {
+  name: 'Transportation Vehicles',
+  description: 'Cars, trucks, and emergency vehicles',
+  theme: 'Transportation'
+},
+clothing_accessories: {
+  name: 'Clothing & Accessories',
+  description: 'Garments, shoes, and fashion accessories',
+  theme: 'Fashion'
+},
+home_furniture: {
+  name: 'Home & Furniture',
+  description: 'Household items and furniture',
+  theme: 'Domestic Life'
+},
+geometric_shapes: {
+  name: 'Geometric Shapes',
+  description: 'Basic geometric forms and colors',
+  theme: 'Abstract Geometry'
+},
+
 } as const;
 
 export type EmojiSet = keyof typeof SPACE_EMOJIS;

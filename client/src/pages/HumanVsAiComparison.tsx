@@ -6,6 +6,8 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { Button } from '@/components/ui/button';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
 import { arcExplainerClient, type AggregatedAIStats } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
@@ -21,10 +23,12 @@ interface ComparisonData {
 }
 
 export function HumanVsAiComparison() {
+  const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [comparisonData, setComparisonData] = useState<ComparisonData[]>([]);
   const [playFabId, setPlayFabId] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   // Calculate summary statistics
   const humanCorrect = comparisonData.filter(d => d.human?.correct).length;
@@ -34,6 +38,14 @@ export function HumanVsAiComparison() {
   const aiAccuracy = totalAIAttempts > 0 ? (totalAICorrect / totalAIAttempts) * 100 : 0;
   const totalPuzzles = comparisonData.length;
   const puzzlesWithAIData = comparisonData.filter(d => d.ai?.hasData).length;
+
+  const handleBackToAssessment = () => {
+    setLocation('/assessment');
+  };
+
+  const handleBackToPuzzles = () => {
+    setLocation('/officer-track');
+  };
 
   useEffect(() => {
     const fetchComparisonData = async () => {
@@ -50,6 +62,7 @@ export function HumanVsAiComparison() {
         }
         await playFabAuthManager.ensureAuthenticated();
         setPlayFabId(playFabAuthManager.getPlayFabId());
+        setDisplayName(playFabAuthManager.getDisplayName());
 
         // 2. Fetch human performance data from PlayFab
         let allHumanData = await playFabUserData.getHumanPerformanceData();
@@ -174,8 +187,94 @@ export function HumanVsAiComparison() {
   return (
     <div className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-amber-400 mb-2 text-center">Human vs. AI Performance</h1>
-        {playFabId && <p className="text-center text-slate-400 text-sm mb-4">PlayFab ID: {playFabId}</p>}
+        <h1 className="text-3xl font-bold text-amber-400 mb-6 text-center">Human vs. AI Performance</h1>
+        
+        {/* Navigation Buttons */}
+        <div className="flex justify-center gap-4 mb-6">
+          <Button
+            onClick={handleBackToAssessment}
+            variant="outline"
+            className="border-green-400 text-green-400 hover:bg-green-400 hover:text-slate-900"
+          >
+            ← Back to Assessment
+          </Button>
+          <Button
+            onClick={handleBackToPuzzles}
+            variant="outline"
+            className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-900"
+          >
+            ← Back to Puzzles
+          </Button>
+        </div>
+
+        {/* Player Identity Section */}
+        {playFabId && (
+          <div className="mb-8">
+            <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+              <h2 className="text-lg font-semibold text-amber-400 mb-3">Player Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-slate-300 text-sm mb-1">Display Name:</p>
+                  <p className="text-xl font-bold text-white">
+                    {displayName || 'Loading...'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-300 text-sm mb-1">PlayFab ID:</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-mono text-cyan-300 select-all">
+                      {playFabId}
+                    </p>
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(playFabId)}
+                      className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 bg-slate-700 rounded transition-colors"
+                      title="Copy PlayFab ID"
+                    >
+                      📋 Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dev Tool: Get New Player ID */}
+              <div className="mt-4 pt-3 border-t border-slate-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-slate-400 text-sm">Debug Tool:</p>
+                    <p className="text-xs text-slate-500">Generate new anonymous player account</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('⚠️ This will create a new player account and reset ALL progress.\n\nYour current progress will be lost. Continue?')) {
+                        // Clear all PlayFab storage
+                        localStorage.removeItem('playfab_device_id');
+                        sessionStorage.removeItem('playfab_device_id');
+                        localStorage.removeItem('debug_playfab_mapping');
+
+                        // Clear any other PlayFab-related localStorage
+                        const keysToRemove = [];
+                        for (let i = 0; i < localStorage.length; i++) {
+                          const key = localStorage.key(i);
+                          if (key && key.includes('playfab')) {
+                            keysToRemove.push(key);
+                          }
+                        }
+                        keysToRemove.forEach(key => localStorage.removeItem(key));
+
+                        // Force page refresh to create new player
+                        window.location.reload();
+                      }
+                    }}
+                    className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded transition-colors font-medium"
+                    title="Clear all data and generate new PlayFab ID"
+                  >
+                    🔄 Get New Player ID
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         {totalPuzzles > 0 && (
           <div className="mb-8">

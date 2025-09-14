@@ -1,6 +1,6 @@
 /**
  * PlayFab User Data Service - Pure HTTP Implementation
- * Manages player profiles, rank progression, and progress tracking
+ * Manages player profiles, progress tracking
  * Direct REST API calls - no SDK dependencies
  */
 

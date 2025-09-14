@@ -239,7 +239,8 @@ export class PlayFabValidation {
   }
 
   /**
-   * Validate ARC puzzle solution via CloudScript (Officer Track)
+   * Validate ARC puzzle solution via CloudScript (Officer Track) with Automatic Fallback
+   * If CloudScript fails, automatically falls back to client-side validation with full PlayFab integration
    */
   public async validateARCPuzzle(args: {
     puzzleId: string;
@@ -249,36 +250,249 @@ export class PlayFabValidation {
     sessionId: string;
     stepCount: number;
   }): Promise<any> {
-    // Authentication handled automatically by requestManager
-    
-    const request: ExecuteCloudScriptRequest = {
-      FunctionName: PLAYFAB_CONSTANTS.CLOUDSCRIPT_FUNCTIONS.VALIDATE_ARC_PUZZLE,
-      FunctionParameter: args, // Pass the entire object
-      GeneratePlayStreamEvent: true
-    };
+    const startTime = Date.now();
 
     console.log(`[PlayFabValidation] Validating ARC puzzle: ${args.puzzleId}`);
 
     try {
+      // First, try CloudScript validation
+      const request: ExecuteCloudScriptRequest = {
+        FunctionName: PLAYFAB_CONSTANTS.CLOUDSCRIPT_FUNCTIONS.VALIDATE_ARC_PUZZLE,
+        FunctionParameter: args,
+        GeneratePlayStreamEvent: true
+      };
+
       const result = await playFabRequestManager.makeRequest<ExecuteCloudScriptRequest, ExecuteCloudScriptResponse>(
         'executeCloudScript',
         request
       );
 
       if (result.Error) {
-        const errorMsg = `CloudScript error: ${result.Error.Error} - ${result.Error.Message}`;
-        console.error('[PlayFabValidation] ARC CloudScript Error:', result.Error);
-        throw new Error(errorMsg);
+        throw new Error(`CloudScript error: ${result.Error.Error} - ${result.Error.Message}`);
       }
 
       const validationResult = result.FunctionResult;
-      
-      console.log(`[PlayFabValidation] ARC puzzle validation result: ${validationResult?.correct ? 'Correct' : 'Incorrect'}`);
 
+      // Check for the "DEBUG: undefined" error that indicates CloudScript failure
+      if (!validationResult || !validationResult.success || (validationResult.error && validationResult.error.includes('undefined'))) {
+        throw new Error('CloudScript validation failed with undefined error');
+      }
+
+      console.log(`✅ [PlayFabValidation] CloudScript validation successful: ${validationResult.correct ? 'Correct' : 'Incorrect'}`);
       return validationResult;
+
     } catch (error) {
-      console.error(`[PlayFabValidation] ARC puzzle validation failed for ${args.puzzleId}:`, error);
-      throw error;
+      console.warn(`⚠️ [PlayFabValidation] CloudScript failed for ${args.puzzleId}, using fallback:`, error);
+
+      // Fallback to enhanced client-side validation with full PlayFab integration
+      try {
+        const fallbackResult = await this.enhancedARCFallbackValidation(args);
+        console.log(`🔄 [PlayFabValidation] Fallback validation result: ${fallbackResult.correct ? 'Correct' : 'Incorrect'}`);
+        return fallbackResult;
+      } catch (fallbackError) {
+        console.error(`❌ [PlayFabValidation] Both CloudScript and fallback failed:`, fallbackError);
+        throw new Error(`Validation completely failed: ${fallbackError}`);
+      }
+    }
+  }
+
+  /**
+   * Enhanced ARC Puzzle Fallback Validation with Full PlayFab Integration
+   * Provides all the same functionality as CloudScript validation but client-side
+   */
+  public async enhancedARCFallbackValidation(args: {
+    puzzleId: string;
+    solutions: number[][][];
+    timeElapsed: number;
+    attemptNumber: number;
+    sessionId: string;
+    stepCount: number;
+  }): Promise<any> {
+    console.warn('🚨 Using enhanced client-side fallback validation with PlayFab integration');
+
+    // Get puzzle data from PlayFab (same as CloudScript would do)
+    const puzzleData = await this.getPuzzleFromPlayFab(args.puzzleId);
+    if (!puzzleData) {
+      throw new Error(`Puzzle ${args.puzzleId} not found in PlayFab Title Data`);
+    }
+
+    // Validate solutions (same logic as CloudScript)
+    const validationResult = this.validateSolutionsClientSide(puzzleData, args.solutions);
+
+    if (!validationResult.allCorrect) {
+      // Return failure result (no scoring for incorrect)
+      return {
+        success: true,
+        correct: false,
+        failures: validationResult.failures,
+        message: 'Solution incorrect. Please try again.',
+        fallback: true
+      };
+    }
+
+    // Calculate score using same formulas as CloudScript
+    const scoreData = this.calculateOfficerTrackScore({
+      timeElapsed: args.timeElapsed,
+      stepCount: args.stepCount,
+      attemptNumber: args.attemptNumber
+    });
+
+    // Update PlayFab data directly (same as CloudScript would do)
+    await this.updatePlayFabDataDirectly(args.puzzleId, scoreData, args);
+
+    return {
+      success: true,
+      correct: true,
+      ...scoreData,
+      message: 'Puzzle solved! (Client-side validation)',
+      fallback: true
+    };
+  }
+
+  /**
+   * Get puzzle data from PlayFab Title Data (client-side version of CloudScript logic)
+   */
+  private async getPuzzleFromPlayFab(puzzleId: string): Promise<any> {
+    const batchKeys = [
+      "officer-tasks-training-batch1.json", "officer-tasks-training-batch2.json",
+      "officer-tasks-training-batch3.json", "officer-tasks-training-batch4.json",
+      "officer-tasks-training2-batch1.json", "officer-tasks-training2-batch2.json",
+      "officer-tasks-training2-batch3.json", "officer-tasks-training2-batch4.json",
+      "officer-tasks-training2-batch5.json", "officer-tasks-training2-batch6.json",
+      "officer-tasks-training2-batch7.json", "officer-tasks-training2-batch8.json",
+      "officer-tasks-training2-batch9.json", "officer-tasks-training2-batch10.json",
+      "officer-tasks-evaluation-batch1.json", "officer-tasks-evaluation-batch2.json",
+      "officer-tasks-evaluation-batch3.json", "officer-tasks-evaluation-batch4.json",
+      "officer-tasks-evaluation2-batch1.json", "officer-tasks-evaluation2-batch2.json"
+    ];
+
+    for (const batchKey of batchKeys) {
+      try {
+        const response = await playFabRequestManager.makeRequest('getTitleData', {
+          Keys: [batchKey]
+        });
+
+        if (response.Data && response.Data[batchKey]) {
+          const puzzles = JSON.parse(response.Data[batchKey]);
+          const cleanPuzzleId = puzzleId.replace(/^ARC-(TR|T2|EV|E2)-/, '');
+
+          for (const puzzle of puzzles) {
+            const cleanStoredId = puzzle.id.replace(/^ARC-(TR|T2|EV|E2)-/, '');
+            if (puzzle.id === puzzleId || cleanStoredId === cleanPuzzleId) {
+              console.log(`🔍 Found puzzle ${puzzleId} in batch ${batchKey}`);
+              return puzzle;
+            }
+          }
+        }
+      } catch (error) {
+        console.warn(`Failed to check batch ${batchKey}:`, error);
+        continue;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Client-side solution validation (same logic as CloudScript ValidationService.compareSolutions)
+   */
+  private validateSolutionsClientSide(puzzle: any, solutions: number[][][]): { allCorrect: boolean; failures: any[] } {
+    const failures: any[] = [];
+    const testCases = Array.isArray(puzzle.test) ? puzzle.test : [puzzle.test];
+
+    if (solutions.length !== testCases.length) {
+      console.error(`Expected ${testCases.length} solutions, got ${solutions.length}`);
+      return { allCorrect: false, failures: [{ error: 'Solution count mismatch' }] };
+    }
+
+    for (let i = 0; i < testCases.length; i++) {
+      if (!this.arraysEqual(solutions[i], testCases[i].output)) {
+        failures.push({ index: i, expected: testCases[i].output, got: solutions[i] });
+      }
+    }
+
+    return { allCorrect: failures.length === 0, failures };
+  }
+
+  /**
+   * Calculate Officer Track score (same formulas as CloudScript)
+   */
+  private calculateOfficerTrackScore(args: { timeElapsed: number; stepCount: number; attemptNumber?: number }) {
+    const BASE_POINTS = 10000;
+    const SPEED_BONUS = { PER_MINUTE_POINTS: 100, UNDER_MINUTES: 20 };
+    const EFFICIENCY_BONUS = { PER_ACTION_POINTS: 50, UNDER_ACTIONS: 100 };
+
+    const timeInMinutes = Math.ceil((args.timeElapsed || 0) / 60);
+    const speedBonus = timeInMinutes < SPEED_BONUS.UNDER_MINUTES ?
+      (SPEED_BONUS.UNDER_MINUTES - timeInMinutes) * SPEED_BONUS.PER_MINUTE_POINTS : 0;
+
+    const efficiencyBonus = args.stepCount < EFFICIENCY_BONUS.UNDER_ACTIONS ?
+      (EFFICIENCY_BONUS.UNDER_ACTIONS - args.stepCount) * EFFICIENCY_BONUS.PER_ACTION_POINTS : 0;
+
+    const finalScore = BASE_POINTS + speedBonus + efficiencyBonus;
+
+    return {
+      basePoints: BASE_POINTS,
+      speedBonus,
+      efficiencyBonus,
+      finalScore,
+      timeElapsed: args.timeElapsed,
+      stepCount: args.stepCount,
+      attemptNumber: args.attemptNumber
+    };
+  }
+
+  /**
+   * Update PlayFab data directly (same updates as CloudScript would do)
+   */
+  private async updatePlayFabDataDirectly(puzzleId: string, scoreData: any, args: any): Promise<void> {
+    try {
+      // Get current player data
+      const userData = await playFabRequestManager.makeRequest('getUserData', {
+        Keys: ['completedARCPuzzles', 'officerTrackPoints', 'humanPerformanceData']
+      });
+
+      const currentPoints = parseInt(userData.Data?.officerTrackPoints?.Value || '0');
+      const completedPuzzles = JSON.parse(userData.Data?.completedARCPuzzles?.Value || '[]');
+      const humanPerformanceData = JSON.parse(userData.Data?.humanPerformanceData?.Value || '[]');
+
+      // Update completed puzzles
+      if (!completedPuzzles.includes(puzzleId)) {
+        completedPuzzles.push(puzzleId);
+      }
+
+      // Add performance record
+      humanPerformanceData.push({
+        puzzleId,
+        correct: true,
+        timestamp: new Date().toISOString(),
+        ...scoreData
+      });
+
+      const newTotalPoints = currentPoints + scoreData.finalScore;
+
+      // Update player statistics
+      await playFabRequestManager.makeRequest('updatePlayerStatistics', {
+        Statistics: [{
+          StatisticName: 'OfficerTrackPoints',
+          Value: newTotalPoints
+        }]
+      });
+
+      // Update user data
+      await playFabRequestManager.makeRequest('updateUserData', {
+        Data: {
+          completedARCPuzzles: JSON.stringify(completedPuzzles),
+          officerTrackPoints: newTotalPoints.toString(),
+          humanPerformanceData: JSON.stringify(humanPerformanceData)
+        }
+      });
+
+      console.log(`✅ [PlayFabValidation] Fallback: Updated PlayFab data for ${puzzleId}, new total: ${newTotalPoints}`);
+
+    } catch (error) {
+      console.error('Failed to update PlayFab data in fallback mode:', error);
+      // Don't throw - we still want to return success to user even if data update fails
     }
   }
 
