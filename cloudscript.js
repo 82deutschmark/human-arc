@@ -339,7 +339,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         //  - CloudScript focuses on validation only
 
         if (!validationResult.allCorrect) {
-            return { success: true, correct: true, failures: validationResult.failures };
+            return { success: true, correct: false, failures: validationResult.failures };
         }
 
         // --- On Success: Calculate Score & Update Player Data ---

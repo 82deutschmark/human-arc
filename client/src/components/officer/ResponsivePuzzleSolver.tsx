@@ -383,7 +383,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
         solutions: solutions,
         timeElapsed: timeElapsedInSeconds,
         attemptNumber: attemptNumber,
-        stepCount: stepIndex,
+        stepCount: Math.max(stepIndex, 1), // Ensure stepCount is at least 1
         sessionId: sessionId
       });
       
