@@ -16,6 +16,7 @@ import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
+import { idConverter } from '@/services/idConverter';
 
 // Curated assessment puzzle IDs HARDCODED BY THE DESIGNER!
 
@@ -96,13 +97,17 @@ export function AssessmentInterface() {
   // Automatically navigate when assessment is complete
   useEffect(() => {
     if (isComplete) {
-      console.log('Navigating to comparison page...');
+      console.log('🚀 [Assessment] isComplete is true! Starting 3-second countdown to redirect...');
       // Navigate after a short delay to allow user to see the completion message
       const timer = setTimeout(() => {
+        console.log('🚀 [Assessment] Redirecting to /assessment/comparison now!');
         navigate('/assessment/comparison');
       }, 3000); // 3-second delay
 
-      return () => clearTimeout(timer);
+      return () => {
+        console.log('🚀 [Assessment] Cleanup: Clearing redirect timer');
+        clearTimeout(timer);
+      };
     }
   }, [isComplete, navigate]);
 
@@ -128,16 +133,26 @@ export function AssessmentInterface() {
       }
 
       if (humanPerformanceData && humanPerformanceData.length > 0) {
-        // The data is already parsed as an array of objects
-        const completed = new Set<string>(humanPerformanceData.map(r => r.puzzleId));
-        setCompletedPuzzles(completed);
-        console.log('[Assessment] Found completed puzzles:', completed);
+        // Convert PlayFab puzzle IDs to ARC format for comparison with ASSESSMENT_PUZZLE_IDS
+        const completedArcIds = new Set<string>();
+
+        humanPerformanceData.forEach(record => {
+          const arcId = idConverter.normalizeToArcId(record.puzzleId);
+          if (arcId) {
+            completedArcIds.add(arcId);
+          }
+          console.log(`[Assessment] Record: ${record.puzzleId} -> ${arcId} (assessment: ${ASSESSMENT_PUZZLE_IDS.includes(arcId || '')})`);
+        });
+
+        setCompletedPuzzles(completedArcIds);
+        console.log('[Assessment] Found completed puzzles (ARC format):', completedArcIds);
+        console.log('[Assessment] ASSESSMENT_PUZZLE_IDS needed:', ASSESSMENT_PUZZLE_IDS);
 
         // Log recovery success if we found data after recovery attempt
         const currentPlayFabId = playFabAuthManager.getPlayFabId();
         console.log('[Assessment] Current PlayFab ID:', currentPlayFabId);
 
-        return completed;
+        return completedArcIds;
       }
     } catch (error) {
       console.error('[Assessment] Failed to check completed puzzles:', error);
@@ -149,12 +164,25 @@ export function AssessmentInterface() {
 
   // Check for assessment completion after solving a puzzle
   const checkForCompletion = async () => {
+    console.log('🔍 [Assessment] Checking for completion...');
     const completed = await checkCompletedPuzzles();
-    
+
+    console.log('🔍 [Assessment] Checking completion status:');
+    ASSESSMENT_PUZZLE_IDS.forEach(id => {
+      const isCompleted = completed.has(id);
+      console.log(`    ${id}: ${isCompleted ? '✅ COMPLETE' : '❌ INCOMPLETE'}`);
+    });
+
     const allComplete = ASSESSMENT_PUZZLE_IDS.every(id => completed.has(id));
+    console.log(`🔍 [Assessment] All complete: ${allComplete}, isComplete: ${isComplete}`);
+
     if (allComplete && !isComplete) {
+      console.log('🎉 Assessment completed! Setting isComplete to true and will redirect in 3 seconds...');
       setIsComplete(true);
-      console.log('🎉 Assessment completed!');
+    } else if (allComplete && isComplete) {
+      console.log('ℹ️ [Assessment] Already marked as complete');
+    } else {
+      console.log(`ℹ️ [Assessment] Not complete yet: ${completed.size}/${ASSESSMENT_PUZZLE_IDS.length} puzzles done`);
     }
   };
 
