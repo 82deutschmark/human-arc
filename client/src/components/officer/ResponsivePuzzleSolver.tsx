@@ -94,10 +94,9 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   const trainingExamples = puzzle.train || [];
 
 
-  // Convert puzzle ID to PlayFab format for consistency
-  const playFabPuzzleId = idConverter.normalizeToPlayFabId(puzzle.id, 'evaluation') ||
-                         idConverter.normalizeToPlayFabId(puzzle.id, 'training') ||
-                         puzzle.id; // fallback to original if conversion fails
+  // Convert puzzle ID to PlayFab format - use the first variant (CloudScript will search all batches)
+  const playFabVariants = idConverter.getAllPlayFabVariants(puzzle.id);
+  const playFabPuzzleId = playFabVariants[0] || puzzle.id;
 
   // Reset component state when the puzzle prop changes
   useEffect(() => {
@@ -948,6 +947,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           puzzleId={puzzle.id}
           onClose={() => setShowSuccessModal(false)} // onClose just closes the modal
           onAssessmentAdvance={onAssessmentAdvance} // onAssessmentAdvance handles moving to the next puzzle
+          fallbackMode={validationResult?.fallback || false}
         />
       ) : (
         <SuccessModal
@@ -958,6 +958,13 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           title="Excellent Work!"
           message="Puzzle solved successfully! Click OK to continue to the next challenge..."
           showDesignerNotes={true}
+          fallbackMode={validationResult?.fallback || false}
+          scoreDetails={validationResult ? {
+            basePoints: validationResult.basePoints,
+            speedBonus: validationResult.speedBonus || validationResult.efficiencyBonus,
+            efficiencyBonus: validationResult.efficiencyBonus,
+            finalScore: validationResult.finalScore
+          } : undefined}
         />
       )}
     </div>

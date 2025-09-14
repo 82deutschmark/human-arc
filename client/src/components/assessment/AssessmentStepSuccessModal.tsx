@@ -15,6 +15,7 @@ interface AssessmentStepSuccessModalProps {
   onClose: () => void;
   puzzleId: string;
   onAssessmentAdvance?: () => void;
+  fallbackMode?: boolean;
 }
 
 export function AssessmentStepSuccessModal({
@@ -22,6 +23,7 @@ export function AssessmentStepSuccessModal({
   onClose,
   puzzleId,
   onAssessmentAdvance,
+  fallbackMode = false,
 }: AssessmentStepSuccessModalProps) {
   const [content, setContent] = useState<AssessmentContent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -109,6 +111,15 @@ export function AssessmentStepSuccessModal({
           <div className="p-4 mb-4 text-center bg-slate-800 rounded-lg">
             <p className="font-semibold text-white">{getPerformanceMessage()}</p>
           </div>
+
+          {/* Fallback mode indicator */}
+          {fallbackMode && (
+            <div className="mb-4 px-3 py-2 bg-blue-900/50 border border-blue-500 rounded-lg">
+              <p className="text-blue-300 text-sm text-center">
+                ⚡ Validated using backup system - all progress saved!
+              </p>
+            </div>
+          )}
           
           <div className="mb-4">
             <h4 className="font-bold text-md text-amber-500">Designer's Explanation</h4>

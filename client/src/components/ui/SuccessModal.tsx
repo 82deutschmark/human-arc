@@ -20,6 +20,7 @@ interface SuccessModalProps {
   message?: string;
   autoCloseDelay?: number;
   showDesignerNotes?: boolean;
+  fallbackMode?: boolean;
   scoreDetails?: {
     basePoints?: number;
     speedBonus?: number;
@@ -56,6 +57,7 @@ export function SuccessModal({
   message = "Great work! Moving to the next challenge...",
   autoCloseDelay = 0, // Default to no auto-close,
   showDesignerNotes = true,
+  fallbackMode = false,
   scoreDetails
 }: SuccessModalProps) {
   const [celebrationEmojis, setCelebrationEmojis] = useState<string[]>([]);
@@ -120,25 +122,12 @@ export function SuccessModal({
           {message}
         </p>
 
-        {/* Score Breakdown */}
-        {scoreDetails && (
-          <div className="my-6 text-left bg-slate-700/50 p-4 rounded-lg border border-slate-600">
-            <h3 className="text-xl font-bold text-amber-300 mb-3 text-center">Score Breakdown</h3>
-            <div className="grid grid-cols-2 gap-2 text-slate-300">
-              <span className="font-semibold">Base Points:</span>
-              <span className="text-right font-mono">{scoreDetails.basePoints?.toLocaleString() ?? 'N/A'}</span>
-              
-              <span className="font-semibold">Speed Bonus:</span>
-              <span className="text-right font-mono text-green-400">+{scoreDetails.speedBonus?.toLocaleString() ?? 'N/A'}</span>
-              
-              <span className="font-semibold">Efficiency Bonus:</span>
-              <span className="text-right font-mono text-blue-400">+{scoreDetails.efficiencyBonus?.toLocaleString() ?? 'N/A'}</span>
-              
-              <div className="col-span-2 border-t border-slate-600 my-2"></div>
-              
-              <span className="font-bold text-amber-400 text-lg">Final Score:</span>
-              <span className="text-right font-mono font-bold text-amber-400 text-lg">{scoreDetails.finalScore?.toLocaleString() ?? 'N/A'}</span>
-            </div>
+        {/* Fallback mode indicator */}
+        {fallbackMode && (
+          <div className="mb-4 px-3 py-2 bg-blue-900/50 border border-blue-500 rounded-lg">
+            <p className="text-blue-300 text-sm">
+              ⚡ Validated using backup system - all progress saved!
+            </p>
           </div>
         )}
 
@@ -149,15 +138,15 @@ export function SuccessModal({
             <div className="grid grid-cols-2 gap-2 text-slate-300">
               <span className="font-semibold">Base Points:</span>
               <span className="text-right font-mono">{scoreDetails.basePoints?.toLocaleString() ?? 'N/A'}</span>
-              
+
               <span className="font-semibold">Speed Bonus:</span>
               <span className="text-right font-mono text-green-400">+{scoreDetails.speedBonus?.toLocaleString() ?? 'N/A'}</span>
-              
+
               <span className="font-semibold">Efficiency Bonus:</span>
               <span className="text-right font-mono text-blue-400">+{scoreDetails.efficiencyBonus?.toLocaleString() ?? 'N/A'}</span>
-              
+
               <div className="col-span-2 border-t border-slate-600 my-2"></div>
-              
+
               <span className="font-bold text-amber-400 text-lg">Final Score:</span>
               <span className="text-right font-mono font-bold text-amber-400 text-lg">{scoreDetails.finalScore?.toLocaleString() ?? 'N/A'}</span>
             </div>
