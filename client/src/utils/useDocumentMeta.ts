@@ -16,16 +16,36 @@ interface DocumentMetaConfig {
 }
 
 const ROUTE_CONFIGS: Record<string, DocumentMetaConfig> = {
+  '/': {
+    title: 'HARC Platform - Human vs AI Reasoning Research',
+    favicon: null,
+    description: 'Compare your cognitive abilities against state-of-the-art AI on abstract reasoning tasks'
+  },
   '/assessment': {
     title: 'ARC Assessment - Human Cognitive Benchmarking',
     favicon: '/assessment-favicon.svg',
     description: 'Test your pattern recognition abilities with curated ARC puzzles'
   },
-  // Default fallback for all other routes
-  default: {
+  '/puzzles': {
+    title: 'HARC Puzzle Library - AI Research Challenges',
+    favicon: null,
+    description: 'Practice on puzzles that challenge the most advanced AI systems'
+  },
+  '/dashboard': {
+    title: 'HARC Dashboard - Your Cognitive Performance',
+    favicon: null,
+    description: 'View your performance analysis and comparison with AI models'
+  },
+  '/space-force': {
     title: 'Mission Control 2050 - Space Force Operations Center',
-    favicon: null, // Will use default (none currently set)
+    favicon: null,
     description: 'Join the Space Force Operations Center where cadets solve ARC-style puzzles to advance through military ranks'
+  },
+  // Default fallback for HARC routes
+  default: {
+    title: 'HARC Platform - Human vs AI Reasoning Research',
+    favicon: null,
+    description: 'Research platform comparing human and artificial intelligence on abstract reasoning tasks'
   }
 };
 
@@ -33,10 +53,20 @@ export function useDocumentMeta() {
   const [location] = useLocation();
 
   useEffect(() => {
-    // Match paths that start with /assessment (including subpaths)
-    const config = location.startsWith('/assessment') 
-      ? ROUTE_CONFIGS['/assessment'] 
-      : ROUTE_CONFIGS[location] || ROUTE_CONFIGS.default;
+    // Match specific route patterns (including subpaths)
+    let config: DocumentMetaConfig;
+    
+    if (location.startsWith('/assessment')) {
+      config = ROUTE_CONFIGS['/assessment'];
+    } else if (location.startsWith('/puzzles')) {
+      config = ROUTE_CONFIGS['/puzzles'];
+    } else if (location.startsWith('/dashboard')) {
+      config = ROUTE_CONFIGS['/dashboard'];
+    } else if (location.startsWith('/space-force')) {
+      config = ROUTE_CONFIGS['/space-force'];
+    } else {
+      config = ROUTE_CONFIGS[location] || ROUTE_CONFIGS.default;
+    }
 
     // Update title
     document.title = config.title;

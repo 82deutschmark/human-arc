@@ -1,21 +1,19 @@
 /*
  * App.tsx
- * Author: Cascade
+ * Author: Gemini 2.5 Pro
+ * Updated: 2025-09-14
  * 
- * PURPOSE:
- * Main application component that handles routing, splash screen, and onboarding flow.
- * Updated to use PlayFab-only data flow, removing React Query dependency.
+ * PURPOSE: Main application component that handles routing and UI providers.
  * 
  * HOW IT WORKS:
- * - Shows splash screen on initial load (1 second)
- * - Displays onboarding modal after splash completion
- * - Routes to main game interface (MissionControl) or FIQ test page
- * - All data management now handled directly by PlayFab service
+ * - Provides routing configuration for HARC Platform and Space Force modes
+ * - Manages onboarding modal state
+ * - Applies dynamic document metadata based on current route
  * 
  * HOW THE PROJECT USES IT:
  * - Entry point for the React application
- * - Manages app-level state and routing
- * - No longer depends on React Query for server communication
+ * - Central routing configuration for all application pages
+ * - UI provider setup (tooltips, toasts)
  */
 import { useState } from 'react';
 import { Switch, Route } from "wouter";
@@ -70,33 +68,17 @@ function Router() {
 }
 
 function App() {
-  // State to control which screen is shown
-  // const [showSplash, setShowSplash] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  // When splash screen completes, show onboarding modal
-  // const handleSplashComplete = () => {
-  //   setShowSplash(false);
-  //   setShowOnboarding(true);
-  // };
-
-  // When onboarding completes, continue to main app
   const handleOnboardingComplete = () => {
     setShowOnboarding(false);
   };
 
   return (
     <TooltipProvider>
-      {/* Splash screen temporarily disabled */}
-      {/* {showSplash ? (
-        <LoadingSplash onComplete={handleSplashComplete} duration={1000} />
-      ) : ( */}
-        <>
-          <Toaster />
-          <Router />
-          <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
-        </>
-      {/* )} */}
+      <Toaster />
+      <Router />
+      <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
     </TooltipProvider>
   );
 }

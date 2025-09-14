@@ -23,16 +23,7 @@ class AssessmentContentService {
   public async getAssessmentContent(puzzleId: string): Promise<AssessmentContent | null> {
     console.log(`[AssessmentContentService] Fetching content for puzzle: ${puzzleId}`);
 
-    // 1. Get the static designer note.
-    const note = getAssessmentNote(puzzleId);
-    if (!note) {
-      console.error(`[AssessmentContentService] No designer note found for puzzle: ${puzzleId}`);
-      // If there's no designer note, we can't proceed as it's essential for the modal.
-      return null;
-    }
-
-    // 2. Get the dynamic puzzle data, including AI performance stats.
-    // We set `preferArcExplainer` to true as per the assessment flow requirements.
+    // 1. Get the dynamic puzzle data first (this is essential)
     const puzzle = await puzzleRepository.findById(puzzleId, true, true);
     if (!puzzle) {
       console.error(`[AssessmentContentService] Failed to fetch puzzle data for: ${puzzleId}`);
@@ -40,9 +31,27 @@ class AssessmentContentService {
       return null;
     }
 
-    // 3. Combine the static and dynamic data into a single object.
+    // 2. Get the static designer note (with fallback)
+    const note = getAssessmentNote(puzzleId);
+    
+    // 3. Create fallback content if no designer note exists
+    const fallbackNote = {
+      puzzleId: puzzleId,
+      title: 'Puzzle Solved!',
+      explanation: 'You successfully identified the pattern and applied the correct transformation to solve this ARC puzzle.',
+      aiDifficultyContext: 'This puzzle challenges pattern recognition and logical reasoning abilities that are fundamental to human intelligence.'
+    };
+
+    // 4. Use designer note if available, otherwise use fallback
+    const finalNote = note || fallbackNote;
+    
+    if (!note) {
+      console.warn(`[AssessmentContentService] No designer note found for puzzle: ${puzzleId}, using fallback content`);
+    }
+
+    // 5. Combine the static and dynamic data into a single object.
     const combinedContent: AssessmentContent = {
-      ...note,
+      ...finalNote,
       puzzle,
     };
 
