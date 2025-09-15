@@ -9,6 +9,12 @@
   - Located in: `client/src/services/core/arcExplainerClient.ts:671`
   - **Testing**: Submit solutions with empty strategy text, confirm no more 400 errors
 
+- **Build Failures**: Fixed incorrect imports in LLM services causing "Could not resolve './core'" errors
+  - Fixed `llmPlayerManager.ts` and `llmDataSyncService.ts` importing from non-existent './core'
+  - Updated all `playFabCore.makeHttpRequest` calls to use `playFabRequestManager.makeRequest`
+  - Build now succeeds without import resolution errors
+  - Located in: `client/src/services/playfab/llmPlayerManager.ts` and `llmDataSyncService.ts`
+
 ---
 
 ## 2025-09-14: 🚨 CRITICAL SECURITY & UX FIXES + 10K Strategy Bonus System
