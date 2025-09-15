@@ -1,0 +1,40 @@
+{
+  "_comment": "Author: Cascade using Claude 3.5 Sonnet | Date: 2025-09-14T22:52:58-04:00 | Purpose: PWA manifest for comprehensive favicon and app installation support across all platforms. Defines app metadata, icons, and display preferences for when users add the site to their home screen.",
+  "name": "Human-ARC Assessment Platform",
+  "short_name": "Human-ARC",
+  "description": "Assess human and AI performance on Abstract Reasoning Corpus puzzles. Compare your problem-solving skills against state-of-the-art LLMs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a202c",
+  "theme_color": "#667eea",
+  "orientation": "any",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "games", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assessment-favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
