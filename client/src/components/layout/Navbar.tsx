@@ -63,7 +63,7 @@ export function Navbar({
               <div className="hidden md:flex items-center space-x-6">
                 <NavLink href="/puzzles">Puzzles</NavLink>
                 <NavLink href="/comparison">Performance</NavLink>
-                <NavLink href="/leaderboard">Leaderboard</NavLink>
+                <NavLink href="/leaderboards">Leaderboard</NavLink>
                 <NavLink href="/about">About</NavLink>
                 
                 {isLoading ? (
