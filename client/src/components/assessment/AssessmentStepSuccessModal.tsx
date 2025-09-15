@@ -146,9 +146,18 @@ export function AssessmentStepSuccessModal({
     }
 
     handleClose();
-    if (onAssessmentAdvance) {
-      onAssessmentAdvance();
-    }
+    
+    // Ensure next puzzle loads fresh with training examples visible at top
+    // Use requestAnimationFrame to scroll to top after modal closes and puzzle advances
+    requestAnimationFrame(() => {
+      if (onAssessmentAdvance) {
+        onAssessmentAdvance();
+        // Scroll to top after puzzle advance to show training examples
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      }
+    });
   };
 
   const renderLoadingState = () => (
