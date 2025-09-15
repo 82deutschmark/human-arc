@@ -1,5 +1,5 @@
 {
-  "_comment": "Author: Cascade using Claude 3.5 Sonnet | Date: 2025-09-14T22:52:58-04:00 | Purpose: PWA manifest for comprehensive favicon and app installation support across all platforms. Defines app metadata, icons, and display preferences for when users add the site to their home screen.",
+  "_comment": "Author: Cascade using Claude 4 Sonnet Thinking | Date: 2025-09-14T23:02:19-04:00 | Purpose: PWA manifest for comprehensive favicon and app installation support across all platforms. Defines app metadata, icons, and display preferences for when users add the site to their home screen.",
   "name": "Human-ARC Assessment Platform",
   "short_name": "Human-ARC",
   "description": "Assess human and AI performance on Abstract Reasoning Corpus puzzles. Compare your problem-solving skills against state-of-the-art LLMs.",

@@ -84,10 +84,10 @@ function PlatformStats() {
   if (!stats) return null;
 
   const statItems = [
-    { icon: BarChart, value: stats.general.totalPuzzles, label: 'Puzzles Analyzed', color: 'text-cyan-400' },
-    { icon: Cpu, value: stats.general.totalModels, label: 'AI Models Tracked', color: 'text-green-400' },
-    { icon: Zap, value: stats.performance.impossible, label: 'Impossible for AI', color: 'text-amber-400' },
-    { icon: AlertTriangle, value: stats.performance.extremely_hard, label: 'Extremely Hard for AI', color: 'text-red-400' },
+    { icon: BarChart, value: stats.general?.totalPuzzles ?? 0, label: 'Puzzles Analyzed', color: 'text-cyan-400' },
+    { icon: Cpu, value: stats.general?.totalModels ?? 0, label: 'AI Models Tracked', color: 'text-green-400' },
+    { icon: Zap, value: stats.performance?.impossible ?? 0, label: 'Impossible for AI', color: 'text-amber-400' },
+    { icon: AlertTriangle, value: stats.performance?.extremely_hard ?? 0, label: 'Extremely Hard for AI', color: 'text-red-400' },
   ];
 
   // Show error indicator if there was an API issue
@@ -99,7 +99,7 @@ function PlatformStats() {
         <Card key={item.label} className={`bg-slate-800 border-slate-700 text-center ${hasError ? 'border-amber-600' : ''}`}>
           <CardContent className="pt-6">
             <item.icon className={`w-8 h-8 mx-auto mb-2 ${item.color}`} />
-            <div className={`text-3xl font-bold ${item.color}`}>{item.value.toLocaleString()}</div>
+            <div className={`text-3xl font-bold ${item.color}`}>{(item.value ?? 0).toLocaleString()}</div>
             <p className="text-sm text-slate-300 mt-1">{item.label}</p>
             {hasError && <div className="text-xs text-amber-400 mt-1">*Estimated</div>}
           </CardContent>
@@ -131,10 +131,10 @@ export default function HARCPlatform() {
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-amber-400 mb-2">
-              HARC Platform
+              Could an AI solve novel abstract reasoning tasks better than you?
             </h1>
             <p className="text-xl text-slate-300">
-              Are you going to be replaced by a LLM?
+              Are you going to be replaced by a LLM? 
             </p>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function HARCPlatform() {
           <p className="text-lg text-slate-300 leading-relaxed max-w-3xl mx-auto">
             ARC-AGI is a benchmark for AI reasoning ability. It is uniquely challenging and is designed to be easy for humans, but hard for AI. The Human - ARC Platform is a research initiative that collects and analyzes human performance 
             on the exact same abstract reasoning tasks, providing direct comparisons with AI model performance. 
-            Contribute to cutting-edge research while discovering your unique cognitive strengths over state of the art AI models.
+            
           </p>
         </div>
 
@@ -164,7 +164,7 @@ export default function HARCPlatform() {
             </CardHeader>
             <CardContent>
               <p className="text-slate-300 text-center">
-                We have curated a set of authentic ARC-AGI puzzles from the training and evaluation sets. 
+                We have curated some ARC-AGI puzzles as an easy introduction to the puzzles. 
 
               </p>
             </CardContent>
@@ -188,8 +188,8 @@ export default function HARCPlatform() {
             </CardHeader>
             <CardContent>
               <p className="text-slate-300 text-center">
-                Contribute to research on human vs AI reasoning capabilities while 
-                building a dataset of human performance on abstract reasoning tasks.
+                Building a dataset of human performance on abstract reasoning tasks. Prove your worth
+                to the future cybernetic overlords? Impress your friends? 
               </p>
             </CardContent>
           </Card>

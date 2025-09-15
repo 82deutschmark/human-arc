@@ -1,6 +1,6 @@
 /*
- * Author: Cascade using Claude 3.5 Sonnet (Enhanced from Claude Code using Sonnet 4)
- * Date: 2025-09-14T22:52:58-04:00
+ * Author: Cascade using Claude 4 Sonnet Thinking
+ * Date: 2025-09-14T23:02:19-04:00
  * PURPOSE: React hook for dynamically updating document title, favicon, and social media preview images
  * Allows different pages to have custom branding (title/icon/social images) while maintaining the same codebase
  * Enhanced to support Open Graph and Twitter Card images for rich social media previews
