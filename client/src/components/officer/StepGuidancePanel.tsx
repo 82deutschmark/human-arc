@@ -1,4 +1,10 @@
-/**
+/**NO IDEA IF THIS IS USED ANYWHERE!!!
+ * 
+ * Author: UNKNOWN
+ * Date: UNKNOWN
+ * Purpose: UNKNOWN
+ * SRP and DRY check: UNKNOWN
+ * Used by: UNKNOWN
  * Step Guidance Panel
  * ===================
  * A collapsible panel that displays the guidance for the current tutorial step,

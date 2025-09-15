@@ -38,9 +38,10 @@ interface ResponsivePuzzleSolverProps {
   onSolve?: () => void;
   onValidationResult?: (result: any) => void;
   onAssessmentAdvance?: () => void;
+  hideHeader?: boolean;
 }
 
-export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, isAssessmentMode = false, onSolve, onValidationResult, onAssessmentAdvance }: ResponsivePuzzleSolverProps) {
+export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, isAssessmentMode = false, onSolve, onValidationResult, onAssessmentAdvance, hideHeader = false }: ResponsivePuzzleSolverProps) {
   const [, setLocation] = useLocation();
   // Multi-test case state
   const [currentTestIndex, setCurrentTestIndex] = useState(0);
@@ -700,12 +701,14 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
 
   return (
     <div className="min-h-screen bg-slate-900 text-amber-50">
-      <Navbar 
-        title="Are you smarter than a Chatbot?" 
-        badges={renderBadges()} 
-        showBackButton={true} 
-        onBack={onBack}
-      />
+      {!hideHeader && (
+        <Navbar
+          title="Are you smarter than a Chatbot?"
+          badges={renderBadges()}
+          showBackButton={true}
+          onBack={onBack}
+        />
+      )}
 
       <main className="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         

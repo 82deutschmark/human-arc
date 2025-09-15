@@ -1,5 +1,5 @@
 /**
- * 
+ * WEDGED IN THE WRONG FOLDER!
  * Author: Claude Code using Sonnet 4
  * Date: 2025-09-12
  * PURPOSE: Clean hint system providing progressive 3-level hints for ARC puzzles. 

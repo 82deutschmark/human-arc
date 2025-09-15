@@ -1,5 +1,5 @@
 /**
- * Header Component
+ * Header Component  THIS SHOULD BE DEPRECATED!!!
  * --------------------------------------------------------
  * Author: Cascade AI
  * Description:

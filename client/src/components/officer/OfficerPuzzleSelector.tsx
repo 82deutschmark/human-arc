@@ -1,13 +1,13 @@
-/**
+/**  Possibly has useful parts, otherwise deprecated
  * Officer Puzzle Selector Component
  * =================================
  * Selector component for choosing ARC puzzles with military academy theming (THEMING is overboard and should be removed)
  * 
  * Key Features:
- * - Real ARC dataset browsing (training, evaluation, etc.)
- * - Officer rank-based filtering and access
+ * - Real ARC dataset browsing (training, evaluation, etc.)  USEFUL!!!
+ * - Officer rank-based filtering and access  VERY BADLY DONE
  * - Puzzle metadata display (difficulty, grid size, completion status)
- * - Military gold/amber theming
+ * - Military gold/amber theming OVERBOARD needs to be removed
  * - Pagination for large datasets
  */
 
