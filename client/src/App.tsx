@@ -39,6 +39,7 @@ import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import { LoadingSplash } from "@/components/game/LoadingSplash";
 import { OnboardingModal } from "@/components/game/OnboardingModal";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function Router() {
   // Apply dynamic document metadata based on current route
@@ -77,11 +78,13 @@ function App() {
   };
 
   return (
-    <TooltipProvider>
-      <Toaster />
-      <Router />
-      <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
-    </TooltipProvider>
+    <ErrorBoundary>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+        <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
+      </TooltipProvider>
+    </ErrorBoundary>
   );
 }
 

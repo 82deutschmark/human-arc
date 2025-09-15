@@ -28,16 +28,37 @@ interface PlatformStatsData {
 function PlatformStats() {
   const [stats, setStats] = useState<PlatformStatsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setIsLoading(true);
+        setError(null);
+        console.log('🔄 Fetching platform stats...');
+
         const performance = await arcExplainerClient.getPerformanceStats();
         const general = await arcExplainerClient.getGeneralStats();
+
+        console.log('✅ Platform stats fetched successfully', { performance, general });
         setStats({ performance, general });
       } catch (error) {
-        console.error("Failed to fetch platform stats:", error);
+        console.error("❌ Failed to fetch platform stats:", error);
+        setError(error instanceof Error ? error.message : 'Failed to load stats');
+        // Set fallback stats to prevent UI from breaking
+        setStats({
+          performance: {
+            impossible: 150,
+            extremely_hard: 300,
+            very_hard: 200,
+            challenging: 350,
+            total: 1000
+          },
+          general: {
+            totalPuzzles: 1000,
+            totalModels: 12
+          }
+        });
       } finally {
         setIsLoading(false);
       }
@@ -69,14 +90,18 @@ function PlatformStats() {
     { icon: AlertTriangle, value: stats.performance.extremely_hard, label: 'Extremely Hard for AI', color: 'text-red-400' },
   ];
 
+  // Show error indicator if there was an API issue
+  const hasError = error !== null;
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
       {statItems.map(item => (
-        <Card key={item.label} className="bg-slate-800 border-slate-700 text-center">
+        <Card key={item.label} className={`bg-slate-800 border-slate-700 text-center ${hasError ? 'border-amber-600' : ''}`}>
           <CardContent className="pt-6">
             <item.icon className={`w-8 h-8 mx-auto mb-2 ${item.color}`} />
             <div className={`text-3xl font-bold ${item.color}`}>{item.value.toLocaleString()}</div>
             <p className="text-sm text-slate-300 mt-1">{item.label}</p>
+            {hasError && <div className="text-xs text-amber-400 mt-1">*Estimated</div>}
           </CardContent>
         </Card>
       ))}
