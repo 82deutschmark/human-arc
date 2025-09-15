@@ -382,6 +382,7 @@ export function AssessmentInterface() {
         onSolve={handleAssessmentSolve}
         onValidationResult={(result) => handleAssessmentValidation(currentPuzzle.id, result)}
         onAssessmentAdvance={handleNextPuzzle}
+        hideHeader={true}
       />
 
       {/* Hint System - positioned adjacent to puzzle grids */}
