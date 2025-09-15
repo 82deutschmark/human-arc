@@ -236,5 +236,7 @@ This means that when building a new feature, the first question should always be
     -   **Solution**: All PlayFab API calls **must** go through the `playFabRequestManager`. This singleton automatically handles attaching the necessary `X-Authentication` session ticket, provides robust retry logic with exponential backoff, and standardizes error handling.
 
 4.  **Data Integrity: CloudScript is the Single Source of Truth**
-    -   **Gotcha**: Replicating validation or scoring logic on the client side. This is a major security vulnerability and violates the core architecture.
+    -   **Gotcha**: Replicating validation or scoring logic on the client side. This is a major security vulnerability, but this is a hobby project and I'm not too worried about it and we have fallbacks regarding puzzle validation.  PlayFab does correctly store the data though.
     -   **Solution**: The client's role is to collect the user's input (the `solutions` array) and submit it to the appropriate CloudScript function (`ValidateARCPuzzle`, `ValidateTaskSolution`, etc.). The server is the **only** authority on correctness, scoring, and data updates. The client simply displays the result returned by the server.
+
+    # The /officer folder is a total mess of UI and other files with poor names that may or may not be critical to the entire application. It is a total mess of code and should be refactored, but be careful to work with it and not break anything.
