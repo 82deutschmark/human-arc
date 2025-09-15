@@ -17,15 +17,15 @@ async function testArcExplainerAPI() {
 
     const modelsData = await modelsResponse.json();
 
-    if (!modelsData.models || !Array.isArray(modelsData.models)) {
-      throw new Error('Invalid models response format');
+    if (!Array.isArray(modelsData)) {
+      throw new Error('Invalid models response format - expected array');
     }
 
-    console.log(`   ✅ Successfully fetched ${modelsData.models.length} models`);
+    console.log(`   ✅ Successfully fetched ${modelsData.length} models`);
 
     // Show first 5 models
     console.log('   📊 Sample models:');
-    modelsData.models.slice(0, 5).forEach((model, index) => {
+    modelsData.slice(0, 5).forEach((model, index) => {
       console.log(`      ${index + 1}. ${model.name} (${model.provider || 'Unknown'})`);
     });
 
@@ -38,9 +38,16 @@ async function testArcExplainerAPI() {
       throw new Error(`Explanations API failed: ${explainResponse.status}`);
     }
 
-    const explanations = await explainResponse.json();
+    const response = await explainResponse.json();
 
-    if (!Array.isArray(explanations)) {
+    // Handle wrapped response format
+    let explanations;
+    if (response.success && Array.isArray(response.data)) {
+      explanations = response.data;
+    } else if (Array.isArray(response)) {
+      explanations = response;
+    } else {
+      console.log('Response structure:', typeof response, Object.keys(response));
       throw new Error('Invalid explanations response format');
     }
 
@@ -51,7 +58,7 @@ async function testArcExplainerAPI() {
     console.log(`   🤖 Models with explanations: ${modelNames.slice(0, 5).join(', ')}${modelNames.length > 5 ? '...' : ''}`);
 
     return {
-      totalModels: modelsData.models.length,
+      totalModels: modelsData.length,
       sampleExplanations: explanations.length,
       modelsWithData: modelNames.length
     };

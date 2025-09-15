@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- **API Validation Error**: Fixed arc-explainer API solution submission failing with HTTP 400 "Solution explanation is required" error
+  - Added validation to ensure explanation field is never empty or undefined
+  - Provides fallback "No strategy provided" text when user strategy is empty
+  - Located in: `client/src/services/core/arcExplainerClient.ts:671`
+  - **Testing**: Submit solutions with empty strategy text, confirm no more 400 errors
+
+---
+
 ## 2025-09-14: 🚨 CRITICAL SECURITY & UX FIXES + 10K Strategy Bonus System
 
 ### **Version 0.2.0 - MAJOR RELEASE**

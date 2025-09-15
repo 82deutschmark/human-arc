@@ -8,7 +8,7 @@
  *
  */
 
-import { playFabCore } from './core';
+import { playFabRequestManager } from './requestManager';
 import { llmPlayerManager } from './llmPlayerManager';
 import { idConverter } from '@/services/idConverter';
 import { arcExplainerClient, ExplanationRecord } from '@/services/core/arcExplainerClient';
@@ -251,27 +251,90 @@ export class LLMDataSyncService {
 
   /**
    * Transform arc-explainer ExplanationRecord to PlayFab performance record
+   * Uses the same scoring algorithm as human players in CloudScript
    */
   private transformToPlayFabRecord(
     explanation: ExplanationRecord,
     puzzleId: string
   ): PlayFabPerformanceRecord {
-    // Calculate AI score
-    const baseScore = explanation.isPredictionCorrect ? 100 : 0;
-    const confidenceBonus = explanation.confidence ? (explanation.confidence / 100) * 50 : 0;
-    const finalScore = Math.round(baseScore + confidenceBonus);
+    if (!explanation.isPredictionCorrect) {
+      // No points for incorrect answers
+      return {
+        puzzleId,
+        correct: false,
+        scoreData: {
+          finalScore: 0,
+          timeBonus: 0,
+          basePoints: 0
+        },
+        newTotalPoints: 0,
+        timestamp: explanation.createdAt
+      };
+    }
+
+    // MATCH CLOUDSCRIPT SCORING EXACTLY
+    const basePoints = 10000; // Same as OFFICER_TRACK.BASE_POINTS
+
+    // Calculate speed bonus (same as human players)
+    // Extract response time from explanation if available
+    const responseTimeMinutes = this.extractResponseTime(explanation);
+    const speedBonus = this.calculateSpeedBonus(responseTimeMinutes);
+
+    // Efficiency bonus is 0 for AI (no step count data)
+    const efficiencyBonus = 0;
+
+    const finalScore = basePoints + speedBonus + efficiencyBonus;
 
     return {
       puzzleId,
-      correct: explanation.isPredictionCorrect,
+      correct: true,
       scoreData: {
         finalScore,
-        timeBonus: 0, // AI doesn't have time constraints
-        basePoints: baseScore
+        timeBonus: speedBonus, // Store speed bonus in timeBonus field for consistency
+        basePoints
       },
       newTotalPoints: 0, // Will be calculated when updating PlayFab
       timestamp: explanation.createdAt
     };
+  }
+
+  /**
+   * Extract response time from explanation data
+   * Arc-explainer may have timing information in various formats
+   */
+  private extractResponseTime(explanation: ExplanationRecord): number {
+    // Try to extract timing information from explanation
+    // This might be in metadata, response time fields, etc.
+
+    // For now, use a reasonable estimate based on model type
+    // TODO: Update when arc-explainer provides actual timing data
+    const modelName = explanation.modelName.toLowerCase();
+
+    if (modelName.includes('nano')) {
+      return 2; // Fast models ~ 2 minutes
+    } else if (modelName.includes('mini')) {
+      return 5; // Medium models ~ 5 minutes
+    } else if (modelName.includes('reasoning') || modelName.includes('o3')) {
+      return 15; // Reasoning models take longer
+    } else {
+      return 8; // Default assumption ~ 8 minutes
+    }
+  }
+
+  /**
+   * Calculate speed bonus exactly like CloudScript
+   * SPEED_BONUS: { PER_MINUTE_POINTS: 100, UNDER_MINUTES: 20 }
+   */
+  private calculateSpeedBonus(timeInMinutes: number): number {
+    const UNDER_MINUTES = 20;
+    const PER_MINUTE_POINTS = 100;
+
+    if (timeInMinutes >= UNDER_MINUTES) {
+      return 0;
+    }
+
+    const minutesSaved = UNDER_MINUTES - timeInMinutes;
+    return Math.floor(minutesSaved * PER_MINUTE_POINTS);
   }
 
   /**
@@ -287,7 +350,7 @@ export class LLMDataSyncService {
       const customId = llmPlayerManager.getCustomIdForModel(modelName);
 
       // Login as the AI player to update their data
-      const loginResponse = await playFabCore.makeHttpRequest('/Client/LoginWithCustomID', {
+      const loginResponse = await playFabRequestManager.makeRequest('/Client/LoginWithCustomID', {
         CustomId: customId
       });
 
@@ -296,14 +359,14 @@ export class LLMDataSyncService {
       }
 
       // Update performance data
-      await playFabCore.makeHttpRequest('/Client/UpdateUserData', {
+      await playFabRequestManager.makeRequest('/Client/UpdateUserData', {
         Data: {
           'humanPerformanceData': JSON.stringify(records)
         }
       });
 
       // Update statistics
-      await playFabCore.makeHttpRequest('/Client/UpdatePlayerStatistics', {
+      await playFabRequestManager.makeRequest('/Client/UpdatePlayerStatistics', {
         Statistics: [
           {
             StatisticName: PLAYFAB_CONSTANTS.STATISTIC_NAMES.OFFICER_TRACK_POINTS,
@@ -327,7 +390,7 @@ export class LLMDataSyncService {
     console.log('🔍 Discovering puzzle IDs from PlayFab Title Data...');
 
     try {
-      const response = await playFabCore.makeHttpRequest('/Client/GetTitleData', {
+      const response = await playFabRequestManager.makeRequest('/Client/GetTitleData', {
         Keys: [
           'officer-tasks-training-batch1.json',
           'officer-tasks-training-batch2.json',

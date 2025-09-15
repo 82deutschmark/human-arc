@@ -136,13 +136,19 @@ ExplanationRecord -> PerformanceRecord
 }
 ```
 
-#### 2.3 Scoring Algorithm for AI Models
+#### 2.3 Scoring Algorithm for AI Models (MATCHES HUMAN SCORING)
 ```typescript
-AI Score Calculation:
-- Base Score: 100 points for correct answer, 0 for incorrect
-- Confidence Bonus: (confidence / 100) * 50 additional points
-- No time bonus (AI doesn't have time pressure)
-- No hint penalty (AI doesn't use hints)
+AI Score Calculation (matches CloudScript scoring exactly):
+- Base Score: 10000 points for correct answer, 0 for incorrect
+- Speed Bonus: 100 points per minute saved under 20 minutes (same as humans)
+- Efficiency Bonus: 50 points per action saved under 100 actions (AI gets 0 - no step data)
+- Total Score = basePoints + speedBonus + efficiencyBonus
+
+Example: AI solves puzzle in 5 minutes correctly
+- Base: 10000 points
+- Speed: (20-5) × 100 = 1500 points
+- Efficiency: 0 points (no step count)
+- Final: 11500 points
 ```
 
 ### Phase 3: Leaderboard Integration

@@ -8,7 +8,7 @@
  *
  */
 
-import { playFabCore } from './core';
+import { playFabRequestManager } from './requestManager';
 import { PLAYFAB_CONSTANTS } from '@/types/playfab';
 import { arcExplainerClient } from '@/services/core/arcExplainerClient';
 
@@ -93,14 +93,14 @@ export class LLMPlayerManager {
 
       const data = await response.json();
 
-      if (!data.models || !Array.isArray(data.models)) {
-        throw new Error('Invalid response format: missing models array');
+      if (!Array.isArray(data)) {
+        throw new Error('Invalid response format: expected models array');
       }
 
-      console.log(`🌐 Fetched ${data.models.length} models from API`);
+      console.log(`🌐 Fetched ${data.length} models from API`);
 
       // Transform API response to our format
-      this.discoveredModels = data.models.map((model: ArcExplainerModelResponse) =>
+      this.discoveredModels = data.map((model: ArcExplainerModelResponse) =>
         this.parseModelMetadata(model)
       );
 
@@ -201,7 +201,7 @@ export class LLMPlayerManager {
 
     try {
       // Step 1: Login/Create the AI player using CustomID
-      const loginResponse = await playFabCore.makeHttpRequest('/Client/LoginWithCustomID', {
+      const loginResponse = await playFabRequestManager.makeRequest('/Client/LoginWithCustomID', {
         CustomId: customId,
         CreateAccount: true,
         InfoRequestParameters: {
@@ -217,12 +217,12 @@ export class LLMPlayerManager {
       console.log(`✅ Created/Retrieved PlayFab player: ${playFabId}`);
 
       // Step 2: Set display name
-      await playFabCore.makeHttpRequest('/Client/UpdateUserTitleDisplayName', {
+      await playFabRequestManager.makeRequest('/Client/UpdateUserTitleDisplayName', {
         DisplayName: displayName
       });
 
       // Step 3: Initialize player data
-      await playFabCore.makeHttpRequest('/Client/UpdateUserData', {
+      await playFabRequestManager.makeRequest('/Client/UpdateUserData', {
         Data: {
           'player-type': 'ai',
           'model-metadata': JSON.stringify(metadata),
@@ -233,7 +233,7 @@ export class LLMPlayerManager {
       });
 
       // Step 4: Initialize statistics (set to 0)
-      await playFabCore.makeHttpRequest('/Client/UpdatePlayerStatistics', {
+      await playFabRequestManager.makeRequest('/Client/UpdatePlayerStatistics', {
         Statistics: [
           {
             StatisticName: PLAYFAB_CONSTANTS.STATISTIC_NAMES.OFFICER_TRACK_POINTS,
@@ -361,7 +361,7 @@ export class LLMPlayerManager {
    */
   async isAIPlayer(playFabId: string): Promise<boolean> {
     try {
-      const response = await playFabCore.makeHttpRequest('/Client/GetUserData', {
+      const response = await playFabRequestManager.makeRequest('/Client/GetUserData', {
         PlayFabId: playFabId,
         Keys: ['player-type']
       });
@@ -379,7 +379,7 @@ export class LLMPlayerManager {
    */
   async getAIPlayerMetadata(playFabId: string): Promise<ModelMetadata | null> {
     try {
-      const response = await playFabCore.makeHttpRequest('/Client/GetUserData', {
+      const response = await playFabRequestManager.makeRequest('/Client/GetUserData', {
         PlayFabId: playFabId,
         Keys: ['model-metadata']
       });
