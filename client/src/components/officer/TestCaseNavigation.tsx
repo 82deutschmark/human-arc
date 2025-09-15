@@ -1,4 +1,4 @@
-/**
+/**CRITICAL APP COMPONENT FOR ALL MODES!!!
  * Test Case Navigation Component
  * Author: Cascade
  * 
