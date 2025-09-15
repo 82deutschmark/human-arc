@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+### Added - LLM Player Registration System (Phase 1 Complete)
+- **AI Model Discovery**: Implemented dynamic AI model discovery from arc-explainer API
+  - **51 AI Models Registered**: Successfully registered 51 AI models as PlayFab players (exceeded original 44 estimate)
+  - **Provider Coverage**: OpenAI (11), Anthropic (5), Google/Gemini (5), DeepSeek (2), OpenRouter (28)
+  - **Robust Registration**: Complete PlayFab player creation with metadata, CustomID normalization, collision detection
+  - **Location**: `client/src/services/playfab/llmPlayerManager.ts`
+
+- **AI Model Constants Database**: Created comprehensive mapping system for AI models
+  - **Source of Truth**: `client/src/constants/modelsPlayfab.ts` contains all 51 registered model mappings
+  - **PlayFab Integration**: Maps model keys to PlayFab IDs, CustomIDs, and registration metadata  
+  - **Helper Functions**: Utility functions for model lookups and duplicate detection
+  - **Future-Proof**: Supports additional model registration and provider expansion
+
+- **Data Synchronization Framework**: Built enterprise-scale sync architecture (NOT YET EXECUTED)
+  - **Massive Scale Support**: Designed for 51 models × ~2000 puzzles = ~102,000 API operations
+  - **Rate Limiting**: 500ms arc-explainer delays, 250ms PlayFab delays with exponential backoff
+  - **Error Recovery**: Circuit breakers, progress persistence, batch processing with checkpoints
+  - **Location**: `client/src/services/playfab/llmDataSyncService.ts`
+
 ### Fixed
 - **API Validation Error**: Fixed arc-explainer API solution submission failing with HTTP 400 "Solution explanation is required" error
   - Added validation to ensure explanation field is never empty or undefined
@@ -14,6 +33,19 @@
   - Updated all `playFabCore.makeHttpRequest` calls to use `playFabRequestManager.makeRequest`
   - Build now succeeds without import resolution errors
   - Located in: `client/src/services/playfab/llmPlayerManager.ts` and `llmDataSyncService.ts`
+
+- **Routing Bug**: Fixed persistent leaderboard navigation typo between singular and plural
+  - Fixed `GameHeader.tsx` link from '/leaderboard' to '/leaderboards' to match App.tsx routes
+  - Updated button text from 'Leaderboard' to 'Leaderboards' for consistency
+  - Resolves broken navigation links in game header
+  - Located in: `client/src/components/game/GameHeader.tsx:79`
+
+### Technical Documentation
+- **Comprehensive Implementation Guide**: Updated `docs/15SeptLLMplayers.md` with realistic technical assessment
+  - **Reality Check**: Documents actual complexity discovered vs original estimates
+  - **Critical Lessons**: PlayFab session management, CustomID normalization pitfalls, scale underestimation
+  - **Future Phases**: Detailed requirements for Phase 2 (12+ hour data sync), Phase 3 (UI integration), Phase 4 (analytics)
+  - **Senior Dev Reference**: Practical guide for understanding, maintaining, and extending the system
 
 ---
 
