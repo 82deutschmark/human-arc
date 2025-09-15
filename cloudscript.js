@@ -149,8 +149,11 @@ const PlayFabService = {
 
 const ScoringService = {
     speedBonusFor({ time, perMinute, underMinutes }) {
-        const timeInMinutes = Math.ceil((time || 0) / 60);
-        return timeInMinutes < underMinutes ? (underMinutes - timeInMinutes) * perMinute : 0;
+        const timeInMinutes = (time || 0) / 60;
+        // CORRECT SPEED BONUS: Under 30 seconds = 10k bonus, reduces 1k per minute
+        if (timeInMinutes <= 0.5) return 10000; // 30 seconds or less = 10,000 bonus
+        if (timeInMinutes >= 10) return 0;      // 10+ minutes = no bonus
+        return Math.max(0, 10000 - (Math.floor(timeInMinutes) * 1000));
     },
     efficiencyBonusFor({ steps, perAction, underActions }) {
         return steps < underActions ? (underActions - steps) * perAction : 0;

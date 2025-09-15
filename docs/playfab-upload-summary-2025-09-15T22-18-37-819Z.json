@@ -1,0 +1,891 @@
+{
+  "timestamp": "2025-09-15T22:18:37.817Z",
+  "totalRecords": 147,
+  "successfulUploads": 0,
+  "failedUploads": 147,
+  "totalPointsAwarded": 0,
+  "results": [
+    {
+      "modelName": "o4-mini-2025-04-16",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o3-2025-04-16",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek-chat",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-7-sonnet-20250219",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4.1-mini-2025-04-14",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4o-mini-2024-07-18",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "z-ai/glm-4.5-air:free",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "bytedance/seed-oss-36b-instruct",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "qwen/qwen3-max",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "nvidia/nemotron-nano-9b-v2",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2-0905",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-mini-2025-08-07",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-5-haiku-20241022",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-haiku-20240307",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-nano-2025-08-07",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4.1-2025-04-14",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "openrouter/sonoma-sky-alpha",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-2025-08-07",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek-reasoner",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "cohere/command-r-plus",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gemini-2.5-pro",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o3-mini-2025-01-31",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-chat-latest",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-prover-v2",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.5-flash-lite",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "qwen/qwen-2.5-coder-32b-instruct",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "moonshotai/kimi-dev-72b:free",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "meta-llama/llama-3.3-70b-instruct",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.0-flash",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-coder",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "x-ai/grok-code-fast-1",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "nousresearch/hermes-4-70b",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek/deepseek-chat-v3.1",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-30b-a3b-instruct-2507",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "mistralai/mistral-large",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "mistralai/codestral-2508",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-4.1-nano-2025-04-14",
+      "puzzleId": "66e6c45b",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o3-2025-04-16",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-chat-v3.1",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek/deepseek-prover-v2",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "qwen/qwen3-30b-a3b-instruct-2507",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "mistralai/mistral-large",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-coder",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "mistralai/codestral-2508",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-4.1-2025-04-14",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek-chat",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4.1-mini-2025-04-14",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "z-ai/glm-4.5-air:free",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-5-haiku-20241022",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "meta-llama/llama-3.3-70b-instruct",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "bytedance/seed-oss-36b-instruct",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-r1-0528:free",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "nousresearch/hermes-4-70b",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2-0905",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "moonshotai/kimi-dev-72b:free",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "openrouter/sonoma-sky-alpha",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-max",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-nano-2025-08-07",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o4-mini-2025-04-16",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-mini-2025-08-07",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.0-flash-lite",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-2025-08-07",
+      "puzzleId": "a699fb00",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-mini-2025-08-07",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-2025-08-07",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-5-sonnet-20241022",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o4-mini-2025-04-16",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o3-mini-2025-01-31",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o3-2025-04-16",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek-reasoner",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek-chat",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.5-pro",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "bytedance/seed-oss-36b-instruct",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gemini-2.5-flash",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-chat-latest",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "openrouter/sonoma-sky-alpha",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-mini-2025-08-07",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-2025-08-07",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-5-sonnet-20241022",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o4-mini-2025-04-16",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o3-mini-2025-01-31",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o3-2025-04-16",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek-reasoner",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "deepseek-chat",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gemini-2.5-pro",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "bytedance/seed-oss-36b-instruct",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.5-flash",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-chat-latest",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "openrouter/sonoma-sky-alpha",
+      "puzzleId": "e7dd8335",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o3-mini-2025-01-31",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "o3-2025-04-16",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-2025-08-07",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4.1-mini-2025-04-14",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-4.1-2025-04-14",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gemini-2.5-pro",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gemini-2.5-flash",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.0-flash-lite",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek-chat",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "claude-3-5-sonnet-20241022",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-chat-latest",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "gpt-5-nano-2025-08-07",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "claude-3-7-sonnet-20250219",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek-reasoner",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "qwen/qwen3-30b-a3b-instruct-2507",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "mistralai/codestral-2508",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "nousresearch/hermes-4-70b",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-chat-v3.1",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "x-ai/grok-3-mini",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "bytedance/seed-oss-36b-instruct",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "CloudScript call failed: 400 Bad Request"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-coder",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2-0905",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-prover-v2",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-r1-0528:free",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "openrouter/sonoma-sky-alpha",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-max",
+      "puzzleId": "ea786f4a",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4.1-nano-2025-04-14",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "claude-3-5-sonnet-20241022",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.0-flash",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek-chat",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.5-pro",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-coder",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "mistralai/codestral-2508",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gemini-2.5-flash",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o3-mini-2025-01-31",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-nano-2025-08-07",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-chat-v3.1",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-4.1-2025-04-14",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "mistralai/mistral-large",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "nousresearch/hermes-4-70b",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-30b-a3b-instruct-2507",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "moonshotai/kimi-k2-0905",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o4-mini-2025-04-16",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek/deepseek-prover-v2",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "openrouter/sonoma-sky-alpha",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-chat-latest",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "deepseek-reasoner",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "o3-2025-04-16",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-mini-2025-08-07",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "qwen/qwen3-max",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    },
+    {
+      "modelName": "gpt-5-2025-08-07",
+      "puzzleId": "fc754716",
+      "status": "error",
+      "error": "Login failed: 429 Too Many Requests"
+    }
+  ]
+}

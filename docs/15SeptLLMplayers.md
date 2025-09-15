@@ -123,11 +123,19 @@ This system is **significantly more complex** than originally estimated. This do
 
 ### THE MASSIVE UNDERTAKING AHEAD
 
-Some notes...  not all models have explanations for all puzzles.  
+Some notes...  not all models have explanations for all puzzles.
+Lots of puzzles have no explanations at all.
+We are only going to focus on the top 10 models for now. We are going to test in small increments.
+First we are making a simple script to find all the explanations for one puzzle at a time.
+Lets first think about that, what kind of data is it going to return?  how will it be returned?  
+Use the puzzles in [assessmentPuzzles.ts](../client/src/constants/assessmentPuzzles.ts) as a first batch.
+Find all the explanations for e7dd8335 and print them to a file in the docs folder so we can see what they look like and then we can start working on the script to extract the data we need, right?  Please slow down and spend a few hours planning this crucial phase.  
 
 **Scope**: 51 AI models × ~2000 puzzles = **~102,000 operations minimum**
 **Estimated Duration**: 14+ hours of continuous API calls (at 500ms intervals)
 **Risk Level**: EXTREMELY HIGH - Network failures, API limits, data corruption  THATS WHY THIS IS CRAZY AND NEEDS A RETHINK!
+
+
 
 ### Critical Implementation Details
 
