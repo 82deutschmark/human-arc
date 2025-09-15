@@ -85,6 +85,81 @@ export default function Profile() {
           </p>
         </div>
 
+        {/* Player Identity Section */}
+        <div className="mb-8">
+          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+            <h2 className="text-lg font-semibold text-amber-400 mb-4">Account Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <p className="text-slate-300 text-sm mb-1">Display Name:</p>
+                <p className="text-xl font-bold text-white">
+                  {playFabAuthManager.getDisplayName() || 'Loading...'}
+                </p>
+              </div>
+              <div>
+                <p className="text-slate-300 text-sm mb-1">PlayFab ID:</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-lg font-mono text-cyan-300 select-all">
+                    {playFabAuthManager.getPlayFabId() || 'Loading...'}
+                  </p>
+                  <button
+                    onClick={() => {
+                      const playFabId = playFabAuthManager.getPlayFabId();
+                      if (playFabId) {
+                        navigator.clipboard?.writeText(playFabId);
+                      }
+                    }}
+                    className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 bg-slate-700 rounded transition-colors"
+                    title="Copy PlayFab ID"
+                  >
+                    📋 Copy
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Reset PlayFab ID Tool */}
+            <div className="pt-4 border-t border-slate-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">Reset Account:</p>
+                  <p className="text-xs text-slate-500">Generate new anonymous player account</p>
+                </div>
+                <button
+                  onClick={() => {
+                    if (window.confirm('⚠️ This will create a new player account and reset ALL progress.\n\nYour current progress will be lost. Continue?')) {
+                      // Clear all PlayFab storage
+                      localStorage.removeItem('playfab_device_id');
+                      sessionStorage.removeItem('playfab_device_id');
+                      localStorage.removeItem('debug_playfab_mapping');
+
+                      // Clear PlayFab cookies (fallback recovery mechanism)
+                      document.cookie = "playfab_device_id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
+                      // Clear any other PlayFab-related localStorage
+                      const keysToRemove = [];
+                      for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key && key.includes('playfab')) {
+                          keysToRemove.push(key);
+                        }
+                      }
+                      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+                      // Force page refresh to create new player
+                      window.location.reload();
+                    }
+                  }}
+                  className="px-3 py-2 bg-orange-600 hover:bg-orange-700 text-white text-sm rounded-lg transition-colors font-medium"
+                  title="Clear all data and generate new PlayFab ID"
+                >
+                  🔄 Reset Account
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="max-w-2xl mx-auto">
           <UserProfile
             onProfileUpdate={(profile) => {
