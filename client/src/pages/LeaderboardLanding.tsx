@@ -9,9 +9,9 @@
  */
 
 import { useLocation } from 'wouter';
-import { Header } from '@/components/game/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getEnabledLeaderboards, LeaderboardConfig } from '@/services/playfab/leaderboard-types';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { getEnabledLeaderboards, type LeaderboardConfig } from '@/services/playfab/leaderboard-types';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function LeaderboardLanding() {
   const [, setLocation] = useLocation();
@@ -23,17 +23,19 @@ export default function LeaderboardLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
-      <Header player={null} totalTasks={0} />
+      <PageHeader 
+        title="Leaderboard Hub"
+        description="Compare your performance across different categories"
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Leaderboards' }
+        ]}
+      />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Leaderboard Hub
-          </h1>
-          <p className="text-blue-200 text-lg">
-            Select a leaderboard to view rankings.
-          </p>
-        </div>
+        <p className="text-blue-200 text-lg mb-6">
+          Select a leaderboard to view rankings.
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {leaderboards.map((lb) => (
@@ -43,14 +45,13 @@ export default function LeaderboardLanding() {
               onClick={() => handleSelectLeaderboard(lb)}
             >
               <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-blue-300">
-                  <span className="text-2xl">{lb.icon}</span>
-                  <span>{lb.displayName}</span>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  {lb.icon} {lb.displayName}
                 </CardTitle>
+                <CardContent className="p-0 pt-2">
+                  <p className="text-slate-300">{lb.description}</p>
+                </CardContent>
               </CardHeader>
-              <CardContent>
-                <p className="text-slate-400">{lb.description}</p>
-              </CardContent>
             </Card>
           ))}
         </div>

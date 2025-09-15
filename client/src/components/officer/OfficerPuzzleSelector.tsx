@@ -1,7 +1,7 @@
 /**
  * Officer Puzzle Selector Component
  * =================================
- * Selector component for choosing ARC puzzles with military academy theming
+ * Selector component for choosing ARC puzzles with military academy theming (THEMING is overboard and should be removed)
  * 
  * Key Features:
  * - Real ARC dataset browsing (training, evaluation, etc.)
