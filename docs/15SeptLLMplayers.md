@@ -5,7 +5,7 @@
 
 ## Executive Summary
 
-This document outlines the comprehensive plan to integrate 44 AI/LLM models from the arc-explainer API as PlayFab players, enabling unified leaderboards and direct human vs AI performance comparisons within the existing Space Force Mission Control platform.
+This document outlines the comprehensive plan to integrate 44 AI/LLM models from the arc-explainer API as PlayFab players, enabling unified leaderboards and direct human vs AI performance comparisons within the existing HARC platform. THIS IS NOT A KID GAME.  THIS IS A SERIOUS RESEARCH PROJECT.
 
 ## Goals and Objectives
 
@@ -260,29 +260,39 @@ arc-explainer API → LLMDataSyncService → PlayFab API
 
 ## Implementation Timeline
 
-### Week 1: Foundation
-- [ ] Update LLMPlayerManager for dynamic model discovery
-- [ ] Implement PlayFab player registration for all 44 models
-- [ ] Create data synchronization service framework
-- [ ] Build comprehensive testing suite
+### Foundation Phase (Week 1)
+- [ ] Add dynamic model discovery to LLMPlayerManager
+- [ ] Create model metadata parsing and normalization
+- [ ] Build PlayFab player registration with error handling
+- [ ] Create LLMDataSyncService framework
+- [ ] Implement puzzle ID discovery from PlayFab Title Data
 
-### Week 2: Data Synchronization
-- [ ] Implement puzzle-by-puzzle sync logic
-- [ ] Build data transformation pipeline
-- [ ] Add error handling and retry mechanisms
-- [ ] Create sync progress tracking and resumption
+### Data Processing Phase (Week 2)
+- [ ] Build explanation fetching with rate limiting
+- [ ] Create data transformation pipeline (arc-explainer -> PlayFab)
+- [ ] Implement batch processing with progress tracking
+- [ ] Add comprehensive error handling and retry logic
+- [ ] Create validation and integrity checking system
 
-### Week 3: Integration
+### Testing and Validation Phase (Week 3)
+- [ ] Test with small subset before full sync
+- [ ] Execute incremental sync with monitoring
+- [ ] Validate data integrity across all 44 models
+- [ ] Performance testing and optimization
+- [ ] Create rollback and recovery procedures
+
+### Integration Phase (Week 4)
 - [ ] Update leaderboard components for mixed player types
 - [ ] Enhance comparison components for AI players
 - [ ] Add player type identification throughout UI
 - [ ] Implement filtering and categorization
+- [ ] Production deployment with monitoring
 
-### Week 4: Testing and Optimization
-- [ ] Execute full sync with validation
-- [ ] Performance testing and optimization
-- [ ] UI/UX testing with mixed leaderboards
-- [ ] Production deployment and monitoring
+### Critical Complexity Notes
+**Scale Challenge**: 44 models × ~2000 puzzles = ~88,000 API calls to arc-explainer
+**Rate Limiting**: Must implement careful throttling to avoid overwhelming APIs
+**Error Recovery**: Need robust retry and resumption logic for interrupted syncs
+**Data Validation**: Each model's performance data must be validated before storage
 
 ## Conclusion
 

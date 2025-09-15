@@ -3,7 +3,7 @@
  * Tests model discovery, registration, and data synchronization before full deployment
  */
 
-import { llmPlayerManager, llmDataSyncService } from '../client/src/services/playfab/index.js';
+// Simple test without imports - we'll test the API endpoints directly
 
 async function testModelDiscovery() {
   console.log('🔍 Testing model discovery from arc-explainer API...');
