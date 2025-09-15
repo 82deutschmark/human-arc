@@ -1,6 +1,6 @@
 # HARC Platform Enhancement Plan
 **Date: September 15, 2025**  
-**Author: Cascade using Claude 3.5 Sonnet**  
+**Author: Cascade using Claude 4 Sonnet Thinking**  
 **Purpose: Transform HARC Platform landing page into data-rich research dashboard**
 
 ## Executive Summary
