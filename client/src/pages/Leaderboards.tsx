@@ -22,6 +22,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/game/Header";
 import { LeaderboardContainer } from "@/components/leaderboards/LeaderboardContainer";
+import { ELOLeaderboardContainer } from "@/components/leaderboards/ELOLeaderboardContainer";
 import { LeaderboardTabs } from "@/components/leaderboards/LeaderboardTabs";
 import { LeaderboardType, getEnabledLeaderboards } from "@/services/playfab/leaderboard-types";
 import {
@@ -129,10 +130,17 @@ export default function Leaderboards() {
           onTabChange={handleTabChange}
         />
 
-        <LeaderboardContainer
-          type={selectedType}
-          key={selectedType} // Force re-render when type changes
-        />
+        {selectedType === LeaderboardType.EXPLANATION_ELO ? (
+          <ELOLeaderboardContainer
+            type={selectedType}
+            key={selectedType} // Force re-render when type changes
+          />
+        ) : (
+          <LeaderboardContainer
+            type={selectedType}
+            key={selectedType} // Force re-render when type changes
+          />
+        )}
       </div>
     </div>
   );

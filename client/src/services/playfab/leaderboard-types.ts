@@ -23,6 +23,7 @@ export enum LeaderboardType {
   OFFICER_TRACK = 'OFFICER_TRACK',
   ARC2_EVALUATION = 'ARC2_EVALUATION',
   HARC_LEADERBOARD = 'HARC_LEADERBOARD',
+  EXPLANATION_ELO = 'EXPLANATION_ELO',
   // Future leaderboards can be added here without code changes:
   // SPEED = 'SPEED',
   // STREAK = 'STREAK',
@@ -74,6 +75,15 @@ export const LEADERBOARD_CONFIGS: Record<LeaderboardType, LeaderboardConfig> = {
     statisticName: PLAYFAB_CONSTANTS.STATISTIC_NAMES.HARC_TOTAL_POINTS,
     icon: '🧩',
     category: 'primary',
+    enabled: true
+  },
+  [LeaderboardType.EXPLANATION_ELO]: {
+    type: LeaderboardType.EXPLANATION_ELO,
+    displayName: 'Explanation Arena',
+    description: 'AI model explanation quality rankings',
+    statisticName: 'ELO_CUSTOM', // Custom handling, not a PlayFab statistic
+    icon: '🥊',
+    category: 'specialty',
     enabled: true
   }
   // Future additions would go here - no code changes needed elsewhere

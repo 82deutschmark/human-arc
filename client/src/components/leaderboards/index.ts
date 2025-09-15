@@ -22,3 +22,5 @@ export { LeaderboardTable } from './LeaderboardTable';
 export { LeaderboardTabs } from './LeaderboardTabs';
 export { LeaderboardStats } from './LeaderboardStats';
 export { PlayerRow } from './PlayerRow';
+export { ELOLeaderboardContainer } from './ELOLeaderboardContainer';
+export { ELOPlayerRow } from './ELOPlayerRow';

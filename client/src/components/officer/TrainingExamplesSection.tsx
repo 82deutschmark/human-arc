@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { ResponsiveOfficerDisplayGrid } from '@/components/officer/ResponsiveOfficerGrid';
+import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
 import { SizeSlider } from '@/components/ui/SizeSlider';
 import type { ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode } from '@/types/puzzleDisplayTypes';
@@ -90,21 +91,25 @@ export function TrainingExamplesSection({
                     EX {index + 1}
                   </h3>
                   <div className="flex items-center gap-1.5">
-                    <ResponsiveOfficerDisplayGrid
-                      grid={example.input}
-                      containerType="example"
-                      emojiSet={emojiSet}
-                      displayMode={displayMode}
-                      fixedCellSize={cellSize}
-                    />
+                    <GridWithDimensions grid={example.input} label="Input">
+                      <ResponsiveOfficerDisplayGrid
+                        grid={example.input}
+                        containerType="example"
+                        emojiSet={emojiSet}
+                        displayMode={displayMode}
+                        fixedCellSize={cellSize}
+                      />
+                    </GridWithDimensions>
                     <div className={`text-slate-700 ${arrowSize} font-bold`}>→</div>
-                    <ResponsiveOfficerDisplayGrid
-                      grid={example.output}
-                      containerType="example"
-                      emojiSet={emojiSet}
-                      displayMode={displayMode}
-                      fixedCellSize={cellSize}
-                    />
+                    <GridWithDimensions grid={example.output} label="Output">
+                      <ResponsiveOfficerDisplayGrid
+                        grid={example.output}
+                        containerType="example"
+                        emojiSet={emojiSet}
+                        displayMode={displayMode}
+                        fixedCellSize={cellSize}
+                      />
+                    </GridWithDimensions>
                   </div>
                 </div>
               );

@@ -1,4 +1,8 @@
-/**
+/**Author: UNKNOWN
+ * Date: 2025 UNKNOWN
+ * Purpose: UNKNOWN!  
+ * SRP and DRY check: UNKNOWN
+ * Used by: UNKNOWN
  * LLM Comparison Selector
  * Simple puzzle selection interface for comparing human vs AI performance
  * Uses real data from arc-explainer API - no hardcoded assumptions

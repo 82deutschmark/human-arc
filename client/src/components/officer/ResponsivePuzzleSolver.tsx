@@ -18,6 +18,8 @@ import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
 import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
+import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
+import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EventType } from '@/types/playfab';
@@ -718,7 +720,6 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           />
         )}
 
-
         {/* Test Case Navigation - SILVER THEME */}
         {totalTests > 1 && (
           <div className="bg-gradient-to-r from-slate-200 via-gray-100 to-slate-200 border-2 border-slate-400 rounded-lg p-4 shadow-lg">
@@ -787,17 +788,19 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-amber-300 text-3xl font-bold text-center">Test Input</h3>
                 <div className="w-1/2">
-                  <SizeSlider value={inputCellSize} onChange={setInputCellSize} min={50} max={100} label="Grid Size" />
+                  <SizeSlider value={inputCellSize} onChange={setInputCellSize} min={25} max={75} label="Grid Size" />
                 </div>
               </div>
-              <ResponsiveOfficerDisplayGrid
-                grid={testInput}
-                containerType="solver"
-                emojiSet={displayState.emojiSet}
-                displayMode={displayState.displayMode}
-                className="w-full h-full"
-                fixedCellSize={inputCellSize}
-              />
+              <GridWithDimensions grid={testInput}>
+                <ResponsiveOfficerDisplayGrid
+                  grid={testInput}
+                  containerType="solver"
+                  emojiSet={displayState.emojiSet}
+                  displayMode={displayState.displayMode}
+                  className="w-full h-full"
+                  fixedCellSize={inputCellSize}
+                />
+              </GridWithDimensions>
             </div>
 
             {/* Central Controls Wrapper - Full width on mobile, center column on large screens */}
@@ -839,7 +842,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                   )}
                 </h3>
                 <div className="w-1/2">
-                  <SizeSlider value={outputCellSize} onChange={setOutputCellSize} min={50} max={100} label="Grid Size" />
+                  <SizeSlider value={outputCellSize} onChange={setOutputCellSize} min={25} max={75} label="Grid Size" />
                 </div>
               </div>
 
@@ -900,18 +903,54 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                    '🎯 Submit for Official Validation'}
                 </button>
               </div>
-              <ResponsiveOfficerGrid
-                initialGrid={currentSolution}
-                containerType="solver"
-                emojiSet={displayState.emojiSet}
-                displayMode={displayState.displayMode}
-                selectedValue={displayState.selectedValue}
-                onCellInteraction={handleCellInteraction}
-                enableDragToPaint={true}
-                className="w-full h-full"
-                onChange={updateCurrentSolution}
-                fixedCellSize={outputCellSize}
-              />
+              <GridWithDimensions
+                grid={currentSolution}
+                expectedDimensions={expectedOutput.length > 0 ? {
+                  width: expectedOutput[0]?.length || 0,
+                  height: expectedOutput.length
+                } : undefined}
+                showExpected={true}
+              >
+                <ResponsiveOfficerGrid
+                  initialGrid={currentSolution}
+                  containerType="solver"
+                  emojiSet={displayState.emojiSet}
+                  displayMode={displayState.displayMode}
+                  selectedValue={displayState.selectedValue}
+                  onCellInteraction={handleCellInteraction}
+                  enableDragToPaint={true}
+                  className="w-full h-full"
+                  onChange={updateCurrentSolution}
+                  fixedCellSize={outputCellSize}
+                />
+              </GridWithDimensions>
+
+              {/* Hint System */}
+              <div className="mt-4">
+                <PermanentHintSystem
+                  puzzle={puzzle}
+                  currentTestOutput={expectedOutput}
+                  onAutoResizeGrid={(width, height) => {
+                    handleSizeChange(width, height);
+                  }}
+                  onHintUsed={(hintLevel, totalHints) => {
+                    console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);
+                    // Log hint usage for analytics
+                    logPlayerAction(
+                      "hint_used",
+                      0,
+                      hintLevel,
+                      {
+                        hintLevel,
+                        totalHintsUsed: totalHints,
+                        testCase: currentTestIndex,
+                        puzzleId: puzzle.id
+                      }
+                    );
+                  }}
+                />
+              </div>
+
             </div>
           </div>
 
@@ -972,6 +1011,10 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
           message="Puzzle solved successfully! Click OK to continue to the next challenge..."
           showDesignerNotes={true}
           fallbackMode={validationResult?.fallback || false}
+          // Enable new features
+          puzzleId={puzzle.id}
+          enableAIComparison={true}
+          enableStrategySubmission={true}
           scoreDetails={validationResult ? {
             basePoints: validationResult.basePoints,
             speedBonus: validationResult.speedBonus || validationResult.efficiencyBonus,

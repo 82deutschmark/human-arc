@@ -7,9 +7,11 @@
 
 import { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Spinner } from '@nextui-org/react';
+import { Textarea } from '@/components/ui/textarea';
 import { assessmentContentService, type AssessmentContent } from '@/services/assessment/AssessmentContentService';
-import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance, type ModelStats } from '@/services/core/arcExplainerClient';
+import { arcExplainerClient, type AggregatedAIStats, type ModelPerformance, type ModelStats, type SolutionSubmissionRequest } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
+import { playFabUserData } from '@/services/playfab/userData';
 
 interface AssessmentStepSuccessModalProps {
   open: boolean;
@@ -31,6 +33,16 @@ export function AssessmentStepSuccessModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAllModels, setShowAllModels] = useState(false);
+
+  // Strategy submission state
+  const [strategyText, setStrategyText] = useState('');
+  const [isSubmittingStrategy, setIsSubmittingStrategy] = useState(false);
+  const [strategySubmitted, setStrategySubmitted] = useState(false);
+  const [strategyError, setStrategyError] = useState<string | null>(null);
+
+  // Strategy bonus state
+  const [bonusAwarded, setBonusAwarded] = useState(false);
+  const [bonusPoints, setBonusPoints] = useState<number | null>(null);
 
   useEffect(() => {
     const loadContent = async () => {
@@ -73,9 +85,66 @@ export function AssessmentStepSuccessModal({
     setContent(null);
     setAiStats(null);
     setError(null);
+    setStrategyText('');
+    setStrategySubmitted(false);
+    setStrategyError(null);
   };
 
-  const handleAdvance = () => {
+  const handleSubmitStrategy = async () => {
+    if (!strategyText.trim()) return;
+
+    setIsSubmittingStrategy(true);
+    setStrategyError(null);
+
+    try {
+      // First, submit strategy to community database
+      const submissionData: SolutionSubmissionRequest = {
+        strategy: strategyText.trim(),
+        metadata: {
+          assessmentMode: true,
+          sessionId: `assessment_${Date.now()}`
+        }
+      };
+
+      const result = await arcExplainerClient.submitUserSolution(puzzleId, submissionData);
+
+      if (result) {
+        setStrategySubmitted(true);
+        console.log('✅ Strategy submitted successfully:', result);
+
+        // Second, award strategy bonus points via CloudScript
+        try {
+          const bonusResult = await playFabUserData.awardStrategyBonus(puzzleId);
+
+          if (bonusResult.success && bonusResult.bonusAwarded) {
+            setBonusAwarded(true);
+            setBonusPoints(bonusResult.bonusPoints || 0);
+            console.log('🎉 Strategy bonus awarded:', bonusResult.bonusPoints);
+          } else {
+            console.log('ℹ️ Strategy bonus not awarded:', bonusResult.message);
+          }
+        } catch (bonusError) {
+          console.error('⚠️ Strategy bonus failed (strategy still submitted):', bonusError);
+          // Don't show error to user since strategy was successfully submitted
+        }
+
+      } else {
+        setStrategyError('Failed to submit strategy. Please try again.');
+      }
+    } catch (error) {
+      console.error('❌ Strategy submission error:', error);
+      setStrategyError('An error occurred while submitting your strategy.');
+    } finally {
+      setIsSubmittingStrategy(false);
+    }
+  };
+
+  const handleAdvance = async () => {
+    // If user has entered strategy but not submitted, submit it first
+    if (strategyText.trim() && !strategySubmitted && !isSubmittingStrategy) {
+      await handleSubmitStrategy();
+    }
+
     handleClose();
     if (onAssessmentAdvance) {
       onAssessmentAdvance();
@@ -117,7 +186,7 @@ export function AssessmentStepSuccessModal({
     const getPerformanceMessage = () => {
         // Use the same AI stats structure as HumanVsAiComparison
         if (!aiStats || !aiStats.hasData || aiStats.totalAttempts === 0) {
-            return 'This puzzle challenged various AI models. Your human insight solved what machines struggle with! 🧠 > 🤖';
+            return 'This puzzle challenged various AI models. 🧠 > 🤖';
         }
 
         // Find the worst performing model from the breakdown
@@ -127,7 +196,7 @@ export function AssessmentStepSuccessModal({
             );
 
             const failureRate = 100 - parseFloat(formatAccuracy(worstModel.accuracy));
-            return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time. Human pattern recognition for the win! 🧠 > 🤖`;
+            return `You solved something that ${worstModel.modelName} gets wrong ${failureRate.toFixed(0)}% of the time.`;
         }
 
         // Fallback using overall accuracy
@@ -256,10 +325,78 @@ export function AssessmentStepSuccessModal({
             )}
           </div>
 
+          {/* Strategy Submission Section */}
+          <div className="mt-6 pt-4 border-t border-slate-700">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-amber-400 text-lg">💭</span>
+              <h4 className="font-bold text-md text-amber-500">Share Your Strategy</h4>
+              <span className="text-xs text-slate-500 ml-auto">(Optional)</span>
+            </div>
+            <p className="text-slate-400 text-sm mb-3">
+              Help other solvers by sharing how you approached this puzzle. Your strategy will be added to the community solutions.
+            </p>
+
+            <Textarea
+              placeholder="Describe your solving approach, what patterns you noticed, or the steps you took..."
+              value={strategyText}
+              onChange={(e) => setStrategyText(e.target.value)}
+              className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder-slate-500"
+              rows={3}
+              maxLength={1000}
+            />
+
+            {strategyError && (
+              <div className="mb-3 p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-sm">
+                {strategyError}
+              </div>
+            )}
+
+            {strategySubmitted && (
+              <div className="mb-3 space-y-2">
+                <div className="p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm flex items-center gap-2">
+                  <span>✅</span> Strategy submitted successfully! Thank you for contributing.
+                </div>
+                {bonusAwarded && bonusPoints && (
+                  <div className="p-2 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-sm flex items-center gap-2">
+                    <span>🎉</span> Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
+                  </div>
+                )}
+              </div>
+            )}
+
+            {strategyText.trim() && !strategySubmitted && (
+              <div className="flex gap-2 mb-3">
+                <Button
+                  size="sm"
+                  color="warning"
+                  variant="bordered"
+                  onPress={handleSubmitStrategy}
+                  isLoading={isSubmittingStrategy}
+                  isDisabled={isSubmittingStrategy}
+                >
+                  {isSubmittingStrategy ? 'Submitting...' : 'Submit Strategy'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onPress={() => setStrategyText('')}
+                  isDisabled={isSubmittingStrategy}
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
+          </div>
+
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onPress={handleAdvance}>
-            OK
+          <Button
+            color="primary"
+            onPress={handleAdvance}
+            isLoading={isSubmittingStrategy}
+            isDisabled={isSubmittingStrategy}
+          >
+            {isSubmittingStrategy ? 'Submitting...' : (strategyText.trim() && !strategySubmitted ? 'Submit & Continue' : 'Continue')}
           </Button>
         </ModalFooter>
       </>

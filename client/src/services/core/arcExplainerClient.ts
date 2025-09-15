@@ -93,6 +93,33 @@ export interface ModelInfo {
   active: boolean;
 }
 
+// Types for user solution submission
+export interface UserSolution {
+  id: string;
+  puzzleId: string;
+  strategy: string;
+  userId?: string;
+  metadata?: {
+    userAgent?: string;
+    timestamp?: string;
+    sessionId?: string;
+  };
+  votes?: {
+    helpful: number;
+    notHelpful: number;
+  };
+  createdAt: string;
+}
+
+export interface SolutionSubmissionRequest {
+  strategy: string;
+  metadata?: {
+    userAgent?: string;
+    sessionId?: string;
+    assessmentMode?: boolean;
+  };
+}
+
 /**
  * Pure HTTP client for arc-explainer API
  * No business logic, just API communication
@@ -621,6 +648,79 @@ export class ArcExplainerClient {
       sampleData: response?.data ? JSON.stringify(response.data).substring(0, 500) + '...' : null
     });
     return response;
+  }
+
+  /**
+   * Submit user solution/strategy for a puzzle
+   */
+  async submitUserSolution(
+    puzzleId: string,
+    solutionData: SolutionSubmissionRequest
+  ): Promise<UserSolution | null> {
+    try {
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      if (!arcId) {
+        console.error(`❌ Invalid puzzle ID for solution submission: ${puzzleId}`);
+        return null;
+      }
+
+      console.log(`💭 Submitting user solution for puzzle: ${arcId}`);
+      const endpoint = `/api/puzzles/${arcId}/solutions`;
+
+      const response = await this.request<any>(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          explanation: solutionData.strategy, // API expects 'explanation' field
+          metadata: {
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString(),
+            ...solutionData.metadata
+          }
+        })
+      }, false); // Don't cache POST requests
+
+      if (response?.success && response?.data) {
+        console.log(`✅ Successfully submitted solution for ${arcId}`);
+        return response.data;
+      }
+
+      console.warn(`⚠️ Failed to submit solution for ${arcId}: Invalid response`);
+      return null;
+    } catch (error) {
+      console.error(`❌ Failed to submit solution for ${puzzleId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get user solutions for a puzzle
+   */
+  async getUserSolutions(puzzleId: string): Promise<UserSolution[]> {
+    try {
+      const arcId = idConverter.normalizeToArcId(puzzleId);
+      if (!arcId) {
+        console.error(`❌ Invalid puzzle ID for solutions retrieval: ${puzzleId}`);
+        return [];
+      }
+
+      console.log(`📖 Getting user solutions for puzzle: ${arcId}`);
+      const endpoint = `/api/puzzles/${arcId}/solutions`;
+      const response = await this.request<any>(endpoint);
+
+      if (response?.success && Array.isArray(response?.data)) {
+        console.log(`✅ Found ${response.data.length} user solutions for ${arcId}`);
+        return response.data;
+      }
+
+      console.warn(`⚠️ No user solutions found for ${arcId}`);
+      return [];
+    } catch (error) {
+      console.error(`❌ Failed to get solutions for ${puzzleId}:`, error);
+      return [];
+    }
   }
 
   /**

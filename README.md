@@ -1,7 +1,13 @@
-# Space Force Mission Control 2050
-## Version 0.1.0 - Minimal Working Prototype
+# HARC Platform / Space Force Mission Control 2050 
+## Version 0.1.1 - Minimal Working Prototype September 14, 2025
+This app is several different wrappers for the same basic core data and functionality. 
 
-A Space Force-themed puzzle platform featuring integrated human vs AI performance comparison. Successfully unifies PlayFab and arc-explainer APIs to provide real-time performance analysis comparing human puzzle-solving abilities against state-of-the-art AI models. Built on the Abstract Reasoning Corpus (ARC) framework.
+### One component is a research platform for the ARC-AGI datasets and how humans perform against AI models.  This is HARC.
+
+### The other component is a Space Force-themed puzzle platform featuring integrated human vs AI performance comparison. 
+
+
+### Both of these wrappers use the same basic architecture and this successfully unifies PlayFab and arc-explainer APIs to provide real-time performance analysis comparing human puzzle-solving abilities against state-of-the-art AI models. Built on the Abstract Reasoning Corpus (ARC) framework.
 
 
 ## **Core Achievement: Human vs AI Performance Comparison**
@@ -14,7 +20,7 @@ A Space Force-themed puzzle platform featuring integrated human vs AI performanc
 - **Assessment Interface**: Users solve curated ARC puzzles with full performance tracking
 - **Performance Comparison**: Real-time comparison of human vs AI solving statistics
 - **Puzzle Discovery**: Foundation for browsing challenging puzzles based on AI difficulty metrics
-- **Dual Track System**: Enlisted (themed tasks) + Officer (raw ARC-AGI datasets)
+- **Space Force Dual Track System**: Enlisted (themed tasks) + Officer (raw ARC-AGI datasets)
 - **Platform**: Static web application with PlayFab cloud backend
 
 https://learn.microsoft.com/en-us/rest/api/playfab/server/?view=playfab-rest - PlayFab Server API Reference
@@ -34,20 +40,20 @@ https://learn.microsoft.com/en-us/rest/api/playfab/server/?view=playfab-rest - P
 3. **Comparison Analysis**: View detailed human vs AI performance at `/assessment/comparison`
 4. **Puzzle Discovery**: Browse challenging puzzles where humans outperform or struggle vs AI (foundation for HARC Platform)
 
-## Legacy Features
-
+# Legacy Features
+### Space Force-themed puzzle platform features:
 ### Enlisted Track (155 Tasks)
 - **Themed Categories**: O₂ Systems, Navigation, Power, Communications, Fuel Systems, Pre-Launch, Security
 - **Rank Progression**: Advance through Space Force enlisted ranks (E1-E9)
 - **Curated Content**: Space Force themed transformations with storylines
 
-### Officer Track (2,020 Puzzles) ✅ OPERATIONAL  
+### Officer Track (2,020 Puzzles) ✅ Minimally Functional, requires design and testing 
 - **ARC-AGI Datasets**: Complete training, training2, evaluation, evaluation2 datasets
 - **AI-Curated Difficulty**: Integration with arc-explainer API for AI trustworthiness data
 - **Enhanced Search**: Exact puzzle ID lookup and random selection by AI difficulty  
 - **Performance Analytics**: Real AI accuracy scores (40.9%, 36.3%, 18.5% etc.) and performance metrics
 - **Batch Architecture**: Efficient loading of large puzzle collections from PlayFab
-- **Officer Ranks**: LIEUTENANT → CAPTAIN → MAJOR → COLONEL progression
+- **Officer Ranks**: DO NOT EXIST are not designed yet!
 
 ### Assessment Platform
 - **Human vs AI Benchmarking**: Compare performance against LLM accuracy data at `/assessment`
@@ -56,7 +62,8 @@ https://learn.microsoft.com/en-us/rest/api/playfab/server/?view=playfab-rest - P
 - **Success Feedback**: User-controlled progression with success modal requiring interaction (`SuccessModal.tsx`)
 
 ### UI/UX Features
-- **Responsive Design**: Complete mobile/tablet support via `ResponsiveOfficerGrid.tsx`
+- **No Mobile**: Any specific mobile features are not yet implemented, it is difficult enough making it look ok on desktop with such big grids.
+- **Responsive Design**: `ResponsiveOfficerGrid.tsx` controls puzzle solving.
 - **Grid Customization**: Separate input/output size controls via `SizeSlider.tsx` (50-100px range)
 - **Visual Integration**: Painting tools show actual ARC colors in Numbers Only mode
 - **Dynamic Metadata**: Navbar displays puzzle performance data from arc-explainer API
@@ -96,15 +103,24 @@ Static React App (client/) ←------ HTTP API Calls ----------------┘
 │   └── layout/         # Navigation (Navbar with dynamic metadata)
 ├── constants/     # Emoji sets and game constants
 ├── services/      # Pure HTTP integrations
-│   ├── playfab/         # Core PlayFab services
-│   ├── arcDataService.ts       # Officer track batch loading
-│   └── arcExplainerService.ts  # AI performance metadata integration
+│   ├── idConverter.ts # ID conversion service between PlayFab and arc-explainer IDs !!!
+│   ├── playfab/         # PlayFab services
+|   |── core/            # Core arc-explainer services
+|        ├── arcExplainerClient.ts
+|        ├── playfabPuzzleClient.ts
+|        ├── puzzleRepository.ts
+│        ├── cacheManager.ts
+│        ├── index.ts
+|
+│   ├── arcDataService.ts       # Officer track batch loading DEPRECATED for files in services/core/
+│   └── arcExplainerService.ts  # AI performance metadata integration  DEPRECATED for files in services/core/ 
 ├── types/         # TypeScript definitions
 └── pages/         # Route components with AI-curated filtering
 
 ### Data Flow
 1. **Enlisted Tasks**: Loaded from `AllTasks` PlayFab Title Data key
 2. **Officer Tasks**: Batch-loaded from multiple Title Data keys per dataset
+2.1 **HARC Tasks**: Batch-loaded from multiple Title Data keys per dataset
 3. **AI Performance**: Real-time HTTP calls to arc-explainer API for difficulty curation
 4. **Assessment Flow**: 2-attempt system with auto-advancement via `AssessmentInterface.tsx`
 5. **Authentication**: Anonymous PlayFab login with persistent device ID
