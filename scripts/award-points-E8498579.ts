@@ -23,8 +23,8 @@ interface PlayFabAdminResponse {
   errorMessage?: string;
 }
 
-async function makeAdminRequest(endpoint: string, body: any): Promise<PlayFabAdminResponse> {
-  const response = await fetch(`https://${PLAYFAB_TITLE_ID}.playfabapi.com/Admin/${endpoint}`, {
+async function makePlayFabRequest(endpoint: string, body: any): Promise<any> {
+  const response = await fetch(`https://${PLAYFAB_TITLE_ID}.playfabapi.com/${endpoint}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -33,67 +33,105 @@ async function makeAdminRequest(endpoint: string, body: any): Promise<PlayFabAdm
     body: JSON.stringify(body)
   });
 
-  return await response.json();
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  if (result.code !== 200) {
+    throw new Error(`PlayFab error: ${result.error || result.errorMessage || 'Unknown error'}`);
+  }
+
+  return result;
 }
 
 async function findParticipant(participantId: string) {
   console.log(`🔍 Searching for participant: ${participantId}`);
 
-  // First try to get user account info by PlayFab ID
-  const accountInfo = await makeAdminRequest('GetUserAccountInfo', {
-    PlayFabId: participantId
-  });
+  try {
+    // Try to get user account info by PlayFab ID
+    const result = await makePlayFabRequest('Admin/GetUserAccountInfo', {
+      PlayFabId: participantId
+    });
 
-  if (accountInfo.code === 200 && accountInfo.data) {
     console.log(`✅ Found participant ${participantId}:`);
-    console.log(`   Display Name: ${accountInfo.data.UserInfo?.TitleInfo?.DisplayName || 'No display name'}`);
-    console.log(`   Created: ${accountInfo.data.UserInfo?.Created}`);
-    return accountInfo.data;
-  }
+    console.log(`   Display Name: ${result.data.UserInfo?.TitleInfo?.DisplayName || 'No display name'}`);
+    console.log(`   Created: ${result.data.UserInfo?.Created}`);
+    return result.data;
 
-  console.log(`❌ Participant ${participantId} not found or error occurred:`);
-  console.log(`   Error: ${accountInfo.errorMessage || 'Unknown error'}`);
-  return null;
+  } catch (error) {
+    console.log(`❌ Participant ${participantId} not found by PlayFab ID`);
+
+    // Get leaderboard to find users with similar IDs
+    try {
+      console.log(`🔍 Searching leaderboard for IDs starting with ${participantId}...`);
+      const leaderboard = await makePlayFabRequest('Server/GetLeaderboard', {
+        StatisticName: 'OfficerTrackPoints',
+        MaxResultsCount: 100
+      });
+
+      // Show all users first
+      console.log(`📋 All users on leaderboard:`);
+      leaderboard.data.Leaderboard.forEach((entry: any, index: number) => {
+        console.log(`   ${index + 1}. ${entry.PlayFabId} - ${entry.DisplayName || 'No name'} (${entry.StatValue} points)`);
+      });
+
+      const matches = leaderboard.data.Leaderboard.filter((entry: any) =>
+        entry.PlayFabId.slice(-8) === participantId
+      );
+
+      if (matches.length > 0) {
+        console.log(`\n🎯 Found ${matches.length} user(s) with IDs ending with ${participantId}:`);
+        matches.forEach((match: any, index: number) => {
+          console.log(`   ${index + 1}. ${match.PlayFabId} - ${match.DisplayName || 'No name'} (${match.StatValue} points)`);
+        });
+        return matches[0]; // Return first match
+      } else {
+        console.log(`\n❌ No users found with IDs ending with ${participantId}`);
+        return null;
+      }
+    } catch (leaderboardError) {
+      console.log(`❌ Could not search leaderboard: ${leaderboardError}`);
+      return null;
+    }
+  }
 }
 
-async function awardPoints(participantId: string, points: number) {
-  console.log(`💰 Awarding ${points.toLocaleString()} points to ${participantId}...`);
+async function awardPoints(participant: any, points: number) {
+  const playFabId = participant.PlayFabId || participant.UserInfo?.PlayFabId;
+  console.log(`💰 Awarding ${points.toLocaleString()} points to ${playFabId}...`);
 
-  // Get current statistics first
-  const currentStats = await makeAdminRequest('GetUserStatistics', {
-    PlayFabId: participantId
-  });
-
-  if (currentStats.code !== 200) {
-    console.log(`❌ Could not get current statistics: ${currentStats.errorMessage}`);
-    return false;
-  }
-
-  console.log('📊 Current statistics:');
-  if (currentStats.data?.Statistics) {
-    currentStats.data.Statistics.forEach((stat: any) => {
-      console.log(`   ${stat.StatisticName}: ${stat.Value}`);
+  try {
+    // Get current statistics first
+    const currentStats = await makePlayFabRequest('Server/GetPlayerStatistics', {
+      PlayFabId: playFabId,
+      StatisticNames: ['OfficerTrackPoints']
     });
-  } else {
-    console.log('   No current statistics found');
-  }
 
-  // Award points to OfficerTrackPoints (main leaderboard stat)
-  const updateResult = await makeAdminRequest('UpdateUserStatistics', {
-    PlayFabId: participantId,
-    Statistics: [
-      {
-        StatisticName: 'OfficerTrackPoints',
-        Value: points
-      }
-    ]
-  });
+    console.log('📊 Current statistics:');
+    const currentScore = currentStats.data?.Statistics?.find((stat: any) => stat.StatisticName === 'OfficerTrackPoints')?.Value || 0;
+    console.log(`   OfficerTrackPoints: ${currentScore}`);
 
-  if (updateResult.code === 200) {
-    console.log(`✅ Successfully awarded ${points.toLocaleString()} points to ${participantId}!`);
+    const newTotalScore = currentScore + points;
+    console.log(`   New total will be: ${newTotalScore} (${currentScore} + ${points})`);
+
+    // Award points using Server API (additive)
+    const updateResult = await makePlayFabRequest('Server/UpdatePlayerStatistics', {
+      PlayFabId: playFabId,
+      Statistics: [
+        {
+          StatisticName: 'OfficerTrackPoints',
+          Value: newTotalScore
+        }
+      ]
+    });
+
+    console.log(`✅ Successfully awarded ${points.toLocaleString()} points to ${playFabId}!`);
+    console.log(`   New total score: ${newTotalScore.toLocaleString()}`);
     return true;
-  } else {
-    console.log(`❌ Failed to award points: ${updateResult.errorMessage}`);
+
+  } catch (error) {
+    console.log(`❌ Failed to award points: ${error}`);
     return false;
   }
 }
@@ -117,7 +155,7 @@ async function main() {
   console.log('');
 
   // Award the points
-  const success = await awardPoints(participantId, pointsToAward);
+  const success = await awardPoints(participant, pointsToAward);
 
   if (success) {
     console.log('');

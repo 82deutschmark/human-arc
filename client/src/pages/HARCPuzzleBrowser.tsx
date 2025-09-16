@@ -234,6 +234,13 @@ export default function HARCPuzzleBrowser() {
               >
                 📊 View Dashboard
               </Button>
+              <Button
+                onClick={() => setLocation('/leaderboards/harc_leaderboard')}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+                disabled={playFabInitializing}
+              >
+                🏆 Leaderboard
+              </Button>
             </div>
           </div>
         </div>
