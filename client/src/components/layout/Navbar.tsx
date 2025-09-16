@@ -62,7 +62,7 @@ export function Navbar({
             {rightContent || (
               <div className="hidden md:flex items-center space-x-6">
                 <NavLink href="/puzzles">Puzzles</NavLink>
-                <NavLink href="/comparison">Performance</NavLink>
+                <NavLink href="/dashboard">Dashboard</NavLink>
                 <NavLink href="/leaderboards">Leaderboard</NavLink>
                 <NavLink href="/about">About</NavLink>
                 

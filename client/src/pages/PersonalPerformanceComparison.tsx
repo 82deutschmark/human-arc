@@ -224,7 +224,7 @@ export function PersonalPerformanceComparison() {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
         <Navbar
-          title="Performance vs LLMs"
+          title="HARC Dashboard"
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
@@ -268,7 +268,7 @@ export function PersonalPerformanceComparison() {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
         <Navbar
-          title="Performance vs LLMs"
+          title="HARC Dashboard"
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
@@ -319,7 +319,7 @@ export function PersonalPerformanceComparison() {
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <Navbar
-        title="Your Performance vs LLMs"
+        title="HARC Dashboard"
         rightContent={
           <div className="flex items-center space-x-3">
             <Button
