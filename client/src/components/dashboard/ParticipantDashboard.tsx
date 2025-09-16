@@ -9,6 +9,8 @@
  */
 
 import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Navbar } from '@/components/layout/Navbar';
 import { ComparisonCard } from './ComparisonCard';
 import { playFabAuthManager } from '@/services/playfab/authManager';
 import { playFabRequestManager } from '@/services/playfab/requestManager';
@@ -106,11 +108,69 @@ export function ParticipantDashboard() {
   }, []);
 
   if (isLoading) {
-    return <div className="p-4 text-center">Loading participant dashboard...</div>;
+    return (
+      <div className="min-h-screen bg-slate-900 text-white">
+        <Navbar
+          title="HARC Dashboard"
+          rightContent={
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => window.location.href = '/assessment'}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                📋 Take Assessment
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                🏆 Leaderboard
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/puzzles'}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              >
+                🧩 Puzzle Library
+              </Button>
+            </div>
+          }
+        />
+        <div className="p-4 text-center">Loading participant dashboard...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-4 text-center text-red-500">Error: {error}</div>;
+    return (
+      <div className="min-h-screen bg-slate-900 text-white">
+        <Navbar
+          title="HARC Dashboard"
+          rightContent={
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => window.location.href = '/assessment'}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                📋 Take Assessment
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                🏆 Leaderboard
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/puzzles'}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              >
+                🧩 Puzzle Library
+              </Button>
+            </div>
+          }
+        />
+        <div className="p-4 text-center text-red-500">Error: {error}</div>
+      </div>
+    );
   }
 
   // Calculate summary statistics
@@ -120,8 +180,34 @@ export function ParticipantDashboard() {
     : '0';
 
   return (
-    <div className="p-6 bg-slate-900 text-white min-h-screen">
-      <h1 className="text-3xl font-bold text-amber-400 mb-6">HARC Participant Dashboard</h1>
+    <div className="min-h-screen bg-slate-900 text-white">
+      <Navbar
+        title="HARC Dashboard"
+        rightContent={
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={() => window.location.href = '/assessment'}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              📋 Take Assessment
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              🏆 Leaderboard
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/puzzles'}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            >
+              🧩 Puzzle Library
+            </Button>
+          </div>
+        }
+      />
+      <div className="p-6">
+        <h1 className="text-3xl font-bold text-amber-400 mb-6">HARC Participant Dashboard</h1>
 
       {comparisonData.length === 0 ? (
         <div className="text-center py-12">
@@ -155,6 +241,7 @@ export function ParticipantDashboard() {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
