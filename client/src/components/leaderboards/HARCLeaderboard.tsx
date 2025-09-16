@@ -23,7 +23,9 @@
  */
 
 import { useState, useEffect } from "react";
-
+import { leaderboards } from "@/services/playfab/leaderboards";
+import { LeaderboardType } from "@/services/playfab/leaderboard-types";
+import type { LeaderboardEntry } from "@/types/playfab";
 import {
   playFabRequestManager,
   playFabAuthManager
@@ -36,9 +38,6 @@ interface HARCStats {
   medianScore: number;
   activeParticipants: number;
 }
-import { leaderboards } from "@/services/playfab/leaderboards";
-import { LeaderboardType } from "@/services/playfab/leaderboard-types";
-import type { LeaderboardEntry } from "@/types/playfab";
 export function HARCLeaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [stats, setStats] = useState<HARCStats | null>(null);
@@ -54,9 +53,9 @@ export function HARCLeaderboard() {
       setIsLoading(true);
       setError(null);
 
-      // Fetch up to 1000 participants using Officer Track data (PlayFab API limit)
-      // This gives us a much more complete view of all participants
-      const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 1000);
+      // Fetch up to 100 participants using Officer Track data (PlayFab API safe limit)
+      // This gives us a good view of active participants without API errors
+      const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 100);
 
       // Estimate puzzles solved from score (100 points per solved puzzle average)
       const enhancedEntries = leaderboardData.map(entry => ({
@@ -370,7 +369,7 @@ export function HARCLeaderboard() {
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>Data refreshed in real-time from PlayFab leaderboard system.</p>
           <p>Scores represent cumulative points from successfully solved ARC puzzles.</p>
-          <p>Showing top {entries.length} participants (PlayFab API limit: 1000 max per request).</p>
+          <p>Showing top {entries.length} participants (PlayFab API limit: 100 max per request).</p>
         </div>
       </div>
     </div>
