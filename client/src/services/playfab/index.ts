@@ -18,8 +18,6 @@ export { leaderboards as playFabLeaderboards } from './leaderboards';
 export { playFabProfiles } from './profiles';
 export { playFabOfficerTrack } from './officerTrack';
 export { playFabRequestManager } from './requestManager';
-export { llmPlayerManager } from './llmPlayerManager';
-export { llmDataSyncService } from './llmDataSyncService';
 
 // Export all public types
 export type * from '@/types/playfab';
