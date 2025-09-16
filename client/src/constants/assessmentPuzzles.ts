@@ -17,12 +17,13 @@ export const ASSESSMENT_PUZZLE_IDS = [
   
 ];
 
-// '22425bda',   // 16x16 -> 1x6  Think of them as strings, the bottom string has priority order in the output.
+// '22425bda',   // 16x16 -> 1x6  Think of them as strings, the bottom string has priority order in the output. This is particularly challenging because there are two possible solutions when using this logic and only one will be correct.  That is why two attempts are always required.
 // 'dc1df850',    //  Surround the specific cell
 // '27a28665',    // 7 Examples, 3 Tests!
 // '3bdb4ada',  //  Make a little dot in each
 // 'e7639916',    //  Connect the dots! Large!
-
+// '12eac192', //   8x8 and very confusing with complex rules...
+// '3aa6fb7a', //   Simple 7x7, make the shape a square by filling in the missing bit.
  //  '0bb8deee',    //  Corral the shapes
  //   '32e9702f',    //  Easy answer, everything pulled to the left and change 0 to 5 
 
