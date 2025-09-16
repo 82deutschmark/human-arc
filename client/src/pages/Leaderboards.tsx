@@ -20,10 +20,12 @@
  */
 
 import { useState, useEffect } from "react";
+import { useRoute } from "wouter";
 import { Header } from "@/components/game/Header";
 import { LeaderboardContainer } from "@/components/leaderboards/LeaderboardContainer";
 import { ELOLeaderboardContainer } from "@/components/leaderboards/ELOLeaderboardContainer";
 import { LeaderboardTabs } from "@/components/leaderboards/LeaderboardTabs";
+import { HARCLeaderboard } from "@/components/leaderboards/HARCLeaderboard";
 import { LeaderboardType, getEnabledLeaderboards } from "@/services/playfab/leaderboard-types";
 import {
   playFabRequestManager,
@@ -35,11 +37,15 @@ import type { LeaderboardConfig } from "@/services/playfab/leaderboard-types";
 import type { PlayFabPlayer } from "@/services/playfab";
 
 export default function Leaderboards() {
+  const [match, params] = useRoute('/leaderboards/:type');
   const [selectedType, setSelectedType] = useState<LeaderboardType>(LeaderboardType.OFFICER_TRACK);
   const [availableLeaderboards, setAvailableLeaderboards] = useState<LeaderboardConfig[]>([]);
   const [player, setPlayer] = useState<PlayFabPlayer | null>(null);
   const [totalTasks, setTotalTasks] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Check if this is the HARC leaderboard route
+  const isHARCLeaderboard = params?.type === 'harc_leaderboard';
 
     useEffect(() => {
     const loadPageData = async () => {
@@ -97,6 +103,11 @@ export default function Leaderboards() {
   const handleTabChange = (type: LeaderboardType) => {
     setSelectedType(type);
   };
+
+  // If this is the HARC leaderboard route, render the dedicated component
+  if (isHARCLeaderboard) {
+    return <HARCLeaderboard />;
+  }
 
   if (isLoading || !player) {
     return (
