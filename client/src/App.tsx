@@ -33,7 +33,6 @@ import HARCPlatform from "@/pages/HARCPlatform";
 import Leaderboards from "@/pages/Leaderboards";
 import Profile from "@/pages/Profile";
 import HumanVsAiComparison from "@/pages/HumanVsAiComparison";
-import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
 import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import ExplanationArena from "@/pages/ExplanationArena";
