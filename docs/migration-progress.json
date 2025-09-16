@@ -1,6 +1,6 @@
 {
   "startTime": "2025-09-16T02:27:30.855Z",
-  "lastUpdate": "2025-09-16T03:18:29.673Z",
+  "lastUpdate": "2025-09-16T03:22:06.590Z",
   "totalPuzzles": 1,
   "processedPuzzles": [
     "00576224",
@@ -888,7 +888,51 @@
     "1e32b0e9",
     "1f0c79e5",
     "1f642eb9",
-    "1f85a75f"
+    "1f85a75f",
+    "1f876c06",
+    "1fad071e",
+    "2013d3e2",
+    "2204b7a8",
+    "22168020",
+    "22233c11",
+    "2281f1f4",
+    "228f6490",
+    "22eb0ac0",
+    "234bbc79",
+    "23581191",
+    "239be575",
+    "23b5c85d",
+    "253bf280",
+    "25d487eb",
+    "25d8a9c8",
+    "25ff71a9",
+    "264363fd",
+    "272f95fa",
+    "27a28665",
+    "28bf18c6",
+    "28e73c20",
+    "29623171",
+    "29c11459",
+    "29ec7d0e",
+    "2bcee788",
+    "2bee17df",
+    "2c608aff",
+    "2dc579da",
+    "2dd70a9a",
+    "2dee498d",
+    "31aa019c",
+    "321b1fc6",
+    "32597951",
+    "3345333e",
+    "3428a4f5",
+    "3618c87e",
+    "3631a71a",
+    "363442ee",
+    "36d67576",
+    "36fdfd69",
+    "3906de3d",
+    "39a8645d",
+    "39e1d7f9"
   ],
   "successfulPuzzles": [
     "00576224",
@@ -1061,7 +1105,24 @@
     "1c786137",
     "1caeab9d",
     "1e0a9b12",
-    "1f642eb9"
+    "1f642eb9",
+    "1f876c06",
+    "1fad071e",
+    "2013d3e2",
+    "22168020",
+    "2281f1f4",
+    "228f6490",
+    "22eb0ac0",
+    "23581191",
+    "239be575",
+    "25d8a9c8",
+    "25ff71a9",
+    "28bf18c6",
+    "29ec7d0e",
+    "2bcee788",
+    "31aa019c",
+    "3618c87e",
+    "3906de3d"
   ],
   "failedPuzzles": [
     {
@@ -3922,6 +3983,114 @@
     },
     {
       "puzzleId": "1f85a75f",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "2204b7a8",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "22233c11",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "234bbc79",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "23b5c85d",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "253bf280",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "25d487eb",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "264363fd",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "272f95fa",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "27a28665",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "28e73c20",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "29623171",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "29c11459",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "2bee17df",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "2c608aff",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "2dc579da",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "2dd70a9a",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "2dee498d",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "321b1fc6",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "32597951",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "3345333e",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "3428a4f5",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "3631a71a",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "363442ee",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "36d67576",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "36fdfd69",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "39a8645d",
+      "error": "No successful uploads"
+    },
+    {
+      "puzzleId": "39e1d7f9",
       "error": "No successful uploads"
     }
   ],

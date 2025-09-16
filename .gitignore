@@ -9,3 +9,4 @@ nul
 
 /docs
 docs/migration-progress.json
+*.json
