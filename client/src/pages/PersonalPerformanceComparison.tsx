@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/Navbar';
 import { playFabAuthManager } from '@/services/playfab/authManager';
 import { playFabRequestManager } from '@/services/playfab/requestManager';
@@ -222,7 +223,37 @@ export function PersonalPerformanceComparison() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
-        <Navbar title="Performance vs LLMs" />
+        <Navbar
+          title="Performance vs LLMs"
+          rightContent={
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => window.location.href = '/assessment'}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                📋 Take Assessment
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/dashboard'}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+              >
+                📊 View Dashboard
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                🏆 Leaderboard
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/puzzles'}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              >
+                🧩 Puzzle Library
+              </Button>
+            </div>
+          }
+        />
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
@@ -236,7 +267,37 @@ export function PersonalPerformanceComparison() {
   if (error) {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
-        <Navbar title="Performance vs LLMs" />
+        <Navbar
+          title="Performance vs LLMs"
+          rightContent={
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => window.location.href = '/assessment'}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                📋 Take Assessment
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/dashboard'}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+              >
+                📊 View Dashboard
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                🏆 Leaderboard
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/puzzles'}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              >
+                🧩 Puzzle Library
+              </Button>
+            </div>
+          }
+        />
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
             <div className="text-red-400 text-4xl mb-4">⚠️</div>
@@ -257,7 +318,37 @@ export function PersonalPerformanceComparison() {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <Navbar title="Your Performance vs LLMs" />
+      <Navbar
+        title="Your Performance vs LLMs"
+        rightContent={
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={() => window.location.href = '/assessment'}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              📋 Take Assessment
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/dashboard'}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+            >
+              📊 View Dashboard
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              🏆 Leaderboard
+            </Button>
+            <Button
+              onClick={() => window.location.href = '/puzzles'}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            >
+              🧩 Puzzle Library
+            </Button>
+          </div>
+        }
+      />
 
       <div className="max-w-6xl mx-auto p-6">
         {comparisonData.length === 0 ? (

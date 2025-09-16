@@ -23,6 +23,9 @@
  */
 
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/layout/Navbar";
 import { leaderboards } from "@/services/playfab/leaderboards";
 import { LeaderboardType } from "@/services/playfab/leaderboard-types";
 import type { LeaderboardEntry } from "@/types/playfab";
@@ -39,6 +42,7 @@ interface HARCStats {
   activeParticipants: number;
 }
 export function HARCLeaderboard() {
+  const [, setLocation] = useLocation();
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [stats, setStats] = useState<HARCStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -177,6 +181,31 @@ export function HARCLeaderboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
+        <Navbar
+          title="HARC Leaderboard"
+          rightContent={
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => setLocation('/assessment')}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                📋 Take Assessment
+              </Button>
+              <Button
+                onClick={() => setLocation('/dashboard')}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+              >
+                📊 View Dashboard
+              </Button>
+              <Button
+                onClick={() => setLocation('/puzzles')}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              >
+                🧩 Puzzle Library
+              </Button>
+            </div>
+          }
+        />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
@@ -190,6 +219,31 @@ export function HARCLeaderboard() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
+        <Navbar
+          title="HARC Leaderboard"
+          rightContent={
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => setLocation('/assessment')}
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+              >
+                📋 Take Assessment
+              </Button>
+              <Button
+                onClick={() => setLocation('/dashboard')}
+                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+              >
+                📊 View Dashboard
+              </Button>
+              <Button
+                onClick={() => setLocation('/puzzles')}
+                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+              >
+                🧩 Puzzle Library
+              </Button>
+            </div>
+          }
+        />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
             <div className="text-red-600 text-xl mb-4">Error Loading Data</div>
@@ -210,6 +264,31 @@ export function HARCLeaderboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar
+        title="HARC Leaderboard"
+        rightContent={
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={() => setLocation('/assessment')}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              📋 Take Assessment
+            </Button>
+            <Button
+              onClick={() => setLocation('/dashboard')}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+            >
+              📊 View Dashboard
+            </Button>
+            <Button
+              onClick={() => setLocation('/puzzles')}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            >
+              🧩 Puzzle Library
+            </Button>
+          </div>
+        }
+      />
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

@@ -119,6 +119,13 @@ export default function HARCPlatform() {
                 📊 View Dashboard
               </Button>
               <Button
+                onClick={() => setLocation('/leaderboards/harc_leaderboard')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                disabled={playFabInitializing}
+              >
+                🏆 Leaderboard
+              </Button>
+              <Button
                 onClick={handleViewPuzzleLibrary}
                 className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
               >
@@ -143,7 +150,7 @@ export default function HARCPlatform() {
 
       {/* Action Buttons - Right below Hero */}
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Button
             onClick={handleStartAssessment}
             className="bg-green-600 hover:bg-green-700 text-white p-6 h-auto"
@@ -168,9 +175,21 @@ export default function HARCPlatform() {
           </Button>
 
           <Button
-            onClick={handleViewPuzzleLibrary}
+            onClick={() => setLocation('/leaderboards/harc_leaderboard')}
             variant="outline"
             className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white p-6 h-auto"
+          >
+            <div className="text-center">
+              <div className="text-2xl mb-2">🏆</div>
+              <div className="font-bold text-lg">Leaderboard</div>
+              <div className="text-sm opacity-90 mt-1">Compare with other researchers</div>
+            </div>
+          </Button>
+
+          <Button
+            onClick={handleViewPuzzleLibrary}
+            variant="outline"
+            className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white p-6 h-auto"
           >
             <div className="text-center">
               <div className="text-2xl mb-2">🧩</div>
