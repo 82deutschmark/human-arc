@@ -54,8 +54,9 @@ export function HARCLeaderboard() {
       setIsLoading(true);
       setError(null);
 
-      // Fetch top 50 participants using Officer Track data (contains ARC puzzle performance)
-      const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 50);
+      // Fetch up to 1000 participants using Officer Track data (PlayFab API limit)
+      // This gives us a much more complete view of all participants
+      const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 1000);
 
       // Estimate puzzles solved from score (100 points per solved puzzle average)
       const enhancedEntries = leaderboardData.map(entry => ({
@@ -71,7 +72,7 @@ export function HARCLeaderboard() {
         const medianIndex = Math.floor(scores.length / 2);
 
         setStats({
-          totalParticipants: leaderboardData.length,
+          totalParticipants: leaderboardData.length, // This is now the actual count from PlayFab
           highestScore: Math.max(...scores),
           averageScore: Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length),
           medianScore: scores.length % 2 === 0
@@ -224,7 +225,7 @@ export function HARCLeaderboard() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
             <div className="bg-white p-4 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-blue-600">{stats.totalParticipants}</div>
+              <div className="text-2xl font-bold text-blue-600">{stats.totalParticipants}+</div>
               <div className="text-sm text-gray-600">Total Participants</div>
             </div>
             <div className="bg-white p-4 rounded-lg border border-gray-200">
@@ -369,6 +370,7 @@ export function HARCLeaderboard() {
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>Data refreshed in real-time from PlayFab leaderboard system.</p>
           <p>Scores represent cumulative points from successfully solved ARC puzzles.</p>
+          <p>Showing top {entries.length} participants (PlayFab API limit: 1000 max per request).</p>
         </div>
       </div>
     </div>
