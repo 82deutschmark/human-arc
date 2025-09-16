@@ -1,4 +1,4 @@
-# Claude.md - Space Force Mission Control 2050 (ARC-AGI Puzzle Platform)
+# Claude.md - Human ARC Platform and Space Force Mission Control 2050 (ARC-AGI Puzzle Platform)
 Every file you create or edit should start with:
  * 
  * Author: Your NAME  (Example: Claude Code using Sonnet 4)
