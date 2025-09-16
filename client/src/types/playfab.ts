@@ -63,8 +63,7 @@ export interface LeaderboardEntry {
   Position: number;
   PlayFabId: string;
   Profile?: PlayerProfile;
-  AttemptCount?: number; // Total number of puzzle attempts
-  CompletionRate?: number; // Success rate as percentage
+  PuzzlesSolved?: number; // Estimated number of puzzles solved
 }
 
 // =============================================================================
