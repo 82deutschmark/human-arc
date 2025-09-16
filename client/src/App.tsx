@@ -21,7 +21,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useDocumentMeta } from "@/utils/useDocumentMeta";
 import MissionControl from "@/pages/MissionControl";
-import FIQTest from "@/pages/FIQTest";
 import OfficerTrackSimple from "@/pages/OfficerTrackSimple";
 import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
@@ -55,7 +54,6 @@ function Router() {
       <Route path="/space-force/officer-track/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/space-force/officer-track/ai-comparison" component={LLMComparisonPage} />
       <Route path="/space-force/tutorial" component={TutorialPage} />
-      <Route path="/space-force/fiq-test" component={FIQTest} />
       <Route path="/assessment" component={AssessmentInterface} />
       <Route path="/officer-track/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/puzzles" component={HARCPuzzleBrowser} />

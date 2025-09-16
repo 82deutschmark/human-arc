@@ -14,21 +14,18 @@ export function AssessmentModal({ open, onClose }: AssessmentModalProps) {
         <div className="text-center space-y-4 p-2 sm:p-4">
           <div>
             <h1 className="text-3xl font-bold text-amber-400 mb-2">Are you smarter than an LLM?</h1>
-            <p className="text-slate-400 font-mono text-sm">Are you ready to challenge the limits
-               of your cognitive abilities and be compared to the state of the art in "AI"?</p>
+            <p className="text-slate-400 font-mono text-sm">Are you ready to challenge the limits of your cognitive abilities and be compared to the state of the art in "AI"?</p>
           </div>
           
           <div className="space-y-4 px-2">
             <div className="bg-slate-900 border border-slate-600 rounded p-3 sm:p-4">
-              <h3 className="text-amber-400 font-semibold mb-2">ARC-AGI is a unique benchmark for AI systems,
-                one they haven't been able to beat yet.
-              </h3>
+              <h3 className="text-amber-400 font-semibold mb-2">ARC-AGI is a unique benchmark for AI systems, one they haven't been able to beat yet.</h3>
               <div className="text-slate-200 text-base leading-relaxed space-y-3">
                 <p>
-                  You will be presented with a series of <span className="text-amber-400 font-bold">Abstract Reasoning Corpus (ARC)</span> puzzles designed to evaluate pattern recognition and logical reasoning abilities.
+                  You will be presented with a series of <span className="text-amber-400 font-bold">Abstract Reasoning Corpus (ARC)</span> puzzles designed to evaluate abstract reasoning abilities.
                 </p>
                 <p>
-                  Each puzzle contains <strong className="text-green-400">training examples</strong> that demonstrate a transformation pattern. Your task is to identify this pattern and apply it to solve the test case.
+                  Each puzzle contains <strong className="text-green-400">training examples</strong> that demonstrate a transformation logic. Take some time to reason about what the output grid should look like.
                 </p>
                 <p>
                   The puzzles may involve various types of transformations including:
@@ -40,13 +37,16 @@ export function AssessmentModal({ open, onClose }: AssessmentModalProps) {
                   <li>Object counting, sorting, and grouping</li>
                 </ul>
                 <p>
-                  Take your time to analyze the training examples carefully. There are no time limits, and you can navigate between puzzles freely.
+                  Take your time to analyze the training examples carefully. There are no time limits and these first 5 will be quick.
                 </p>
                 <p className="text-amber-300">
-                  <strong>Hint System Available:</strong> If you get stuck, progressive hints are available to help guide you through the puzzle-solving process.
+                  <strong>Hint System Available:</strong> Hint 1 will size the output grid to be the correct size, this is a big help on some puzzles!
                 </p>
                 <p className="text-green-300">
-                  This assessment helps us understand how humans approach abstract reasoning tasks. Your responses contribute to important research in cognitive science and artificial intelligence.
+                Sure, they can chat like a human and even pass hard exams — like the ones to become a lawyer or a doctor. But that's because those tests follow patterns, and <strong className="text-yellow-300">AI 🤖 are pattern masters</strong>.
+                </p>
+                <p>
+                  What they're <em>not</em>? <strong className="text-red-400">Real problem-solvers</strong>. Give them something brand new — something they've never seen, with no clear answer in their memory — and they freeze. Or worse: <em className="text-red-300">they make up confident-sounding nonsense</em>.
                 </p>
               </div>
             </div>

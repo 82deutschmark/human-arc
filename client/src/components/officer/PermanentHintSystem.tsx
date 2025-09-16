@@ -208,7 +208,7 @@ export function PermanentHintSystem({
                 <strong>Grid Size Hint:</strong> {getExpectedOutputDimensions()}
                 {currentTestOutput && currentTestOutput.length > 0 && (
                   <div className="mt-2 p-2 bg-green-900 border border-green-600 rounded text-green-200">
-                    ✅ <strong>Auto-resized your grid to {currentTestOutput[0]?.length || 0} × {currentTestOutput.length}</strong>
+                    ✅ <strong>Auto-resized your grid to {currentTestOutput.length} × {currentTestOutput[0]?.length || 0}</strong>
                   </div>
                 )}
               </div>

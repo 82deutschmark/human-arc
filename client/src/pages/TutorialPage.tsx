@@ -6,7 +6,6 @@
 
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { OfficerTutorialModal } from '@/components/officer/OfficerTutorialModal';
 import { TutorialPuzzleWrapper } from '@/components/officer/TutorialPuzzleWrapper';
 import { useTutorialProgress } from '@/hooks/useTutorialProgress';
 import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';
