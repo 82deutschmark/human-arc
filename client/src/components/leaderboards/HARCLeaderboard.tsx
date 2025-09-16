@@ -23,9 +23,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { leaderboards } from "@/services/playfab/leaderboards";
-import { LeaderboardType } from "@/services/playfab/leaderboard-types";
-import type { LeaderboardEntry } from "@/types/playfab";
+
 import {
   playFabRequestManager,
   playFabAuthManager
@@ -38,7 +36,9 @@ interface HARCStats {
   medianScore: number;
   activeParticipants: number;
 }
-
+import { leaderboards } from "@/services/playfab/leaderboards";
+import { LeaderboardType } from "@/services/playfab/leaderboard-types";
+import type { LeaderboardEntry } from "@/types/playfab";
 export function HARCLeaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [stats, setStats] = useState<HARCStats | null>(null);
