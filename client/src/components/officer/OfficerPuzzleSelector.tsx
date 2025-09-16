@@ -360,8 +360,8 @@ export function OfficerPuzzleSelector({
                     <span className="text-sm text-amber-300">
                       {puzzle.gridSize.minWidth === puzzle.gridSize.maxWidth && 
                        puzzle.gridSize.minHeight === puzzle.gridSize.maxHeight
-                        ? `${puzzle.gridSize.minWidth}×${puzzle.gridSize.minHeight}`
-                        : `${puzzle.gridSize.minWidth}-${puzzle.gridSize.maxWidth}×${puzzle.gridSize.minHeight}-${puzzle.gridSize.maxHeight}`
+                        ? `${puzzle.gridSize.minHeight}×${puzzle.gridSize.minWidth}`
+                        : `${puzzle.gridSize.minHeight}-${puzzle.gridSize.maxHeight}×${puzzle.gridSize.minWidth}-${puzzle.gridSize.maxWidth}`
                       }
                     </span>
                   </div>
@@ -452,8 +452,8 @@ export function OfficerPuzzleSelector({
               <div className="text-slate-300">
                 • Grid: {selectedPuzzle.gridSize.minWidth === selectedPuzzle.gridSize.maxWidth && 
                          selectedPuzzle.gridSize.minHeight === selectedPuzzle.gridSize.maxHeight
-                          ? `${selectedPuzzle.gridSize.minWidth}×${selectedPuzzle.gridSize.minHeight}`
-                          : `${selectedPuzzle.gridSize.minWidth}-${selectedPuzzle.gridSize.maxWidth}×${selectedPuzzle.gridSize.minHeight}-${selectedPuzzle.gridSize.maxHeight}`
+                          ? `${selectedPuzzle.gridSize.minHeight}×${selectedPuzzle.gridSize.minWidth}`
+                          : `${selectedPuzzle.gridSize.minHeight}-${selectedPuzzle.gridSize.maxHeight}×${selectedPuzzle.gridSize.minWidth}-${selectedPuzzle.gridSize.maxWidth}`
                         }<br />
                 • {selectedPuzzle.testCaseCount} test case{selectedPuzzle.testCaseCount !== 1 ? 's' : ''}<br />
                 • {selectedPuzzle.trainingExampleCount} training examples<br />
