@@ -1,8 +1,14 @@
-There are important nuances in how the metrics are calculated. Let's break down each one by examining the exact code in [MetricsRepository.ts](cci:7://file:///d:/1Projects/arc-explainer/server/repositories/MetricsRepository.ts:0:0-0:0).
+# Arc-Explainer API Guide
 
-I will re-examine the file and then provide a detailed, step-by-step explanation of the logic for each endpoint, highlighting potential areas of confusion or mistakes.
+**Author**: Claude Code using Sonnet 4
+**Date**: 2025-09-16
+**Purpose**: Developer guide for integrating with arc-explainer API endpoints
 
-The naming conventions in these statistical endpoints are indeed confusing, and a line-by-line code review reveals critical nuances. Let's break down exactly what the code in [MetricsRepository.ts](cci:7://file:///d:/1Projects/arc-explainer/server/repositories/MetricsRepository.ts:0:0-0:0) is doing for each endpoint.
+> **Note**: This document provides implementation details for arc-explainer API integration. For comprehensive integration patterns, see [arc-explainer-integration.md](./arc-explainer-integration.md).
+
+## API Endpoint Analysis
+
+There are important nuances in how the metrics are calculated. This guide breaks down each endpoint's implementation and potential areas of confusion.
 
 ### 1. `GET /api/puzzle/accuracy-stats` & `GET /api/puzzle/general-stats`
 
