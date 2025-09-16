@@ -231,21 +231,24 @@ function PlatformStats({ setLocation }: { setLocation: (path: string) => void })
   
   // Add accuracy stats if available
   if (dashboardData.accuracy) {
-    statItems.push(
-      { 
-        icon: Target, 
-        value: Math.round(dashboardData.accuracy.overallAccuracyPercentage), 
-        label: 'AI Avg Accuracy %', 
+    if (typeof dashboardData.accuracy.overallAccuracyPercentage === 'number') {
+      statItems.push({
+        icon: Target,
+        value: Math.round(dashboardData.accuracy.overallAccuracyPercentage),
+        label: 'AI Avg Accuracy %',
         color: 'text-cyan-400',
         suffix: '%'
-      },
-      { 
-        icon: Brain, 
-        value: dashboardData.accuracy.totalSolverAttempts, 
-        label: 'Total AI Attempts', 
-        color: 'text-green-400' 
-      }
-    );
+      });
+    }
+
+    if (typeof dashboardData.accuracy.totalSolverAttempts === 'number') {
+      statItems.push({
+        icon: Brain,
+        value: dashboardData.accuracy.totalSolverAttempts,
+        label: 'Total AI Attempts',
+        color: 'text-green-400'
+      });
+    }
   }
   
   // Add worst performing puzzles count
@@ -260,7 +263,7 @@ function PlatformStats({ setLocation }: { setLocation: (path: string) => void })
   }
   
   // Add feedback stats if available
-  if (dashboardData.feedback) {
+  if (dashboardData.feedback && typeof dashboardData.feedback.totalFeedback === 'number') {
     statItems.push({
       icon: Users,
       value: dashboardData.feedback.totalFeedback,
@@ -294,7 +297,7 @@ function PlatformStats({ setLocation }: { setLocation: (path: string) => void })
             <CardContent className="pt-6">
               <item.icon className={`w-8 h-8 mx-auto mb-2 ${item.color}`} />
               <div className={`text-3xl font-bold ${item.color}`}>
-                {item.value.toLocaleString()}{item.suffix || ''}
+                {(item.value ?? 0).toLocaleString()}{item.suffix || ''}
               </div>
               <p className="text-sm text-slate-300 mt-1">{item.label}</p>
               {item.tooltip && (
