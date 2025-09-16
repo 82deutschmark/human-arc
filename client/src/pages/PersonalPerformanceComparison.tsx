@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/Navbar';
 import { playFabAuthManager } from '@/services/playfab/authManager';
 import { playFabRequestManager } from '@/services/playfab/requestManager';
