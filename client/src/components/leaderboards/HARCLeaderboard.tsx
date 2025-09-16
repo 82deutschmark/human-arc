@@ -40,7 +40,7 @@ export function HARCLeaderboard() {
   const [stats, setStats] = useState<HARCStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortColumn, setSortColumn] = useState<'rank' | 'score' | 'attempts'>('rank');
+  const [sortColumn, setSortColumn] = useState<'rank' | 'score'>('rank');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -49,8 +49,8 @@ export function HARCLeaderboard() {
       setIsLoading(true);
       setError(null);
 
-      // Fetch top 50 participants using Officer Track data (contains ARC puzzle performance)
-      const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 50);
+      // Fetch ALL participants using Officer Track data (contains ARC puzzle performance)
+      const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 200);
 
       setEntries(leaderboardData);
 
@@ -81,7 +81,7 @@ export function HARCLeaderboard() {
     loadHARCData();
   }, []);
 
-  const handleSort = (column: 'rank' | 'score' | 'attempts') => {
+  const handleSort = (column: 'rank' | 'score') => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -112,10 +112,6 @@ export function HARCLeaderboard() {
           aVal = a.StatValue;
           bVal = b.StatValue;
           break;
-        case 'attempts':
-          aVal = a.AttemptCount || 0;
-          bVal = b.AttemptCount || 0;
-          break;
         default:
           return 0;
       }
@@ -126,20 +122,16 @@ export function HARCLeaderboard() {
     return sorted;
   };
 
-  const calculateSuccessRate = (score: number, attempts: number) => {
-    if (!attempts || attempts === 0) return 'N/A';
-    // Rough estimation: assuming average 100 points per successful solve
-    const estimatedSolves = Math.floor(score / 100);
-    const rate = Math.min((estimatedSolves / attempts) * 100, 100);
-    return `${rate.toFixed(1)}%`;
+  const calculatePuzzlesSolved = (score: number) => {
+    // Each puzzle solved gives ~10,000-19,999 points (base 10k + speed bonus)
+    // This is a rough estimate of puzzles solved
+    return Math.floor(score / 10000);
   };
 
-  const getPerformanceLevel = (score: number) => {
-    if (score >= 10000) return { level: 'Expert', color: 'text-green-700 bg-green-50' };
-    if (score >= 5000) return { level: 'Advanced', color: 'text-blue-700 bg-blue-50' };
-    if (score >= 1000) return { level: 'Intermediate', color: 'text-yellow-700 bg-yellow-50' };
-    if (score > 0) return { level: 'Beginner', color: 'text-gray-700 bg-gray-50' };
-    return { level: 'No Activity', color: 'text-gray-500 bg-gray-50' };
+  const getAveragePointsPerPuzzle = (score: number) => {
+    const puzzlesSolved = calculatePuzzlesSolved(score);
+    if (puzzlesSolved === 0) return 0;
+    return Math.round(score / puzzlesSolved);
   };
 
   if (isLoading) {
@@ -270,29 +262,22 @@ export function HARCLeaderboard() {
                       </span>
                     </div>
                   </th>
-                  <th
-                    className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                    onClick={() => handleSort('attempts')}
-                  >
-                    <div className="flex items-center justify-end gap-2">
-                      Attempts
-                      <span className="text-gray-400">
-                        {sortColumn === 'attempts' && (sortDirection === 'asc' ? '↑' : '↓')}
-                      </span>
-                    </div>
+                  <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Puzzles Solved
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Success Rate
+                    Avg Points/Puzzle
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Level
+                  <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Performance Index
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {sortedEntries.map((entry, index) => {
-                  const performanceLevel = getPerformanceLevel(entry.StatValue);
-                  const successRate = calculateSuccessRate(entry.StatValue, entry.AttemptCount || 0);
+                  const puzzlesSolved = calculatePuzzlesSolved(entry.StatValue);
+                  const avgPointsPerPuzzle = getAveragePointsPerPuzzle(entry.StatValue);
+                  const performanceIndex = entry.StatValue > 0 ? (avgPointsPerPuzzle / 10000 * 100).toFixed(1) : '0';
 
                   return (
                     <tr key={entry.PlayFabId} className="hover:bg-gray-50 transition-colors">
@@ -326,21 +311,25 @@ export function HARCLeaderboard() {
                         <div className="text-sm font-bold text-gray-900">
                           {entry.StatValue.toLocaleString()}
                         </div>
+                        <div className="text-xs text-gray-500">cumulative points</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          {puzzlesSolved}
+                        </div>
+                        <div className="text-xs text-gray-500">estimated</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="text-sm font-medium text-gray-900">
+                          {avgPointsPerPuzzle > 0 ? avgPointsPerPuzzle.toLocaleString() : 'N/A'}
+                        </div>
                         <div className="text-xs text-gray-500">points</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-sm text-gray-900">
-                          {entry.AttemptCount || 0}
+                        <div className="text-sm font-medium text-gray-900">
+                          {performanceIndex}%
                         </div>
-                        <div className="text-xs text-gray-500">total</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="text-sm text-gray-900">{successRate}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${performanceLevel.color}`}>
-                          {performanceLevel.level}
-                        </span>
+                        <div className="text-xs text-gray-500">efficiency</div>
                       </td>
                     </tr>
                   );
