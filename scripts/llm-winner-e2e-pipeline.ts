@@ -358,4 +358,15 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+// Export functions and types for bulk migration script
+export {
+  loadPlayFabMappings,
+  processPuzzleE2E,
+  type E2EResult,
+  type ModelWinner
+};
+
+// Execute if run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch(console.error);
+}
