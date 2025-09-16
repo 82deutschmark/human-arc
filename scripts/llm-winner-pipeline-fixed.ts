@@ -89,18 +89,18 @@ interface PipelineResult {
 }
 
 /**
- * Calculate speed bonus using the correct logic:
- * ≤30 seconds: 10,000 bonus
- * Reduces by 1,000 per minute
- * 10+ minutes: 0 bonus
+ * Calculate speed bonus using the new simplified logic:
+ * 10,000 points minus 1 point per millisecond
+ * Maximum bonus: 9,999 points (for 1ms response)
+ * Anything over 10 seconds (10,000ms): 0 bonus
  */
 function calculateSpeedBonus(timeInMs: number): number {
-  const timeInMinutes = timeInMs / (1000 * 60);
-
-  if (timeInMinutes <= 0.5) return 10000; // 30 seconds or less = 10,000 bonus
-  if (timeInMinutes >= 10) return 0;      // 10+ minutes = no bonus
-
-  return Math.max(0, 10000 - (Math.floor(timeInMinutes) * 1000));
+  // Anything over 10 seconds gets no bonus
+  if (timeInMs >= 10000) return 0;
+  
+  // 10,000 points minus 1 per millisecond
+  // So 1ms = 9999, 2ms = 9998, etc.
+  return Math.max(0, 10000 - timeInMs);
 }
 
 /**
@@ -109,18 +109,25 @@ function calculateSpeedBonus(timeInMs: number): number {
 function calculateModelScore(explanations: ExplanationRecord[]): { basePoints: number; speedBonus: number; finalScore: number; fastestTimeMs?: number } {
   const basePoints = 10000; // Fixed base for solving puzzle
 
-  // Find fastest response time (if any explanations have timing data)
-  const timings = explanations
+  // Find timing data from successful attempts only
+  const successfulTimings = explanations
+    .filter(e => e.isPredictionCorrect) // Only look at successful attempts
     .map(e => e.apiProcessingTimeMs)
-    .filter(t => typeof t === 'number' && t > 0);
+    .filter((t): t is number => typeof t === 'number' && t > 0);
 
-  if (timings.length === 0) {
-    // No timing data available, base points only
-    return { basePoints, speedBonus: 0, finalScore: basePoints };
+  console.log(`  Debug: Found ${successfulTimings.length} successful attempts with timing data: [${successfulTimings.join(', ')}]`);
+
+  if (successfulTimings.length === 0) {
+    // No timing data available from successful attempts, base points only
+    console.log(`  Debug: No timing data from successful attempts, awarding base points only`);
+    return { basePoints, speedBonus: 0, finalScore: basePoints, fastestTimeMs: undefined };
   }
 
-  const fastestTimeMs = Math.min(...timings);
+  // Use the fastest successful time (best performance)
+  const fastestTimeMs = Math.min(...successfulTimings);
   const speedBonus = calculateSpeedBonus(fastestTimeMs);
+  
+  console.log(`  Debug: Fastest successful time: ${fastestTimeMs}ms (${(fastestTimeMs/1000).toFixed(1)}s) = ${speedBonus} speed bonus`);
 
   return {
     basePoints,
@@ -187,10 +194,13 @@ function detectWinners(explanations: ExplanationRecord[], puzzleId: string): Mod
   const results: ModelPuzzleResult[] = [];
 
   for (const [modelName, modelExplanations] of modelGroups) {
-    // Check if ANY attempt was successful
-    const solved = modelExplanations.some(e => e.isPredictionCorrect);
+    // FIXED: Only consider models that have at least one CORRECT prediction
+    const correctAttempts = modelExplanations.filter(e => e.isPredictionCorrect === true);
+    const solved = correctAttempts.length > 0;
 
-    // Get best confidence and latest timestamp
+    console.log(`  Debug: ${modelName} - ${modelExplanations.length} total attempts, ${correctAttempts.length} correct attempts`);
+
+    // Get best confidence and latest timestamp from ALL attempts
     const bestConfidence = Math.max(...modelExplanations.map(e => e.confidence || 0));
     const latestTimestamp = modelExplanations
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
@@ -200,10 +210,10 @@ function detectWinners(explanations: ExplanationRecord[], puzzleId: string): Mod
     const isRegistered = REGISTERED_MODEL_KEYS.has(modelName);
     const playFabMapping = isRegistered ? AI_MODEL_MAPPINGS[modelName] : undefined;
 
-    // Calculate score (only matters for winners)
-    let scoring = { basePoints: 0, speedBonus: 0, finalScore: 0, fastestTimeMs: undefined };
+    // Calculate score ONLY from correct attempts
+    let scoring: { basePoints: number; speedBonus: number; finalScore: number; fastestTimeMs?: number } = { basePoints: 0, speedBonus: 0, finalScore: 0 };
     if (solved) {
-      scoring = calculateModelScore(modelExplanations);
+      scoring = calculateModelScore(correctAttempts); // Only pass correct attempts for scoring
     }
 
     const result: ModelPuzzleResult = {
@@ -355,13 +365,13 @@ async function main() {
     await loadPlayFabMappings();
 
     // Process the target puzzle
-    const puzzleId = '66e6c45b'; // Fifth puzzle
+    const puzzleId = 'a699fb00'; // Third assessment puzzle - Connect the dots
     const result = await processPuzzle(puzzleId);
 
     // Generate PlayFab update records using REAL data
     const playFabUpdates = generatePlayFabUpdates(result.winners);
 
-    console.log('\n📈 FIXED PIPELINE SUMMARY:');
+    console.log('\n FIXED PIPELINE SUMMARY:');
     console.log(`   Puzzle: ${result.puzzleId}`);
     console.log(`   Models analyzed: ${result.totalModels}`);
     console.log(`   Winners found: ${result.winnersFound}`);

@@ -1,6 +1,6 @@
 {
   "puzzleId": "a699fb00",
-  "timestamp": "2025-09-15T21:44:34.207Z",
+  "timestamp": "2025-09-15T23:23:15.976Z",
   "totalModels": 37,
   "winnersFound": 27,
   "playFabUpdatesReady": 27,
@@ -23,8 +23,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9950,
+      "finalScore": 19950,
       "fastestTimeMs": 50
     },
     {
@@ -44,8 +44,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9958,
+      "finalScore": 19958,
       "fastestTimeMs": 42
     },
     {
@@ -65,8 +65,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9972,
+      "finalScore": 19972,
       "fastestTimeMs": 28
     },
     {
@@ -86,8 +86,8 @@
       },
       "bestConfidence": 98,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9992,
+      "finalScore": 19992,
       "fastestTimeMs": 8
     },
     {
@@ -107,8 +107,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9991,
+      "finalScore": 19991,
       "fastestTimeMs": 9
     },
     {
@@ -128,8 +128,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9997,
+      "finalScore": 19997,
       "fastestTimeMs": 3
     },
     {
@@ -149,8 +149,8 @@
       },
       "bestConfidence": 90,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9997,
+      "finalScore": 19997,
       "fastestTimeMs": 3
     },
     {
@@ -170,8 +170,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9735,
+      "finalScore": 19735,
       "fastestTimeMs": 265
     },
     {
@@ -191,8 +191,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9941,
+      "finalScore": 19941,
       "fastestTimeMs": 59
     },
     {
@@ -212,8 +212,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9939,
+      "finalScore": 19939,
       "fastestTimeMs": 61
     },
     {
@@ -233,8 +233,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9947,
+      "finalScore": 19947,
       "fastestTimeMs": 53
     },
     {
@@ -254,8 +254,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9941,
+      "finalScore": 19941,
       "fastestTimeMs": 59
     },
     {
@@ -275,8 +275,8 @@
       },
       "bestConfidence": 90,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9952,
+      "finalScore": 19952,
       "fastestTimeMs": 48
     },
     {
@@ -296,8 +296,8 @@
       },
       "bestConfidence": 90,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9963,
+      "finalScore": 19963,
       "fastestTimeMs": 37
     },
     {
@@ -317,8 +317,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9960,
+      "finalScore": 19960,
       "fastestTimeMs": 40
     },
     {
@@ -338,8 +338,8 @@
       },
       "bestConfidence": 95,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9966,
+      "finalScore": 19966,
       "fastestTimeMs": 34
     },
     {
@@ -359,8 +359,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9969,
+      "finalScore": 19969,
       "fastestTimeMs": 31
     },
     {
@@ -380,8 +380,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9977,
+      "finalScore": 19977,
       "fastestTimeMs": 23
     },
     {
@@ -401,8 +401,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9983,
+      "finalScore": 19983,
       "fastestTimeMs": 17
     },
     {
@@ -422,8 +422,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9996,
+      "finalScore": 19996,
       "fastestTimeMs": 4
     },
     {
@@ -443,8 +443,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9990,
+      "finalScore": 19990,
       "fastestTimeMs": 10
     },
     {
@@ -464,8 +464,8 @@
       },
       "bestConfidence": 98,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 9991,
+      "finalScore": 19991,
       "fastestTimeMs": 9
     },
     {
@@ -485,9 +485,9 @@
       },
       "bestConfidence": 87,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
-      "fastestTimeMs": 3062
+      "speedBonus": 0,
+      "finalScore": 10000,
+      "fastestTimeMs": 19357
     },
     {
       "modelName": "o4-mini-2025-04-16",
@@ -506,8 +506,8 @@
       },
       "bestConfidence": 98,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 0,
+      "finalScore": 10000,
       "fastestTimeMs": 18315
     },
     {
@@ -527,8 +527,8 @@
       },
       "bestConfidence": 92,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 0,
+      "finalScore": 10000,
       "fastestTimeMs": 12433
     },
     {
@@ -548,8 +548,8 @@
       },
       "bestConfidence": 100,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 7313,
+      "finalScore": 17313,
       "fastestTimeMs": 2687
     },
     {
@@ -569,8 +569,8 @@
       },
       "bestConfidence": 92,
       "basePoints": 10000,
-      "speedBonus": 10000,
-      "finalScore": 20000,
+      "speedBonus": 985,
+      "finalScore": 10985,
       "fastestTimeMs": 9015
     }
   ]

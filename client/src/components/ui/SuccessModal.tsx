@@ -91,6 +91,11 @@ export function SuccessModal({
   const [bonusAwarded, setBonusAwarded] = useState(false);
   const [bonusPoints, setBonusPoints] = useState<number | null>(null);
 
+  // LLM Analysis state
+  const [isAnalyzingAI, setIsAnalyzingAI] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
   // Generate new random emojis each time modal opens
   useEffect(() => {
     if (open) {
@@ -106,6 +111,11 @@ export function SuccessModal({
       setStrategyText('');
       setStrategySubmitted(false);
       setStrategyError(null);
+
+      // Reset LLM analysis state
+      setIsAnalyzingAI(false);
+      setAnalysisComplete(false);
+      setAnalysisError(null);
 
       // Only auto close if delay is explicitly set and no strategy submission in progress
       if (autoCloseDelay > 0) {
@@ -139,6 +149,37 @@ export function SuccessModal({
       console.error('Failed to load AI performance data:', error);
     } finally {
       setIsLoadingAI(false);
+    }
+  };
+
+  // Handle LLM Analysis trigger
+  const handleAnalyzeAI = async () => {
+    if (!puzzleId) return;
+
+    setIsAnalyzingAI(true);
+    setAnalysisError(null);
+
+    try {
+      const response = await fetch('/api/llm-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ puzzleId, triggeredBy: 'success-modal' })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setAnalysisComplete(true);
+        console.log('✅ LLM Analysis completed:', result);
+      } else {
+        setAnalysisError(result.error || 'Analysis failed');
+        console.error('❌ LLM Analysis failed:', result);
+      }
+    } catch (error) {
+      console.error('❌ LLM Analysis request failed:', error);
+      setAnalysisError('Network error occurred');
+    } finally {
+      setIsAnalyzingAI(false);
     }
   };
 
@@ -363,6 +404,57 @@ export function SuccessModal({
               <p className="text-slate-400 text-sm">
                 No AI performance data available for this puzzle.
               </p>
+            )}
+          </div>
+        )}
+
+        {/* LLM Analysis Section */}
+        {puzzleId && (
+          <div className="my-6 text-center bg-slate-700/30 p-4 rounded-lg border border-cyan-400/30">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="text-2xl">🏆</span>
+              <h3 className="text-lg font-bold text-cyan-300">Update AI Leaderboards</h3>
+            </div>
+            <p className="text-slate-400 text-sm mb-3">
+              Process AI model scores and update PlayFab leaderboards for this puzzle
+            </p>
+
+            {analysisError && (
+              <div className="mb-3 p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-sm text-center">
+                {analysisError}
+              </div>
+            )}
+
+            {analysisComplete && (
+              <div className="mb-3 p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm text-center flex items-center justify-center gap-2">
+                <span>✅</span> AI leaderboards updated successfully!
+              </div>
+            )}
+
+            {!analysisComplete && (
+              <button
+                onClick={handleAnalyzeAI}
+                disabled={isAnalyzingAI}
+                className="
+                  px-4 py-2 text-sm font-semibold rounded
+                  bg-cyan-600/80 hover:bg-cyan-600 text-white
+                  transition-all duration-200 border border-cyan-400
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                  flex items-center justify-center gap-2 mx-auto
+                "
+              >
+                {isAnalyzingAI ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                    Updating Leaderboards...
+                  </>
+                ) : (
+                  <>
+                    <span>🏆</span>
+                    Update AI Leaderboards
+                  </>
+                )}
+              </button>
             )}
           </div>
         )}

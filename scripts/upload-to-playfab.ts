@@ -1,9 +1,9 @@
 /**
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-15
- * PURPOSE: Upload LLM winner data to PlayFab with generous rate limiting
- * Uses existing ValidateARCPuzzle CloudScript function for proven integration
- * SRP and DRY check: Pass - Single responsibility (PlayFab upload), reuses existing CloudScript
+ * Authored by: Cascade using Gemini 2.5 Pro
+ * Date: 2025-09-15T18:21:38-04:00
+ * PURPOSE: Direct PlayFab Server API upload of LLM winner statistics
+ * Uses UpdatePlayerStatistics Server API for immediate score updates
+ * SRP and DRY check: Pass - Single responsibility (statistics upload), no unnecessary complexity
  */
 
 import { writeFileSync, readFileSync, readdirSync } from 'fs';
@@ -17,10 +17,10 @@ const __dirname = dirname(__filename);
 // PlayFab API configuration
 const PLAYFAB_TITLE_ID = process.env.VITE_PLAYFAB_TITLE_ID || ''; // Will need from .env
 const PLAYFAB_SECRET_KEY = process.env.PLAYFAB_SECRET_KEY || ''; // Will need from .env
-const PLAYFAB_BASE_URL = 'https://title.playfabapi.com';
+const PLAYFAB_SERVER_BASE_URL = `https://${PLAYFAB_TITLE_ID}.playfabapi.com`;
 
-// Reduced rate limiting: 11 seconds between calls
-const RATE_LIMIT_DELAY_MS = 2000; // 2 seconds
+// Much faster rate limiting since we're not doing complex operations
+const RATE_LIMIT_DELAY_MS = 500; // 0.5 seconds between direct API calls
 
 interface LLMPlayerUpdate {
   modelName: string;
@@ -110,112 +110,57 @@ function loadAllWinnerData(): LLMPlayerUpdate[] {
 }
 
 /**
- * Login to PlayFab using CustomID for a specific AI model
+ * Direct Server API call to update player statistics
+ * No login required - uses secret key authentication
  */
-async function loginToPlayFab(customId: string): Promise<string> {
-  const loginData = {
-    TitleId: PLAYFAB_TITLE_ID,
-    CustomId: customId,
-    CreateAccount: false // Should already exist from our registration
-  };
-
-  const response = await fetch(`${PLAYFAB_BASE_URL}/Client/LoginWithCustomID`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(loginData)
-  });
-
-  if (!response.ok) {
-    throw new Error(`Login failed: ${response.status} ${response.statusText}`);
-  }
-
-  const result = await response.json();
-
-  if (!result.data?.SessionTicket) {
-    throw new Error(`Login failed: No session ticket returned. Response: ${JSON.stringify(result)}`);
-  }
-
-  return result.data.SessionTicket;
-}
-
-/**
- * Call CloudScript to validate and score a puzzle solution
- */
-async function callValidateCloudScript(sessionTicket: string, puzzleId: string, solutions: any[], timeElapsed: number, attemptNumber: number, stepCount: number): Promise<any> {
-  const cloudScriptData = {
-    FunctionName: 'ValidateARCPuzzle',
-    FunctionParameter: {
-      puzzleId,
-      solutions,
-      timeElapsed,
-      attemptNumber,
-      stepCount
-    }
-  };
-
-  const response = await fetch(`${PLAYFAB_BASE_URL}/Client/ExecuteCloudScript`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Authentication': sessionTicket
-    },
-    body: JSON.stringify(cloudScriptData)
-  });
-
-  if (!response.ok) {
-    throw new Error(`CloudScript call failed: ${response.status} ${response.statusText}`);
-  }
-
-  const result = await response.json();
-
-  if (result.data?.Error) {
-    throw new Error(`CloudScript error: ${result.data.Error.Message}`);
-  }
-
-  return result.data;
-}
-
-/**
- * Upload a single LLM player update to PlayFab
- */
-async function uploadSingleUpdate(update: LLMPlayerUpdate): Promise<UploadResult> {
-  console.log(`🔄 Uploading: ${update.modelName} on ${update.puzzleId} (${update.finalScore} points)`);
+async function updatePlayerStatistics(update: LLMPlayerUpdate): Promise<UploadResult> {
+  console.log(`🔄 Updating statistics: ${update.modelName} on ${update.puzzleId} (${update.finalScore} points)`);
 
   try {
-    // Step 1: Login as the AI model
-    const sessionTicket = await loginToPlayFab(update.customId);
-    console.log(`   ✅ Logged in as ${update.modelName}`);
+    // Use PlayFab Server API to directly update statistics
+    // No login simulation - just update the statistic directly
+    const requestData = {
+      PlayFabId: update.playFabId,
+      Statistics: [
+        {
+          StatisticName: 'OfficerTrackPoints',
+          Value: update.finalScore
+        }
+      ]
+    };
 
-    // Step 2: Call CloudScript with REAL attempt data
-    const timeElapsedSeconds = update.fastestTimeMs ? Math.round(update.fastestTimeMs / 1000) : 30;
-    const attemptNumber = update.totalAttempts; // Real attempt count
-    const stepCount = update.fastestTimeMs || 30000; // Raw milliseconds as step count
-    const dummySolutions = [[[1]]]; // Minimal valid solution structure
+    const response = await fetch(`${PLAYFAB_SERVER_BASE_URL}/Server/UpdatePlayerStatistics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-SecretKey': PLAYFAB_SECRET_KEY
+      },
+      body: JSON.stringify(requestData)
+    });
 
-    const cloudScriptResult = await callValidateCloudScript(
-      sessionTicket,
-      update.puzzleId,
-      dummySolutions,
-      timeElapsedSeconds,
-      attemptNumber,
-      stepCount
-    );
+    if (!response.ok) {
+      throw new Error(`Server API call failed: ${response.status} ${response.statusText}`);
+    }
 
-    console.log(`   ✅ CloudScript executed successfully`);
-    console.log(`   📊 Points awarded: ${cloudScriptResult.FunctionResult?.scoreData?.finalScore || 'unknown'}`);
+    const result = await response.json();
+
+    if (result.code !== 200) {
+      throw new Error(`PlayFab error: ${result.error || result.errorMessage || 'Unknown error'}`);
+    }
+
+    console.log(`   ✅ Statistics updated successfully for ${update.modelName}`);
+    console.log(`   📊 OfficerTrackPoints set to: ${update.finalScore}`);
 
     return {
       modelName: update.modelName,
       puzzleId: update.puzzleId,
       status: 'success',
       finalScore: update.finalScore,
-      playFabResponse: cloudScriptResult
+      playFabResponse: result.data
     };
 
   } catch (error) {
-    console.error(`   ❌ Failed to upload ${update.modelName} on ${update.puzzleId}:`, error);
+    console.error(`   ❌ Failed to update statistics for ${update.modelName} on ${update.puzzleId}:`, error);
     return {
       modelName: update.modelName,
       puzzleId: update.puzzleId,
@@ -229,8 +174,8 @@ async function uploadSingleUpdate(update: LLMPlayerUpdate): Promise<UploadResult
  * Upload all LLM player updates with rate limiting
  */
 async function uploadAllUpdates(updates: LLMPlayerUpdate[]): Promise<UploadSummary> {
-  console.log(`🚀 Starting PlayFab upload of ${updates.length} LLM player updates`);
-  console.log(`⏱️ Rate limiting: ${RATE_LIMIT_DELAY_MS / 1000}s between uploads`);
+  console.log(`🚀 Starting direct PlayFab statistics update of ${updates.length} LLM players`);
+  console.log(`⏱️ Rate limiting: ${RATE_LIMIT_DELAY_MS / 1000}s between API calls`);
   console.log(`📅 Estimated completion time: ${Math.round((updates.length * RATE_LIMIT_DELAY_MS) / 60000)} minutes`);
 
   const results: UploadResult[] = [];
@@ -242,7 +187,7 @@ async function uploadAllUpdates(updates: LLMPlayerUpdate[]): Promise<UploadSumma
 
     console.log(`\n[${i + 1}/${updates.length}] Processing ${update.modelName} on ${update.puzzleId}`);
 
-    const result = await uploadSingleUpdate(update);
+    const result = await updatePlayerStatistics(update);
     results.push(result);
 
     if (result.status === 'success') {
@@ -250,9 +195,9 @@ async function uploadAllUpdates(updates: LLMPlayerUpdate[]): Promise<UploadSumma
       totalPointsAwarded += result.finalScore || 0;
     }
 
-    // Rate limiting: Wait 20 seconds between uploads (except for the last one)
+    // Rate limiting: Wait between direct API calls (except for the last one)
     if (i < updates.length - 1) {
-      console.log(`   ⏳ Waiting ${RATE_LIMIT_DELAY_MS / 1000}s before next upload...`);
+      console.log(`   ⏳ Waiting ${RATE_LIMIT_DELAY_MS / 1000}s before next API call...`);
       await sleep(RATE_LIMIT_DELAY_MS);
     }
   }
@@ -267,19 +212,19 @@ async function uploadAllUpdates(updates: LLMPlayerUpdate[]): Promise<UploadSumma
   };
 
   // Save detailed summary
-  const summaryFile = join(__dirname, '..', 'docs', `playfab-upload-summary-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+  const summaryFile = join(__dirname, '..', 'docs', `playfab-statistics-update-summary-${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
   writeFileSync(summaryFile, JSON.stringify(summary, null, 2));
 
-  console.log('\n📊 UPLOAD SUMMARY:');
+  console.log('\n📊 STATISTICS UPDATE SUMMARY:');
   console.log(`   Total records: ${summary.totalRecords}`);
-  console.log(`   Successful uploads: ${summary.successfulUploads}`);
-  console.log(`   Failed uploads: ${summary.failedUploads}`);
+  console.log(`   Successful updates: ${summary.successfulUploads}`);
+  console.log(`   Failed updates: ${summary.failedUploads}`);
   console.log(`   Success rate: ${((summary.successfulUploads / summary.totalRecords) * 100).toFixed(1)}%`);
   console.log(`   Total points awarded: ${summary.totalPointsAwarded.toLocaleString()}`);
   console.log(`   Summary saved to: ${summaryFile}`);
 
   if (summary.failedUploads > 0) {
-    console.log('\n❌ FAILED UPLOADS:');
+    console.log('\n❌ FAILED UPDATES:');
     summary.results
       .filter(r => r.status === 'error')
       .forEach(result => {
@@ -294,11 +239,16 @@ async function uploadAllUpdates(updates: LLMPlayerUpdate[]): Promise<UploadSumma
  * Main execution
  */
 async function main() {
-  console.log('🚀 Starting PlayFab upload process...');
+  console.log('🚀 Starting PlayFab direct statistics update process...');
 
   // Validate environment variables
   if (!PLAYFAB_TITLE_ID) {
     console.error('❌ VITE_PLAYFAB_TITLE_ID environment variable not set');
+    process.exit(1);
+  }
+
+  if (!PLAYFAB_SECRET_KEY) {
+    console.error('❌ PLAYFAB_SECRET_KEY environment variable not set');
     process.exit(1);
   }
 
@@ -317,26 +267,28 @@ async function main() {
       return acc;
     }, {} as Record<string, number>);
 
-    console.log('\n📊 UPLOAD BREAKDOWN BY PROVIDER:');
+    console.log('\n📊 STATISTICS UPDATE BREAKDOWN BY PROVIDER:');
     Object.entries(providerCounts).forEach(([provider, count]) => {
-      console.log(`   ${provider}: ${count} updates`);
+      console.log(`   ${provider}: ${count} statistics to update`);
     });
 
     // Confirm before proceeding
-    console.log('\n⚠️ About to upload to PlayFab with 20-second delays between calls');
-    console.log('Press Ctrl+C to cancel, or wait 5 seconds to proceed...');
-    await sleep(5000);
+    console.log('\n⚠️ About to update PlayFab statistics using direct Server API');
+    console.log(`⚡ Much faster than previous approach: ${RATE_LIMIT_DELAY_MS / 1000}s delays between calls`);
+    console.log('Press Ctrl+C to cancel, or wait 3 seconds to proceed...');
+    await sleep(3000);
 
-    // Execute upload
+    // Execute statistics updates
     const summary = await uploadAllUpdates(updates);
 
     if (summary.successfulUploads > 0) {
-      console.log('\n🎉 Upload completed! LLM players should now appear on leaderboards.');
-      console.log(`✅ ${summary.successfulUploads} AI models now have scores for assessment puzzles`);
+      console.log('\n🎉 Statistics update completed! LLM players should now appear on leaderboards.');
+      console.log(`✅ ${summary.successfulUploads} AI models now have OfficerTrackPoints updated`);
+      console.log('🏆 Check the PlayFab dashboard to see the updated leaderboards!');
     }
 
   } catch (error) {
-    console.error('❌ Upload process failed:', error);
+    console.error('❌ Statistics update process failed:', error);
     process.exit(1);
   }
 }
