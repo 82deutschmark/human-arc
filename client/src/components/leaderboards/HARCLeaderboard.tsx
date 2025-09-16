@@ -26,6 +26,10 @@ import { useState, useEffect } from "react";
 import { leaderboards } from "@/services/playfab/leaderboards";
 import { LeaderboardType } from "@/services/playfab/leaderboard-types";
 import type { LeaderboardEntry } from "@/types/playfab";
+import {
+  playFabRequestManager,
+  playFabAuthManager
+} from '@/services/playfab';
 
 interface HARCStats {
   totalParticipants: number;
@@ -43,6 +47,7 @@ export function HARCLeaderboard() {
   const [sortColumn, setSortColumn] = useState<'rank' | 'score' | 'attempts'>('rank');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [playFabInitialized, setPlayFabInitialized] = useState(false);
 
   const loadHARCData = async () => {
     try {
@@ -77,9 +82,43 @@ export function HARCLeaderboard() {
     }
   };
 
+  // Initialize PlayFab first, then load data
   useEffect(() => {
-    loadHARCData();
+    const initializePlayFab = async () => {
+      try {
+        const titleId = import.meta.env.VITE_PLAYFAB_TITLE_ID;
+        if (!titleId) {
+          throw new Error('VITE_PLAYFAB_TITLE_ID environment variable not found');
+        }
+        
+        if (!playFabRequestManager.isInitialized()) {
+          await playFabRequestManager.initialize({ 
+            titleId, 
+            secretKey: import.meta.env.VITE_PLAYFAB_SECRET_KEY 
+          });
+        }
+
+        if (!playFabAuthManager.isAuthenticated()) {
+          await playFabAuthManager.loginAnonymously();
+        }
+
+        setPlayFabInitialized(true);
+      } catch (error) {
+        console.error('[HARCLeaderboard] PlayFab initialization failed:', error);
+        setError('Failed to initialize PlayFab. Please refresh the page.');
+        setIsLoading(false);
+      }
+    };
+
+    initializePlayFab();
   }, []);
+
+  // Load data only after PlayFab is initialized
+  useEffect(() => {
+    if (playFabInitialized) {
+      loadHARCData();
+    }
+  }, [playFabInitialized]);
 
   const handleSort = (column: 'rank' | 'score' | 'attempts') => {
     if (sortColumn === column) {
