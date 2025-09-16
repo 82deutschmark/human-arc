@@ -101,7 +101,7 @@ export function PuzzleSolverControls({
               onClick={() => onSizeChange(size.width, size.height)}
               className="bg-amber-700 hover:bg-amber-600 text-white text-xl font-bold px-4 py-3 h-16 rounded min-w-[90px]"
             >
-              {size.height}×{size.width}
+              {size.width}×{size.height}
             </button>
           ))}
         </div>
