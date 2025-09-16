@@ -199,7 +199,45 @@ function detectWinners(explanations: ExplanationRecord[], puzzleId: string): Mod
 }
 
 /**
- * Upload a single winner to PlayFab using direct Server API
+ * Get current player statistics from PlayFab
+ */
+async function getPlayerCurrentScore(playFabId: string): Promise<number> {
+  try {
+    const requestData = {
+      PlayFabId: playFabId,
+      StatisticNames: ['OfficerTrackPoints']
+    };
+
+    const response = await fetch(`${PLAYFAB_SERVER_BASE_URL}/Server/GetPlayerStatistics`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-SecretKey': PLAYFAB_SECRET_KEY
+      },
+      body: JSON.stringify(requestData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    if (result.code !== 200) {
+      throw new Error(`PlayFab error: ${result.error || result.errorMessage || 'Unknown error'}`);
+    }
+
+    // Find OfficerTrackPoints statistic
+    const officerTrackStat = result.data?.Statistics?.find((stat: any) => stat.StatisticName === 'OfficerTrackPoints');
+    return officerTrackStat ? officerTrackStat.Value : 0;
+
+  } catch (error) {
+    console.warn(`   ⚠️ Could not get current score for ${playFabId}, assuming 0:`, error instanceof Error ? error.message : 'Unknown error');
+    return 0;
+  }
+}
+
+/**
+ * Upload a single winner to PlayFab using direct Server API (ADDITIVE SCORING)
  */
 async function uploadWinnerToPlayFab(winner: ModelWinner): Promise<{ success: boolean; error?: string }> {
   if (!winner.playFabRegistered || !winner.playFabMapping) {
@@ -207,12 +245,19 @@ async function uploadWinnerToPlayFab(winner: ModelWinner): Promise<{ success: bo
   }
 
   try {
+    // STEP 1: Get current score from PlayFab
+    const currentScore = await getPlayerCurrentScore(winner.playFabMapping.playFabId);
+    const newTotalScore = currentScore + winner.finalScore;
+
+    console.log(`   📊 ${winner.modelName}: ${currentScore} + ${winner.finalScore} = ${newTotalScore} points`);
+
+    // STEP 2: Update with new cumulative total
     const requestData = {
       PlayFabId: winner.playFabMapping.playFabId,
       Statistics: [
         {
           StatisticName: 'OfficerTrackPoints',
-          Value: winner.finalScore
+          Value: newTotalScore  // Set to CUMULATIVE total (current + new puzzle score)
         }
       ]
     };
@@ -235,7 +280,7 @@ async function uploadWinnerToPlayFab(winner: ModelWinner): Promise<{ success: bo
       throw new Error(`PlayFab error: ${result.error || result.errorMessage || 'Unknown error'}`);
     }
 
-    console.log(`   ✅ ${winner.modelName}: ${winner.finalScore} points uploaded`);
+    console.log(`   ✅ ${winner.modelName}: Cumulative score updated to ${newTotalScore} points (+${winner.finalScore})`);
     return { success: true };
 
   } catch (error) {
@@ -291,9 +336,9 @@ async function processPuzzleE2E(puzzleId: string): Promise<E2EResult> {
         failedUploads++;
       }
 
-      // Rate limiting
+      // Rate limiting (increased due to additional API call)
       if (i < registeredWinners.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 750));
       }
     }
   }
