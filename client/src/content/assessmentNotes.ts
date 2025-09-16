@@ -1,7 +1,7 @@
 /**
  * @author Gemini 2.5 Pro
  * @date 2025-09-13
- * @description Central repository for designer-crafted educational content for assessment puzzles.
+ * @description Central repository for Max Power's advice for assessment puzzles.
  * Adheres to SRP by separating static content from component logic.
  */
 
@@ -45,7 +45,7 @@ export const assessmentNotes = new Map<string, DesignerNote>([
     'ea786f4a',
     {
       puzzleId: 'ea786f4a',
-      title: 'Diagonal Pattern Recognition',
+      title: 'Make an X',
       explanation: 'The goal is to create a large \'X\' shape that spans the entire grid, a fundamental test of diagonal pattern generation.',
       aiDifficultyContext: 'Generating perfect diagonals across a grid requires precise coordinate calculations. AI can sometimes produce incomplete or jagged lines if it misinterprets the geometric goal.'
     }

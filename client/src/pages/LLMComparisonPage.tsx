@@ -1,7 +1,7 @@
 /**Unknow when this page was created or if it does anything???
  * Needs audit!
  * LLM Comparison Page
- * Wrapper page for the LLM comparison selector component
+ * Wrapper page for the LLM comparison selector component  NO IDEA WHAT THIS IS TALKING ABOUT!!
  */
 
 import { useState, useEffect } from 'react';

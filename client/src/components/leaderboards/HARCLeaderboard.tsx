@@ -57,10 +57,11 @@ export function HARCLeaderboard() {
       // This gives us a good view of active participants without API errors
       const leaderboardData = await leaderboards.getLeaderboard(LeaderboardType.OFFICER_TRACK, 100);
 
-      // Estimate puzzles solved from score (100 points per solved puzzle average)
+      // Estimate puzzles solved from score (10,000-19,999 points per solved puzzle)
+      // Using 15,000 as average estimate based on actual CloudScript scoring
       const enhancedEntries = leaderboardData.map(entry => ({
         ...entry,
-        PuzzlesSolved: Math.floor(entry.StatValue / 100) // Rough estimate
+        PuzzlesSolved: Math.floor(entry.StatValue / 15000) // Realistic estimate
       }));
 
       setEntries(enhancedEntries);
