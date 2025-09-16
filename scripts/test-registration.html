@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Model Registration Test</title>
+</head>
+<body>
+    <h1>AI Model Registration Test</h1>
+    <button onclick="testRegistration()">Register All AI Models</button>
+    <div id="output"></div>
+
+    <script type="module">
+        async function testRegistration() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<p>🚀 Starting AI model registration...</p>';
+
+            try {
+                // Import the LLM player manager
+                const { llmPlayerManager } = await import('/src/services/playfab/index.ts');
+
+                output.innerHTML += '<p>✅ LLMPlayerManager imported successfully</p>';
+
+                // Test model discovery first
+                output.innerHTML += '<p>🔍 Discovering models from arc-explainer API...</p>';
+                const models = await llmPlayerManager.getDiscoveredModels();
+                output.innerHTML += `<p>📋 Found ${models.length} models to register</p>`;
+
+                // Show first few models
+                output.innerHTML += '<p>Sample models:</p><ul>';
+                models.slice(0, 5).forEach(model => {
+                    output.innerHTML += `<li>${model.modelName} (${model.provider})</li>`;
+                });
+                output.innerHTML += '</ul>';
+
+                // Register all models
+                output.innerHTML += '<p>🤖 Starting registration process...</p>';
+                const results = await llmPlayerManager.registerAllLLMPlayers();
+
+                output.innerHTML += `<p>🎉 Registration complete!</p>`;
+                output.innerHTML += `<p>✅ Successfully registered: ${results.length} AI players</p>`;
+
+                // Show summary by provider
+                const providerCounts = {};
+                results.forEach(result => {
+                    providerCounts[result.metadata.provider] = (providerCounts[result.metadata.provider] || 0) + 1;
+                });
+
+                output.innerHTML += '<p>📊 Summary by provider:</p><ul>';
+                Object.entries(providerCounts).forEach(([provider, count]) => {
+                    output.innerHTML += `<li>${provider}: ${count} models</li>`;
+                });
+                output.innerHTML += '</ul>';
+
+            } catch (error) {
+                output.innerHTML += `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                console.error('Registration failed:', error);
+            }
+        }
+
+        // Make function globally available
+        window.testRegistration = testRegistration;
+    </script>
+</body>
+</html>

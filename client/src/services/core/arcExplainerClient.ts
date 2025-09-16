@@ -667,13 +667,16 @@ export class ArcExplainerClient {
       console.log(`💭 Submitting user solution for puzzle: ${arcId}`);
       const endpoint = `/api/puzzles/${arcId}/solutions`;
 
+      // Ensure explanation is not empty or undefined
+      const explanation = solutionData.strategy?.trim() || 'No strategy provided';
+
       const response = await this.request<any>(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          explanation: solutionData.strategy, // API expects 'explanation' field
+          explanation: explanation, // API expects 'explanation' field
           metadata: {
             userAgent: navigator.userAgent,
             timestamp: new Date().toISOString(),

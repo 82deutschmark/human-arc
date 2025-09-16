@@ -76,12 +76,12 @@ export function GameHeader({
                 </Button>
                 
                 <Button
-                  onClick={() => setLocation('/leaderboard')}
+                  onClick={() => setLocation('/leaderboards')}
                   variant="outline"
                   size="sm"
                   className="border-blue-400 text-blue-400 hover:bg-blue-900/20"
                 >
-                  🏆 Leaderboard
+                  🏆 Leaderboards
                 </Button>
               </>
             )}

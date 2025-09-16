@@ -16,15 +16,20 @@ export const ASSESSMENT_PUZZLE_IDS = [
   '66e6c45b',   // Expand!
   
 ];
+
+// '22425bda',   // 16x16 -> 1x6  Think of them as strings, the bottom string has priority order in the output. This is particularly challenging because there are two possible solutions when using this logic and only one will be correct.  That is why two attempts are always required.
 // 'dc1df850',    //  Surround the specific cell
 // '27a28665',    // 7 Examples, 3 Tests!
 // '3bdb4ada',  //  Make a little dot in each
 // 'e7639916',    //  Connect the dots! Large!
-
+// '12eac192', //   8x8 and very confusing with complex rules...
+// '3aa6fb7a', //   Simple 7x7, make the shape a square by filling in the missing bit.
  //  '0bb8deee',    //  Corral the shapes
  //   '32e9702f',    //  Easy answer, everything pulled to the left and change 0 to 5 
+ // '639f5a19', //   Big looks like Simon game 23x23
 
  //   '7b80bb43', //  Close the gates!  Very Large and unusual size
  //   '1caeab9d', //  Line them up!
  //   '87ab05b8', //  2/Red Fills up whatever quarter of the 4x4 grid it appears in, the rest remain 6
 // 'bc1d5164',    //  5x7 -> 3x3 where the grid is a rectangle, where a set of 2x2 grids are divided, solve by welding.
+// 

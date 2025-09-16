@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Model Registration Runner</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .container {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #3b82f6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .status {
+            background: #334155;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #3b82f6;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+
+        .output {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .error {
+            color: #ef4444;
+        }
+
+        .success {
+            color: #10b981;
+        }
+
+        .warning {
+            color: #f59e0b;
+        }
+
+        .info {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AI Model Registration System</h1>
+
+        <div class="status">
+            <strong>Instructions:</strong><br>
+            1. Make sure your dev server is running on localhost:5173<br>
+            2. Click "Register All AI Models" to start the process<br>
+            3. This will register all 51 AI models from arc-explainer as PlayFab players
+        </div>
+
+        <div style="text-align: center;">
+            <button id="registerBtn" onclick="startRegistration()">Register All AI Models</button>
+            <button id="testBtn" onclick="testConnection()">Test Connection</button>
+            <button id="clearBtn" onclick="clearOutput()">Clear Output</button>
+        </div>
+
+        <div id="output" class="output">Ready to start registration...\n</div>
+    </div>
+
+    <script type="module">
+        let isRunning = false;
+
+        function log(message, type = 'info') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' :
+                            type === 'success' ? 'success' :
+                            type === 'warning' ? 'warning' : 'info';
+
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function testConnection() {
+            if (isRunning) return;
+
+            log('🔍 Testing connection to localhost:5173...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:5173/');
+                if (response.ok) {
+                    log('✅ Connection successful - dev server is running', 'success');
+                } else {
+                    log('⚠️ Dev server responded but not OK status: ' + response.status, 'warning');
+                }
+            } catch (error) {
+                log('❌ Cannot connect to localhost:5173 - make sure dev server is running', 'error');
+                log('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function startRegistration() {
+            if (isRunning) {
+                log('⚠️ Registration already in progress...', 'warning');
+                return;
+            }
+
+            isRunning = true;
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Registration in Progress...';
+
+            try {
+                log('🚀 Starting AI Model Registration Process...', 'info');
+                log('📋 Importing LLMPlayerManager from localhost:5173...', 'info');
+
+                // Import the service from the running dev server
+                const module = await import('http://localhost:5173/src/services/playfab/index.ts');
+                const { llmPlayerManager } = module;
+
+                log('✅ LLMPlayerManager imported successfully', 'success');
+
+                log('🔍 Discovering models from arc-explainer API...', 'info');
+                const models = await llmPlayerManager.getDiscoveredModels();
+                log(`📊 Found ${models.length} models to register`, 'success');
+
+                // Show sample models
+                log('🎯 Sample models:', 'info');
+                models.slice(0, 5).forEach((model, index) => {
+                    log(`  ${index + 1}. ${model.modelName} (${model.provider})`, 'info');
+                });
+
+                log('🤖 Starting registration process...', 'info');
+                log('⏱️ This may take several minutes - please be patient...', 'warning');
+
+                const startTime = Date.now();
+                const results = await llmPlayerManager.registerAllLLMPlayers();
+                const endTime = Date.now();
+
+                log(`🎉 Registration Complete in ${(endTime - startTime) / 1000}s!`, 'success');
+                log(`✅ Successfully registered: ${results.length} AI players`, 'success');
+
+                // Show summary by provider
+                const providerCounts = {};
+                results.forEach(result => {
+                    const provider = result.metadata.provider;
+                    providerCounts[provider] = (providerCounts[provider] || 0) + 1;
+                });
+
+                log('📊 Registration Summary by Provider:', 'success');
+                Object.entries(providerCounts).forEach(([provider, count]) => {
+                    log(`  ${provider}: ${count} models`, 'success');
+                });
+
+                log('🎯 Next Steps:', 'info');
+                log('1. Check PlayFab leaderboards for new AI players', 'info');
+                log('2. Run data synchronization to populate AI performance records', 'info');
+                log('3. Test mixed human/AI leaderboard display', 'info');
+
+            } catch (error) {
+                log('❌ Registration failed: ' + error.message, 'error');
+                if (error.stack) {
+                    log('Stack trace: ' + error.stack, 'error');
+                }
+
+                if (error.message.includes('Failed to resolve module')) {
+                    log('💡 Tip: Make sure you are accessing this page from localhost:5173', 'warning');
+                    log('💡 Try opening: http://localhost:5173/ai-registration-runner.html', 'warning');
+                }
+            } finally {
+                isRunning = false;
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register All AI Models';
+            }
+        }
+
+        function clearOutput() {
+            document.getElementById('output').innerHTML = 'Output cleared...\n';
+        }
+
+        // Make functions globally available
+        window.startRegistration = startRegistration;
+        window.testConnection = testConnection;
+        window.clearOutput = clearOutput;
+
+        // Initial connection test
+        setTimeout(testConnection, 1000);
+    </script>
+</body>
+</html>

@@ -7,3 +7,6 @@ vite.config.ts.*
 .env
 nul
 
+/docs
+docs/migration-progress.json
+*.json

@@ -41,11 +41,13 @@ const CONSTANTS = {
     SCORING: {
         OFFICER_TRACK: {
             BASE_POINTS: 10000,
-            SPEED_BONUS: { PER_MINUTE_POINTS: 100, UNDER_MINUTES: 20 },
+            // NEW: 10,000 points minus 1 per millisecond, max 9,999 bonus (1ms), 0 bonus over 10 seconds
+            SPEED_BONUS: { MAX_BONUS: 10000, CUTOFF_MS: 10000 },
             EFFICIENCY_BONUS: { PER_ACTION_POINTS: 50, UNDER_ACTIONS: 100 },
         },
         ARC2_EVAL: {
             BASE_POINTS: 25000, FIRST_TRY_BONUS: 5000,
+            // Keep old logic for ARC2_EVAL for now
             SPEED_BONUS: { PER_MINUTE_POINTS: 200, UNDER_MINUTES: 30 },
             EFFICIENCY_BONUS: { PER_ACTION_POINTS: 100, UNDER_ACTIONS: 150 },
         },
@@ -148,9 +150,23 @@ const PlayFabService = {
 // =============================================================================
 
 const ScoringService = {
-    speedBonusFor({ time, perMinute, underMinutes }) {
-        const timeInMinutes = Math.ceil((time || 0) / 60);
-        return timeInMinutes < underMinutes ? (underMinutes - timeInMinutes) * perMinute : 0;
+    speedBonusFor({ time, maxBonus, cutoffMs, perMinute, underMinutes }) {
+        // NEW OFFICER TRACK LOGIC: 10,000 points minus 1 per millisecond
+        if (maxBonus && cutoffMs) {
+            const timeInMs = (time || 0) * 1000; // Convert seconds to milliseconds
+            if (timeInMs >= cutoffMs) return 0; // Over 10 seconds = no bonus
+            return Math.max(0, maxBonus - timeInMs); // 10,000 - milliseconds
+        }
+        
+        // LEGACY ARC2_EVAL LOGIC: Keep old minute-based calculation
+        if (perMinute && underMinutes) {
+            const timeInMinutes = (time || 0) / 60;
+            if (timeInMinutes <= 0.5) return 10000; // 30 seconds or less = 10,000 bonus
+            if (timeInMinutes >= 10) return 0;      // 10+ minutes = no bonus
+            return Math.max(0, 10000 - (Math.floor(timeInMinutes) * 1000));
+        }
+        
+        return 0; // Fallback
     },
     efficiencyBonusFor({ steps, perAction, underActions }) {
         return steps < underActions ? (underActions - steps) * perAction : 0;

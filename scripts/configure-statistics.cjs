@@ -7,13 +7,13 @@
  * 
  * Designed by: 82deutschmark github.com/82deutschmark
  * Updated: 2025-09-07
- * Version: 0.0.1
+ * Version: 0.0.1  OUT OF DATE
  * Author: Claude Code using Sonnet 4
  */
 
 const https = require('https');
 
-// Load environment variables from .env file
+// Load environment variables from .env file  use cross-env!!!
 require('dotenv').config();
 
 // PlayFab Configuration - MUST SET THESE!

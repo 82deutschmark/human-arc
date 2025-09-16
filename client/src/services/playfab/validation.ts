@@ -220,7 +220,7 @@ export class PlayFabValidation {
   /**
    * Helper function to compare 2D arrays
    */
-  private arraysEqual(a: string[][], b: string[][]): boolean {
+  private arraysEqual<T extends string | number>(a: T[][], b: T[][]): boolean {
     if (a.length !== b.length) return false;
     for (let i = 0; i < a.length; i++) {
       if (a[i].length !== b[i].length) return false;

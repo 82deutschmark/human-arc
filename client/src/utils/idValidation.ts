@@ -185,12 +185,12 @@ export function validateIDConversions(): IDValidationResult {
   testCases.forEach(testCase => {
     try {
       const validationResult = idConverter.validateId(testCase.expectedPlayFab);
-      const passed = validationResult.valid && validationResult.format === 'playfab' && validationResult.dataset === testCase.dataset;
+      const passed = validationResult.isValid && validationResult.format === 'playfab' && validationResult.dataset === testCase.dataset;
       
       result.testResults[`${testCase.name} - arcExplainerAPI.validatePuzzleId`] = {
         passed,
         expected: `valid: true, format: playfab, dataset: ${testCase.dataset}`,
-        actual: `valid: ${validationResult.valid}, format: ${validationResult.format}, dataset: ${validationResult.dataset}`
+        actual: `valid: ${validationResult.isValid}, format: ${validationResult.format}, dataset: ${validationResult.dataset}`
       };
 
       if (!passed) {

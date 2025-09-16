@@ -37,8 +37,11 @@ import HumanVsAiComparison from "@/pages/HumanVsAiComparison";
 import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
 import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
+import ExplanationArena from "@/pages/ExplanationArena";
+import LeaderboardLanding from "@/pages/LeaderboardLanding";
 import { LoadingSplash } from "@/components/game/LoadingSplash";
 import { OnboardingModal } from "@/components/game/OnboardingModal";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function Router() {
   // Apply dynamic document metadata based on current route
@@ -58,7 +61,9 @@ function Router() {
       <Route path="/puzzles" component={HARCPuzzleBrowser} />
       <Route path="/puzzles/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/dashboard" component={ParticipantDashboard} />
-      <Route path="/leaderboards" component={Leaderboards} />
+      <Route path="/leaderboards" component={LeaderboardLanding} />
+      <Route path="/leaderboards/:type" component={Leaderboards} />
+      <Route path="/leaderboards/explanation-arena" component={ExplanationArena} />
       <Route path="/profile" component={Profile} />
       <Route path="/comparison" component={PersonalPerformanceComparison} />
       <Route path="/grid-test" component={GridSizeTest} />
@@ -77,11 +82,13 @@ function App() {
   };
 
   return (
-    <TooltipProvider>
-      <Toaster />
-      <Router />
-      <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
-    </TooltipProvider>
+    <ErrorBoundary>
+      <TooltipProvider>
+        <Toaster />
+        <Router />
+        <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
+      </TooltipProvider>
+    </ErrorBoundary>
   );
 }
 
