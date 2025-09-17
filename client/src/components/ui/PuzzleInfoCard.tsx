@@ -8,9 +8,12 @@
  * Date: 2025-09-14
  */
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { AttemptCounter } from '@/components/officer/AttemptCounter';
+import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 import type { OfficerPuzzle } from '@/types/arcTypes';
 
 interface PuzzleInfoCardProps {
@@ -64,15 +67,53 @@ const getDatasetBadge = (dataset?: string) => {
 };
 
 export function PuzzleInfoCard({ puzzle, onSelectPuzzle }: PuzzleInfoCardProps) {
+  const [attemptStatus, setAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
+
+  // Load attempt status for this puzzle
+  useEffect(() => {
+    const loadAttemptStatus = async () => {
+      if (!puzzle?.id) return;
+
+      try {
+        const status = await attemptTracker.getPuzzleAttemptStatus(puzzle.id);
+        setAttemptStatus(status);
+      } catch (error) {
+        console.error(`Failed to load attempt status for ${puzzle.id}:`, error);
+        // Set default status on error
+        setAttemptStatus({
+          status: 'available',
+          attemptsRemaining: 2,
+          totalAttempts: 0,
+          canAttempt: true,
+          lockedAt: null
+        });
+      }
+    };
+
+    loadAttemptStatus();
+  }, [puzzle?.id]);
   const difficultyBadge = getDifficultyBadge(puzzle.difficulty);
   const analysisQualityBadge = getAnalysisQualityBadge(puzzle);
   const datasetBadge = getDatasetBadge(puzzle.dataset);
 
+  const isLocked = attemptStatus?.status === 'locked';
+  const isCompleted = attemptStatus?.status === 'completed';
+
+  const handleCardClick = () => {
+    if (!isLocked) {
+      onSelectPuzzle(puzzle);
+    }
+  };
+
   return (
     <Card
       key={puzzle.id}
-      className="bg-slate-800/50 border-slate-700 hover:border-cyan-500 transition-all duration-200 cursor-pointer group min-h-[280px] hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20 flex flex-col"
-      onClick={() => onSelectPuzzle(puzzle)}
+      className={`bg-slate-800/50 border-slate-700 transition-all duration-200 min-h-[280px] flex flex-col ${
+        isLocked
+          ? 'border-red-500/50 cursor-not-allowed opacity-75'
+          : 'hover:border-cyan-500 cursor-pointer group hover:scale-[1.02] hover:shadow-lg hover:shadow-cyan-500/20'
+      } ${isCompleted ? 'border-green-500/50' : ''}`}
+      onClick={handleCardClick}
     >
       <CardContent className="p-3 flex flex-col flex-grow">
         {/* Header */}
@@ -93,6 +134,16 @@ export function PuzzleInfoCard({ puzzle, onSelectPuzzle }: PuzzleInfoCardProps) 
           <Badge className={`text-xs px-2 py-0.5 ${datasetBadge.className} font-semibold`}>
             {datasetBadge.label}
           </Badge>
+        </div>
+
+        {/* Attempt Status */}
+        <div className="mb-3">
+          <AttemptCounter
+            puzzleId={puzzle.id}
+            size="sm"
+            showLabel={false}
+            className="w-full justify-center"
+          />
         </div>
 
         {/* Stats Grid */}
@@ -135,9 +186,16 @@ export function PuzzleInfoCard({ puzzle, onSelectPuzzle }: PuzzleInfoCardProps) 
         {/* Action Button */}
         <Button
           size="sm"
-          className="w-full bg-cyan-600 hover:bg-cyan-500 text-white group-hover:bg-cyan-500 font-semibold text-sm py-2 mt-2 transition-colors"
+          disabled={isLocked}
+          className={`w-full font-semibold text-sm py-2 mt-2 transition-colors ${
+            isLocked
+              ? 'bg-red-600 text-white cursor-not-allowed'
+              : isCompleted
+                ? 'bg-green-600 hover:bg-green-500 text-white'
+                : 'bg-cyan-600 hover:bg-cyan-500 text-white group-hover:bg-cyan-500'
+          }`}
         >
-          Solve Puzzle
+          {isLocked ? '🔒 Locked' : isCompleted ? '✓ Completed' : 'Solve Puzzle'}
         </Button>
       </CardContent>
     </Card>
