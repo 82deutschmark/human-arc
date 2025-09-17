@@ -1,4 +1,5 @@
-/**
+/**OLD FILE POSSIBLE STILL SERVING CRITICAL FUNCTIONALITY
+ * NEEDS REVIEW!
  * Smart hook for Officer Track puzzle data
  * 
  * Leverages arc-explainer API rich metadata for dynamic puzzle selection
