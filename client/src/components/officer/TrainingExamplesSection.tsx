@@ -1,4 +1,6 @@
-/**
+/**Author: Claude
+ * Date: 2025-09-17
+ * Audit: Dr. Max Power
  * Training Examples Section
  * =========================
  * Responsive layout system for displaying ARC puzzle training examples
@@ -77,8 +79,8 @@ export function TrainingExamplesSection({
           <div className="flex gap-4 pb-4">
             {examples.map((example, index) => {
               const cardPadding = "p-2";
-              const headerSize = "text-xs font-bold";
-              const arrowSize = "text-sm";
+              const headerSize = "text-lg font-bold";
+              const arrowSize = "text-xl";
 
               return (
                 <div key={index} className={`flex-shrink-0 ${getExampleBgClass(index)} rounded-lg border-4 border-slate-400 shadow-lg ${cardPadding} relative overflow-hidden`}>
@@ -87,11 +89,11 @@ export function TrainingExamplesSection({
                   <div className="absolute bottom-0 left-0 w-4 h-4 border-l-4 border-b-4 border-slate-600 rounded-bl-lg"></div>
                   <div className="absolute bottom-0 right-0 w-4 h-4 border-r-4 border-b-4 border-slate-600 rounded-br-lg"></div>
                   
-                  <h3 className={`text-slate-800 ${headerSize} mb-1 text-center`}>
+                  <h3 className={`text-slate-900 ${headerSize} mb-1 text-center`}>
                     EX {index + 1}
                   </h3>
                   <div className="flex items-center gap-1.5">
-                    <GridWithDimensions grid={example.input} label="Input">
+                    <GridWithDimensions grid={example.input} label="This grid">
                       <ResponsiveOfficerDisplayGrid
                         grid={example.input}
                         containerType="example"
@@ -100,8 +102,8 @@ export function TrainingExamplesSection({
                         fixedCellSize={cellSize}
                       />
                     </GridWithDimensions>
-                    <div className={`text-slate-700 ${arrowSize} font-bold`}>→</div>
-                    <GridWithDimensions grid={example.output} label="Output">
+                    <div className={`text-slate-900 ${arrowSize} font-bold`}>→</div>
+                    <GridWithDimensions grid={example.output} label="becomes this grid!  Why?">
                       <ResponsiveOfficerDisplayGrid
                         grid={example.output}
                         containerType="example"
@@ -121,7 +123,7 @@ export function TrainingExamplesSection({
         {examples.length >= 3 && (
           <div className="mt-6 bg-blue-900 border border-blue-600 rounded-lg p-4">
             <div className="text-blue-300 text-base">
-              <strong>💡 Pattern Analysis:</strong> Study these {examples.length} examples to identify the transformation pattern. 
+              <strong>💡 What's the rule here?</strong> Study these {examples.length} examples to identify the transformation pattern. 
               Look for consistent rules that apply across all input → output pairs.
             </div>
           </div>
