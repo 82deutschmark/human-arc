@@ -1,7 +1,8 @@
 /**
- * Tutorial Progress Bar
- * =====================
- * A fixed footer that displays the user's progress through the tutorial steps.
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component renders a progress bar for the tutorial mode. It displays a series of blocks that visually represent the user's progress through the tutorial steps, with different colors indicating completed, in-progress, and future steps. It's a simple, presentational component that provides clear feedback to the user.
+ * SRP and DRY check: Pass. This component has a single responsibility: to display the tutorial progress. It is a presentational component that receives all its data and callbacks via props, making it reusable and well-encapsulated.
  */
 
 import type { TutorialStep } from '@/config/tutorialSteps';

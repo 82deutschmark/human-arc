@@ -1,10 +1,9 @@
-/**MISLEADING!!!  THIS IS for displaying puzzle CARDS displaying data, not for solving puzzles!!!
- * Simple Responsive Puzzle Grid
- * 
- * CSS Grid that adapts to screen size:
- * - Mobile: 1 column
- * - Tablet: 2-3 columns  
- * - Desktop: 4+ columns
+/**
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component arranges a collection of puzzle information cards into a responsive grid layout. It is used to display a browsable list of puzzles to the user.
+ * NAMING WARNING: The filename `PuzzleGrid.tsx` is misleading. This component does NOT render the interactive grid for solving a puzzle. Instead, it displays a grid of `PuzzleInfoCard` components. The actual puzzle-solving grid is handled by other components like `ResponsivePuzzleSolver.tsx`.
+ * SRP and DRY check: Pass. The component's single responsibility is to create a responsive layout for a list of puzzle cards. It correctly delegates the rendering of individual cards to the `PuzzleInfoCard` component, adhering to SRP.
  */
 
 import { Card, CardContent } from '@/components/ui/card';

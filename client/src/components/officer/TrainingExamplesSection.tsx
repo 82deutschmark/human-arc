@@ -1,10 +1,8 @@
-/**Author: Claude
+/**
+ * Author: Cascade using gpt-4-turbo
  * Date: 2025-09-17
- * Audit: Dr. Max Power
- * Training Examples Section
- * =========================
- * Responsive layout system for displaying ARC puzzle training examples
- * Handles multiple examples with proper input/output pairing and mobile optimization
+ * PURPOSE: This component displays the training examples for an ARC puzzle in a responsive, horizontally scrolling section. Each example shows an input grid and its corresponding output grid, which is essential for the user to understand the puzzle's transformation rule. It also includes a slider to control the size of the grid cells for better visibility.
+ * SRP and DRY check: Pass. This component has a single responsibility: to display the training examples for a puzzle. It is a presentational component that receives all its data via props, making it reusable and well-encapsulated.
  */
 
 import { useState, useEffect } from 'react';

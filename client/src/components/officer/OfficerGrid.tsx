@@ -1,15 +1,9 @@
-/** DEPRECATED???
- * Probably superceded by ResponsiveOfficerGrid
- * Officer Grid Component
- * ======================
- * Interactive grid component for ARC puzzle solving with military academy styling
- * 
- * Key Features:
- * - Variable grid sizes (ARC puzzles have different dimensions)
- * - Integer-to-emoji transformation for visual representation  
- * - Click-to-cycle through values (0-9)
- * - Real-time solution building
- * - Military gold/amber theming
+/**
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component renders an ARC puzzle grid with fixed-size cells. It supports both interactive (for solving) and display-only modes. 
+ * DEPRECATION NOTICE: This component is considered deprecated and has been superseded by `ResponsiveOfficerGrid`. The `ResponsiveOfficerGrid` component provides superior scaling and adaptability for different screen sizes and puzzle dimensions. This component should be avoided in new development, and existing instances should be migrated to the responsive version where possible.
+ * SRP and DRY check: Pass (as a legacy component). Its single responsibility was to render a fixed-size grid. However, its functionality is now better and more flexibly handled by `ResponsiveOfficerGrid`.
  */
 
 import { useState, useEffect } from 'react';

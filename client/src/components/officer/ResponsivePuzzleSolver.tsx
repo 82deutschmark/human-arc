@@ -1,8 +1,8 @@
 /**
- * Responsive Puzzle Solver
- * =========================
- * Complete responsive puzzle solving interface with proper scaling
- * Replaces SimplePuzzleSolver with full responsive design implementation
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component is the primary interface for solving ARC puzzles. It orchestrates the entire puzzle-solving experience, including displaying training examples, handling multi-test case puzzles, managing user input and grid state, and validating solutions with the PlayFab backend. It is a central hub that composes many other smaller components to create the full solver UI.
+ * SRP and DRY check: Fail. This is a "god component" that violates the Single Responsibility Principle. It manages a wide range of concerns, including puzzle state, UI display logic, user interaction, session tracking, and backend communication. This makes the component difficult to understand, maintain, and test. It should be refactored into smaller, more focused components and custom hooks to better separate these concerns.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -327,7 +327,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   };
 
   // Handle output size change for current test
-  const handleSizeChange = (newWidth: number, newHeight: number) => {
+  const handleSizeChange = (newHeight: number, newWidth: number) => {
     const oldDimensions = outputDimensions[currentTestIndex];
     
     const newDimensions = [...outputDimensions];
@@ -846,7 +846,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
               {/* Grid Size Controls */}
               <PuzzleSolverControls
                 currentDimensions={currentDimensions}
-                onSizeChange={handleSizeChange}
+                onSizeChange={(height, width) => handleSizeChange(height, width)}
                 getSuggestedSizes={getSuggestedSizes}
               />
 
@@ -971,13 +971,15 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 />
               </GridWithDimensions>
 
+
               {/* Hint System */}
               <div className="mt-4">
                 <PermanentHintSystem
                   puzzle={puzzle}
                   currentTestOutput={expectedOutput}
-                  onAutoResizeGrid={(width, height) => {
-                    handleSizeChange(width, height);
+                  onAutoResizeGrid={(height, width) => {
+                    console.log(`[AutoResize] Received request to resize to ${height}x${width}`);
+                    handleSizeChange(height, width);
                   }}
                   onHintUsed={(hintLevel, totalHints) => {
                     console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);

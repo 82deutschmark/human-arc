@@ -1,8 +1,8 @@
 /**
- * Enhanced Grid Cell Component
- * ============================
- * Smart grid cell with color overlays, emoji support, and interaction handling
- * Supports emoji, ARC colors, and hybrid display modes with proper contrast
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component renders a single cell within a puzzle grid. It is 'enhanced' because it intelligently handles multiple display modes (emoji, ARC colors, hybrid), interaction states (selected, hovered), and user events (click, mouse down, etc.). It dynamically adjusts its appearance, including background color, text color, and font size, based on the provided props. This is a core presentational component for rendering the puzzle grids in the Officer and HARC tracks.
+ * SRP and DRY check: Pass. This component has the single responsibility of displaying one grid cell. It is a pure, reusable component that receives all its data via props, making it highly modular and compliant with DRY principles.
  */
 
 import React from 'react';

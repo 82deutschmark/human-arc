@@ -1,15 +1,9 @@
 /**
- * Officer Rank Badge Component
- * ============================
- * THIS IS A HALLUCINATED COMPONENT THAT DOES NOT WORK AND PROBABLY HAS NO MEANING
- * Military rank display component for the Officer Track with progression system
- * 
- * Key Features:
- * - Officer rank visualization with military styling
- * - Progress tracking to next rank
- * - Rank-specific insignia and colors
- * - Experience points and completion statistics
- * - Military gold/amber theming
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component was intended to display a player's rank in the Officer Track, complete with military-style insignia and progress tracking.
+ * DEPRECATION NOTICE: This component is deprecated and should not be used. The Officer Rank system is not an implemented feature of the application, as confirmed in the project's README. This component was likely created based on a misunderstanding of the project's scope and is a clear violation of DRY and SRP, as it introduces a significant amount of code for a non-existent feature.
+ * SRP and DRY check: Fail. This component is a poster child for over-engineering and building features that are not required. It introduces a large amount of unnecessary code and complexity for a feature that does not exist.
  */
 
 import { useState } from 'react';

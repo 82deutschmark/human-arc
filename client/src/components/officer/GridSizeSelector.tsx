@@ -1,20 +1,8 @@
 /**
- * Grid Size Selector Component
- * Author: Cascade
- * 
- * PURPOSE:
- * Allows users to specify output grid dimensions when different from input size
- * Critical for ARC puzzles where output size ≠ input size
- * 
- * HOW IT WORKS:
- * - Provides width/height dropdowns (1-30 range)
- * - Shows current dimensions
- * - Warns when changing size would affect existing solution
- * - Suggests common sizes based on training examples
- * 
- * HOW THE PROJECT USES IT:
- * - Used in ResponsivePuzzleSolver for dynamic output grid sizing
- * - Enables proper solving of ARC puzzles with size transformations
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component provides a user interface for selecting the dimensions (width and height) of the output grid for a puzzle. It is particularly important for ARC puzzles where the output grid size may differ from the input grid size. It includes features like suggested sizes based on training examples and a warning to the user if changing the size will reset their current work. It also incorporates controls for changing the display mode and emoji set, making it a comprehensive control panel for the puzzle-solving interface.
+ * SRP and DRY check: Pass. This component's primary responsibility is to manage the grid size selection. While it also includes display mode controls, they are closely related to the presentation of the grid and are logically grouped here. The component is reusable and does not contain any puzzle-solving logic.
  */
 
 import { Button } from '@/components/ui/button';

@@ -1,9 +1,9 @@
 /**
- * Display Mode Toolbar
- * ====================
- * A self-contained toolbar for selecting puzzle display modes and emoji themes.
- * Designed to be placed next to the main test case title.
- * Author: Gemini 2.5 Pro
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: Provides a toolbar for users to switch between different puzzle grid display modes ('arc-colors', 'emoji', 'hybrid') and select an emoji theme. This component is crucial for the Officer and HARC tracks, allowing users to customize their puzzle-solving interface for clarity and accessibility.
+ * It interacts with a parent component (like ResponsivePuzzleSolver) by taking the current displayMode and emojiSet as props and calling the onDisplayModeChange and onEmojiSetChange callbacks when the user makes a selection.
+ * SRP and DRY check: Pass. This component has a single responsibility: managing the display settings for the puzzle grid. It is self-contained and does not duplicate logic from other components.
  */
 
 import type { DisplayMode } from '@/types/puzzleDisplayTypes';

@@ -1,16 +1,9 @@
 /**
- * Officer Result Modal Component
- * ==============================
- * THIS IS A HALLUCINATED COMPONENT THAT DOES NOT WORK AND PROBABLY HAS NO MEANING
- * Modal component for displaying ARC puzzle completion results with military theming
- * 
- * Key Features:
- * - Success/failure result display with military feedback
- * - Experience points and rank progression updates
- * - Detailed solution comparison (expected vs actual)
- * - Performance metrics and statistics
- * - Next mission recommendations
- * - Military gold/amber theming
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component was intended to be a modal for displaying the results of a puzzle attempt in the Officer Track, including success/failure status, experience points, and rank progression.
+ * DEPRECATION NOTICE: This component is deprecated and should not be used. It is inextricably linked to the non-existent Officer Rank and progression system, making it a "hallucinated" feature that is not part of the actual application. It depends on other deprecated components like `OfficerRankBadge`.
+ * SRP and DRY check: Fail. This component was built for a feature that does not exist, making it a prime example of unnecessary code and a violation of the "You Aren't Gonna Need It" (YAGNI) principle.
  */
 
 import { useEffect, useState } from 'react';

@@ -1,7 +1,8 @@
 /**
- * Grid Size Test Component
- * ========================
- * Demonstrates scaling issues with different puzzle sizes
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This is a diagnostic component used for testing and demonstrating the scaling behavior of different grid components. It is not intended for use in the main application but serves as a development tool to visualize how fixed-size and responsive grids handle various puzzle dimensions, especially on smaller viewports.
+ * SRP and DRY check: Pass. This component's single responsibility is to be a testbed for grid components. It is not part of the production application and does not need to adhere to the same strict SRP and DRY principles as production code, but it is well-structured for its purpose.
  */
 
 import { OfficerGrid, OfficerDisplayGrid } from '@/components/officer/OfficerGrid';

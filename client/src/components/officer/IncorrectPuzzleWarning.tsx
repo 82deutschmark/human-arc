@@ -1,8 +1,8 @@
 /**
- * Incorrect Puzzle Warning
- * ========================
- * Displays a warning message when the loaded puzzle does not match the
- * puzzle intended for the current tutorial step.
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component displays a warning message to the user when the puzzle they have loaded does not match the one expected for a particular context, such as a tutorial step. It's a simple, presentational component designed to provide clear feedback and prevent user confusion.
+ * SRP and DRY check: Pass. This component has a single responsibility: to display a specific warning. It is reusable and can be employed anywhere a puzzle mismatch needs to be communicated to the user.
  */
 
 import { Card, CardContent } from '@/components/ui/card';

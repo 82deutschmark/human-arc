@@ -1,8 +1,8 @@
 /**
- * Tutorial Header
- * ===============
- * Renders the main header for the tutorial mode, including the title,
- * step number, instructor avatar, and action buttons.
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component renders the header for the tutorial mode. It displays the current step number, the title of the step, the instructor's avatar, and provides buttons for toggling the guidance panel and exiting the tutorial. It's a presentational component that provides context and navigation for the tutorial.
+ * SRP and DRY check: Pass. This component has a single responsibility: to display the tutorial header. It is a presentational component that receives all its data and callbacks via props, making it reusable and well-encapsulated.
  */
 
 import { Button } from '@/components/ui/button';

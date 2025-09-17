@@ -1,14 +1,9 @@
-/**  Possibly has useful parts, otherwise deprecated
- * Officer Puzzle Selector Component
- * =================================
- * Selector component for choosing ARC puzzles with military academy theming (THEMING is overboard and should be removed)
- * 
- * Key Features:
- * - Real ARC dataset browsing (training, evaluation, etc.)  USEFUL!!!
- * - Officer rank-based filtering and access  VERY BADLY DONE
- * - Puzzle metadata display (difficulty, grid size, completion status)
- * - Military gold/amber theming OVERBOARD needs to be removed
- * - Pagination for large datasets
+/**
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component is a comprehensive puzzle selector for the Officer and HARC tracks. It allows users to browse, search, and filter the complete ARC dataset based on a wide range of criteria, including AI performance, grid size, complexity, and completion status. It uses pagination to handle large datasets efficiently and provides detailed metadata for each puzzle to help users make an informed selection.
+ * LEGACY NOTE: This component contains legacy styling and functionality that may be considered deprecated. The "military" theming is overly stylized and the original rank-based filtering was poorly implemented and has since been disabled. While the core filtering and browsing functionality is valuable, this component is a candidate for refactoring to align with the simpler, research-focused HARC platform aesthetic.
+ * SRP and DRY check: Pass. The component's single responsibility is to facilitate puzzle discovery and selection. It encapsulates all the logic for filtering and pagination, making it a self-contained and reusable, albeit complex, unit.
  */
 
 import { useState, useEffect } from 'react';

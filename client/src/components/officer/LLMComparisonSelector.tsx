@@ -1,12 +1,8 @@
-/**Author: UNKNOWN
- * Date: 2025 UNKNOWN
- * Purpose: UNKNOWN!  
- * SRP and DRY check: UNKNOWN
- * Used by: UNKNOWN
- * LLM Comparison Selector
- * =======================
- * Simple puzzle selection interface for comparing human vs AI performance
- * Uses real data from arc-explainer API - no hardcoded assumptions
+/**
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component provides a UI for users to select a puzzle for a human vs. AI challenge. It fetches performance data from the arc-explainer API, allowing users to browse and select puzzles based on how well AI models performed on them. It includes filtering and sorting options to help users find interesting challenges, such as puzzles that no AI could solve. When a puzzle is selected, it passes the puzzle data to a parent component.
+ * SRP and DRY check: Pass. This component has a single responsibility: to allow a user to select a puzzle based on AI performance data. It is self-contained and reusable.
  */
 
 import { useState, useEffect } from 'react';
