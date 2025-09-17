@@ -20,6 +20,7 @@ import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
+import { AttemptCounter } from '@/components/officer/AttemptCounter';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EventType } from '@/types/playfab';
@@ -29,6 +30,7 @@ import { playFabValidation } from '@/services/playfab/validation';
 import { playFabEvents } from '@/services/playfab/events';
 import { idConverter } from '@/services/idConverter';
 import { SizeSlider } from '@/components/ui/SizeSlider';
+import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 interface ResponsivePuzzleSolverProps {
   puzzle: OfficerTrackPuzzle;
@@ -78,8 +80,40 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   // Performance stats state
   const [performanceStats, setPerformanceStats] = useState<PerformanceData | null>(null);
 
+  // Attempt tracking state
+  const [attemptStatus, setAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
+  const [attemptStatusLoading, setAttemptStatusLoading] = useState(true);
+
   const [inputCellSize, setInputCellSize] = useState(50);
   const [outputCellSize, setOutputCellSize] = useState(50);
+
+  // Load attempt status when puzzle changes
+  useEffect(() => {
+    const loadAttemptStatus = async () => {
+      if (!puzzle?.id) return;
+
+      setAttemptStatusLoading(true);
+      try {
+        const status = await attemptTracker.getPuzzleAttemptStatus(puzzle.id);
+        setAttemptStatus(status);
+        console.log(`[ResponsivePuzzleSolver] Loaded attempt status for ${puzzle.id}:`, status);
+      } catch (error) {
+        console.error(`Failed to load attempt status for ${puzzle.id}:`, error);
+        // Set default status on error
+        setAttemptStatus({
+          status: 'available',
+          attemptsRemaining: 2,
+          totalAttempts: 0,
+          canAttempt: true,
+          lockedAt: null
+        });
+      } finally {
+        setAttemptStatusLoading(false);
+      }
+    };
+
+    loadAttemptStatus();
+  }, [puzzle?.id]);
 
   // Assessment mode guidance state
   const [assessmentTestsCompleted, setAssessmentTestsCompleted] = useState<boolean[]>([]);
@@ -816,6 +850,13 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 getSuggestedSizes={getSuggestedSizes}
               />
 
+              {/* Attempt Counter - ARC-AGI 2-Attempt Limit */}
+              <AttemptCounter
+                puzzleId={puzzle.id}
+                size="lg"
+                className="w-full"
+              />
+
               {/* Display Controls, Actions, Palette, and Validation */}
               <PuzzleTools
                 displayMode={displayState.displayMode}
@@ -830,6 +871,8 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 allTestsCompleted={isAssessmentMode ? false : completedTests.every(test => test)}
                 usedValues={getUsedValues()}
                 isAssessmentMode={isAssessmentMode}
+                isLocked={attemptStatus?.status === 'locked'}
+                attemptsRemaining={attemptStatus?.attemptsRemaining ?? 2}
               />
             </div>
 
