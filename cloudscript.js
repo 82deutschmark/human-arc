@@ -189,6 +189,132 @@ const ScoringService = {
 };
 
 // =============================================================================
+// ATTEMPT TRACKING SERVICE
+// =============================================================================
+
+const AttemptTrackingService = {
+    getPlayerAttemptsData(playFabId) {
+        const result = PlayFabService.getPlayerData(playFabId, ['puzzleAttempts']);
+        const attemptsDataStr = result.Data?.puzzleAttempts?.Value;
+
+        if (!attemptsDataStr || attemptsDataStr === "undefined") {
+            return {};
+        }
+
+        return Utils.safeParseJSON(attemptsDataStr, {});
+    },
+
+    savePlayerAttemptsData(playFabId, attemptsData) {
+        return PlayFabService.updatePlayerData(playFabId, {
+            puzzleAttempts: JSON.stringify(attemptsData)
+        });
+    },
+
+    getPuzzleStatus(attemptsData, puzzleId) {
+        const puzzleState = attemptsData[puzzleId];
+
+        if (!puzzleState) {
+            return {
+                status: "available",
+                attemptsRemaining: 2,
+                totalAttempts: 0,
+                canAttempt: true
+            };
+        }
+
+        return {
+            status: puzzleState.status || "available",
+            attemptsRemaining: puzzleState.attemptsRemaining || 0,
+            totalAttempts: puzzleState.attempts?.length || 0,
+            canAttempt: puzzleState.status !== "locked" && puzzleState.status !== "completed",
+            lockedAt: puzzleState.lockedAt || null
+        };
+    },
+
+    trackPuzzleAttempt(playFabId, puzzleId, attemptData, isCorrect) {
+        log.info(`[AttemptTracking] Tracking attempt for puzzle ${puzzleId}, result: ${isCorrect ? 'correct' : 'incorrect'}`);
+
+        const attemptsData = this.getPlayerAttemptsData(playFabId);
+
+        // Initialize puzzle entry if doesn't exist
+        if (!attemptsData[puzzleId]) {
+            attemptsData[puzzleId] = {
+                attempts: [],
+                status: "available",
+                attemptsRemaining: 2,
+                lockedAt: null
+            };
+        }
+
+        const puzzleState = attemptsData[puzzleId];
+
+        // Check if puzzle is locked (should not happen due to client checks, but safety)
+        if (puzzleState.status === "locked") {
+            log.error(`[AttemptTracking] Attempt on locked puzzle ${puzzleId}`);
+            return {
+                success: false,
+                error: "Puzzle locked: Maximum attempts exceeded",
+                canAttempt: false,
+                attemptsRemaining: 0
+            };
+        }
+
+        // Check if puzzle already completed (allow re-attempts for completed puzzles but don't award points)
+        if (puzzleState.status === "completed" && isCorrect) {
+            log.info(`[AttemptTracking] Re-attempt on completed puzzle ${puzzleId}`);
+            return {
+                success: true,
+                alreadyCompleted: true,
+                message: "Puzzle already completed - no additional points awarded",
+                canAttempt: true,
+                attemptsRemaining: puzzleState.attemptsRemaining
+            };
+        }
+
+        // Add attempt record
+        const attemptRecord = {
+            timestamp: new Date().toISOString(),
+            result: isCorrect ? "correct" : "incorrect",
+            solutions: attemptData.solutions,
+            timeElapsed: attemptData.timeElapsed,
+            stepCount: attemptData.stepCount,
+            attemptNumber: attemptData.attemptNumber
+        };
+
+        if (isCorrect && attemptData.scoreData) {
+            attemptRecord.scoreData = attemptData.scoreData;
+        }
+
+        puzzleState.attempts.push(attemptRecord);
+
+        // Update status based on result
+        if (isCorrect) {
+            puzzleState.status = "completed";
+            // Don't change attemptsRemaining for completed puzzles
+            log.info(`[AttemptTracking] Puzzle ${puzzleId} completed successfully`);
+        } else {
+            puzzleState.attemptsRemaining--;
+            if (puzzleState.attemptsRemaining <= 0) {
+                puzzleState.status = "locked";
+                puzzleState.lockedAt = new Date().toISOString();
+                log.info(`[AttemptTracking] Puzzle ${puzzleId} locked after 2 failed attempts`);
+            }
+        }
+
+        // Save updated attempts data
+        this.savePlayerAttemptsData(playFabId, attemptsData);
+
+        return {
+            success: true,
+            puzzleState: puzzleState,
+            canAttempt: puzzleState.status !== "locked",
+            attemptsRemaining: puzzleState.attemptsRemaining,
+            totalAttempts: puzzleState.attempts.length
+        };
+    }
+};
+
+// =============================================================================
 // VALIDATION SERVICE
 // =============================================================================
 
@@ -235,6 +361,24 @@ function _validateAndScoreArcPuzzle(args, context, config) {
         const playerId = context.currentPlayerId;
         Utils.assert(playerId, 'context.currentPlayerId is missing or undefined.');
 
+        // CHECK ATTEMPT STATUS FIRST - CRITICAL FOR 2-ATTEMPT LIMIT
+        const attemptsData = AttemptTrackingService.getPlayerAttemptsData(playerId);
+        const puzzleStatus = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId);
+
+        log.info(`[${config.handlerName}] Puzzle ${puzzleId} status: ${puzzleStatus.status}, remaining attempts: ${puzzleStatus.attemptsRemaining}`);
+
+        // Block attempts on locked puzzles
+        if (puzzleStatus.status === "locked") {
+            log.warn(`[${config.handlerName}] Blocked attempt on locked puzzle ${puzzleId}`);
+            return {
+                success: false,
+                error: "Puzzle locked: Maximum 2 attempts exceeded",
+                locked: true,
+                attemptsRemaining: 0,
+                totalAttempts: puzzleStatus.totalAttempts
+            };
+        }
+
         log.info(`Searching for puzzle: ${puzzleId}`);
         const puzzleData = PlayFabService.getPuzzleById(puzzleId);
         if (!puzzleData) {
@@ -249,34 +393,73 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             return { success: false, error: validationResult.error };
         }
 
-        if (!validationResult.allCorrect) {
-            return { success: true, correct: false, failures: validationResult.failures };
+        const isCorrect = validationResult.allCorrect;
+
+        // TRACK ALL ATTEMPTS (CORRECT AND INCORRECT)
+        const attemptData = {
+            solutions,
+            timeElapsed,
+            stepCount,
+            attemptNumber,
+            sessionId
+        };
+
+        // For correct attempts, calculate score before tracking
+        let scoreData = null;
+        if (isCorrect) {
+            scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
+            attemptData.scoreData = scoreData;
         }
 
+        // Track the attempt
+        const trackingResult = AttemptTrackingService.trackPuzzleAttempt(playerId, puzzleId, attemptData, isCorrect);
+
+        if (!trackingResult.success) {
+            return trackingResult; // Return tracking error (e.g., locked puzzle)
+        }
+
+        // Handle incorrect attempts
+        if (!isCorrect) {
+            log.info(`[${config.handlerName}] Incorrect attempt for puzzle ${puzzleId}, attempts remaining: ${trackingResult.attemptsRemaining}`);
+            return {
+                success: true,
+                correct: false,
+                failures: validationResult.failures,
+                attemptsRemaining: trackingResult.attemptsRemaining,
+                totalAttempts: trackingResult.totalAttempts,
+                locked: trackingResult.puzzleState.status === "locked",
+                message: trackingResult.puzzleState.status === "locked"
+                    ? "Maximum attempts exceeded - puzzle locked"
+                    : `Incorrect. ${trackingResult.attemptsRemaining} attempt(s) remaining.`
+            };
+        }
+
+        // Handle correct attempts
+        if (trackingResult.alreadyCompleted) {
+            // Re-attempt on already completed puzzle
+            return {
+                success: true,
+                correct: true,
+                alreadyCompleted: true,
+                message: "Puzzle solved correctly (already completed - no additional points)",
+                attemptsRemaining: trackingResult.attemptsRemaining,
+                totalAttempts: trackingResult.totalAttempts
+            };
+        }
+
+        // First time correct - award points and update player data
         const keysToFetch = [config.completedPuzzlesKey, config.pointsKey, 'humanPerformanceData'];
         const playerData = PlayFabService.getPlayerData(playerId, keysToFetch);
         const currentPoints = parseInt(playerData.Data[config.pointsKey]?.Value || '0');
         const completedPuzzles = Utils.safeParseJSON(playerData.Data[config.completedPuzzlesKey]?.Value, []);
         const humanPerformanceData = Utils.safeParseJSON(playerData.Data.humanPerformanceData?.Value, []);
 
-        // CRITICAL FIX: Check if puzzle already completed BEFORE awarding points
-        if (completedPuzzles.includes(puzzleId)) {
-            // Find the previous score for this puzzle
-            const previousRecord = humanPerformanceData.find(record => record.puzzleId === puzzleId);
-            return {
-                success: true,
-                correct: true,
-                alreadyCompleted: true,
-                message: "Puzzle solved correctly (already completed)",
-                previousScore: previousRecord || null
-            };
+        // Add to completed puzzles if not already there
+        if (!completedPuzzles.includes(puzzleId)) {
+            completedPuzzles.push(puzzleId);
         }
 
-        // Only calculate score and award points for first completion
-        const scoreData = config.scoringFunction({ timeElapsed, stepCount, attemptNumber });
-
-        completedPuzzles.push(puzzleId);
-
+        // Add to human performance data
         humanPerformanceData.push({
             puzzleId,
             correct: true,
@@ -289,6 +472,7 @@ function _validateAndScoreArcPuzzle(args, context, config) {
 
         const newTotalPoints = currentPoints + scoreData.finalScore;
 
+        // Update PlayFab statistics and user data
         PlayFabService.updatePlayerStats(playerId, [
             { StatisticName: config.statisticName, Value: newTotalPoints }
         ]);
@@ -299,7 +483,16 @@ function _validateAndScoreArcPuzzle(args, context, config) {
             'humanPerformanceData': JSON.stringify(humanPerformanceData)
         });
 
-        return { success: true, correct: true, ...scoreData };
+        log.info(`[${config.handlerName}] Puzzle ${puzzleId} completed successfully, awarded ${scoreData.finalScore} points`);
+
+        return {
+            success: true,
+            correct: true,
+            ...scoreData,
+            attemptsRemaining: trackingResult.attemptsRemaining,
+            totalAttempts: trackingResult.totalAttempts,
+            message: `Puzzle solved! +${scoreData.finalScore} points`
+        };
 
     } catch (error) {
         log.error(`Error in ${config.handlerName}`, { error: error.message, stack: error.stack, args });
@@ -588,5 +781,62 @@ handlers.AwardStrategyBonus = function(args, context) {
     } catch (error) {
         log.error("AwardStrategyBonus error", { error: error.message, stack: error.stack, args });
         return { success: false, error: "Failed to award strategy bonus" };
+    }
+};
+
+// =============================================================================
+// PUZZLE ATTEMPT STATUS FUNCTION
+// =============================================================================
+
+handlers.GetPuzzleAttemptStatus = function(args, context) {
+    try {
+        Utils.assertArgs(args, ['puzzleIds']);
+        const { puzzleIds } = args;
+        const playerId = context.currentPlayerId;
+        Utils.assert(playerId, 'context.currentPlayerId is missing or undefined.');
+
+        log.info(`[GetPuzzleAttemptStatus] Checking status for ${puzzleIds.length} puzzles`);
+
+        const attemptsData = AttemptTrackingService.getPlayerAttemptsData(playerId);
+        const statusResults = {};
+
+        for (const puzzleId of puzzleIds) {
+            const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId);
+            statusResults[puzzleId] = status;
+        }
+
+        return {
+            success: true,
+            puzzleStatuses: statusResults,
+            totalPuzzlesChecked: puzzleIds.length
+        };
+
+    } catch (error) {
+        log.error("GetPuzzleAttemptStatus error", { error: error.message, stack: error.stack, args });
+        return { success: false, error: "Failed to get puzzle attempt status" };
+    }
+};
+
+handlers.GetSinglePuzzleAttemptStatus = function(args, context) {
+    try {
+        Utils.assertArgs(args, ['puzzleId']);
+        const { puzzleId } = args;
+        const playerId = context.currentPlayerId;
+        Utils.assert(playerId, 'context.currentPlayerId is missing or undefined.');
+
+        log.info(`[GetSinglePuzzleAttemptStatus] Checking status for puzzle ${puzzleId}`);
+
+        const attemptsData = AttemptTrackingService.getPlayerAttemptsData(playerId);
+        const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId);
+
+        return {
+            success: true,
+            puzzleId: puzzleId,
+            ...status
+        };
+
+    } catch (error) {
+        log.error("GetSinglePuzzleAttemptStatus error", { error: error.message, stack: error.stack, args });
+        return { success: false, error: "Failed to get puzzle attempt status" };
     }
 };
