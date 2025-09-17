@@ -1,8 +1,12 @@
 /**
- * Author: Cascade using gpt-4-turbo
- * Date: 2025-09-17
- * PURPOSE: This component serves as a toolbox for the puzzle solver interface. It aggregates several key controls, including the `EmojiPaletteDivider` for value selection, and action buttons for copying the input grid, resetting the solution, and submitting the solution for validation. It's a central hub for user interaction with the puzzle.
- * SRP and DRY check: Pass. This component follows the Single Responsibility Principle by acting as a dedicated container for puzzle-solving tools. It composes other single-purpose components, which is a good example of DRY and modular design.
+ * 
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-09-12
+ * PURPOSE: Enhanced puzzle tools with glowing pulse effects to guide user interaction.
+ * Provides display controls and action tools for ARC puzzle solving with improved UX.
+ * Features pulsing glow effect on Display Mode controls until user first interacts.
+ * SRP and DRY check: Pass - Single responsibility (puzzle tools/controls), enhanced with UX improvements
+ * 
  */
 
 import React, { useState } from 'react';

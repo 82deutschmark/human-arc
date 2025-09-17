@@ -1,8 +1,12 @@
 /**
- * Author: Cascade using gpt-4-turbo
- * Date: 2025-09-17
- * PURPOSE: This component provides a 3-level progressive hint system for ARC puzzles. It is designed to be used in the HARC assessment and the Officer Track. The hints are revealed one at a time, starting with the output grid size, then the transformation types, and finally a full solution explanation from the arc-explainer API. It also includes a penalty system for using hints.
- * SRP and DRY check: Pass. This component has a single responsibility: to provide hints for a puzzle. It is a reusable component that can be used with any puzzle that has the required data.
+ * WEDGED IN THE WRONG FOLDER!!
+ * Author: Claude Code using Sonnet 4
+ * Date: 2025-09-12
+ * PURPOSE: Clean hint system providing progressive 3-level hints for ARC puzzles. 
+ * Integrates with PlayFab hint scoring system and arc-explainer API. 
+ * Designed for HARC assessment but reusable across officer track.
+ * SRP and DRY check: Pass - Single responsibility (hints only), reusable component
+ * 
  */
 
 import { useState, useEffect } from 'react';

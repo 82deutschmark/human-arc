@@ -1,5 +1,5 @@
 /**
- * Author: Cascade using gpt-4-turbo
+ * Author: Cascade using Gemini 2.5 Pro
  * Date: 2025-09-17
  * PURPOSE: This component is the primary interface for solving ARC puzzles. It orchestrates the entire puzzle-solving experience, including displaying training examples, handling multi-test case puzzles, managing user input and grid state, and validating solutions with the PlayFab backend. It is a central hub that composes many other smaller components to create the full solver UI.
  * SRP and DRY check: Fail. This is a "god component" that violates the Single Responsibility Principle. It manages a wide range of concerns, including puzzle state, UI display logic, user interaction, session tracking, and backend communication. This makes the component difficult to understand, maintain, and test. It should be refactored into smaller, more focused components and custom hooks to better separate these concerns.
