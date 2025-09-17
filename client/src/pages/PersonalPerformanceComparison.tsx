@@ -224,7 +224,7 @@ export function PersonalPerformanceComparison() {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
         <Navbar
-          title="Performance vs LLMs"
+          title="HARC Dashboard"
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
@@ -268,7 +268,7 @@ export function PersonalPerformanceComparison() {
     return (
       <div className="min-h-screen bg-slate-900 text-white">
         <Navbar
-          title="Performance vs LLMs"
+          title="HARC Dashboard"
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
@@ -319,7 +319,7 @@ export function PersonalPerformanceComparison() {
   return (
     <div className="min-h-screen bg-slate-900 text-white">
       <Navbar
-        title="Your Performance vs LLMs"
+        title="HARC Dashboard"
         rightContent={
           <div className="flex items-center space-x-3">
             <Button
@@ -393,6 +393,57 @@ export function PersonalPerformanceComparison() {
                   <h3 className="text-lg font-semibold text-purple-300">Avg Time</h3>
                 </div>
                 <div className="text-3xl font-bold text-white">{averageTime}s</div>
+              </div>
+            </div>
+
+            {/* Profile Information Section */}
+            <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/50 p-6 rounded-2xl border border-slate-600/50 shadow-xl backdrop-blur-sm mb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">👤</span>
+                <h3 className="font-bold text-xl text-amber-300">Player Profile</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600/30">
+                  <p className="text-slate-300 text-sm mb-2">Display Name:</p>
+                  <p className="text-xl font-bold text-white">
+                    {import.meta.env.VITE_PLAYFAB_TITLE_ID ? (
+                      playFabAuthManager?.getDisplayName?.() || 'Anonymous Researcher'
+                    ) : 'Anonymous Researcher'}
+                  </p>
+                </div>
+                <div className="bg-slate-700/50 p-4 rounded-lg border border-slate-600/30">
+                  <p className="text-slate-300 text-sm mb-2">PlayFab ID:</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-mono text-cyan-300 select-all">
+                      {import.meta.env.VITE_PLAYFAB_TITLE_ID ? (
+                        playFabAuthManager?.getPlayFabId?.()?.slice(-8) || 'Loading...'
+                      ) : 'N/A'}
+                    </p>
+                    {import.meta.env.VITE_PLAYFAB_TITLE_ID && (
+                      <button
+                        onClick={() => {
+                          const playFabId = playFabAuthManager?.getPlayFabId?.();
+                          if (playFabId) {
+                            navigator.clipboard?.writeText(playFabId);
+                          }
+                        }}
+                        className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 bg-slate-600 rounded transition-colors"
+                        title="Copy full PlayFab ID"
+                      >
+                        📋
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-slate-600/30">
+                <Link
+                  href="/profile"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600/20 border border-amber-500/30 rounded-lg text-amber-300 hover:bg-amber-600/30 hover:text-amber-200 transition-all"
+                >
+                  <span>⚙️</span>
+                  <span>Manage Profile</span>
+                </Link>
               </div>
             </div>
 

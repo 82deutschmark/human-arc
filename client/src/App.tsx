@@ -27,13 +27,12 @@ import PuzzleSolver from "@/pages/PuzzleSolver";
 import { TutorialPage } from '@/pages/TutorialPage';
 import { GridSizeTest } from "@/components/officer/GridSizeTest";
 import { AssessmentInterface } from "@/components/assessment/AssessmentInterface";
-import { ParticipantDashboard } from "@/components/dashboard/ParticipantDashboard";
+import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
 import { LLMComparisonPage } from "@/pages/LLMComparisonPage";
 import HARCPlatform from "@/pages/HARCPlatform";
 import Leaderboards from "@/pages/Leaderboards";
 import Profile from "@/pages/Profile";
 import HumanVsAiComparison from "@/pages/HumanVsAiComparison";
-import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
 import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 import ExplanationArena from "@/pages/ExplanationArena";
@@ -58,12 +57,12 @@ function Router() {
       <Route path="/officer-track/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/puzzles" component={HARCPuzzleBrowser} />
       <Route path="/puzzles/solve/:puzzleId" component={PuzzleSolver} />
-      <Route path="/dashboard" component={ParticipantDashboard} />
+      <Route path="/dashboard" component={PersonalPerformanceComparison} />
+      <Route path="/comparison" component={PersonalPerformanceComparison} />
       <Route path="/leaderboards" component={LeaderboardLanding} />
       <Route path="/leaderboards/:type" component={Leaderboards} />
       <Route path="/leaderboards/explanation-arena" component={ExplanationArena} />
       <Route path="/profile" component={Profile} />
-      <Route path="/comparison" component={PersonalPerformanceComparison} />
       <Route path="/grid-test" component={GridSizeTest} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
       <Route path="/about" component={About} />
