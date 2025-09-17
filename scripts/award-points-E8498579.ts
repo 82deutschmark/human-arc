@@ -77,7 +77,7 @@ async function findParticipant(participantId: string) {
       });
 
       const matches = leaderboard.data.Leaderboard.filter((entry: any) =>
-        entry.PlayFabId.slice(-8) === participantId
+        entry.PlayFabId.slice(-8).toLowerCase() === participantId.toLowerCase()
       );
 
       if (matches.length > 0) {
@@ -137,7 +137,7 @@ async function awardPoints(participant: any, points: number) {
 }
 
 async function main() {
-  const participantId = 'E8498579';
+  const participantId = 'e8498579'; // Made lowercase to match PlayFab ID format
   const pointsToAward = 5000000;
 
   console.log('🚀 Starting point award process...');
