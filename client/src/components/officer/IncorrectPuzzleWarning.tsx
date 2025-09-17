@@ -1,4 +1,4 @@
-/**
+/**MISLEADING NAME THIS IS A SPECIFIC TUTORIAL Component
  * Author: Cascade using gpt-4-turbo
  * Date: 2025-09-17
  * PURPOSE: This component displays a warning message to the user when the puzzle they have loaded does not match the one expected for a particular context, such as a tutorial step. It's a simple, presentational component designed to provide clear feedback and prevent user confusion.
