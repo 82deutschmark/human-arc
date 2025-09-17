@@ -1,3 +1,7 @@
+///What does this do and where did it come from?  
+//  Possibly deprecated?  Possibly critical?  
+
+
 import { RankBadge } from "./RankBadge";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";

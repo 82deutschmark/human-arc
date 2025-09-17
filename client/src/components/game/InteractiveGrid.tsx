@@ -1,3 +1,7 @@
+///What does this do and where did it come from?  
+//  Possibly deprecated?  Possibly critical?  
+
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SPACE_EMOJIS, EMOJI_SET_INFO } from "@/constants/spaceEmojis";
