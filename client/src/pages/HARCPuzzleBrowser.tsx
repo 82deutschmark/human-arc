@@ -1,4 +1,5 @@
-/**
+/**  SRP and DRY Check: FAIL!!  
+ *  NEEDS AUDIT!!
  * HARC Puzzle Browser - Modernized UI
  * Authored by: Cascade using Claude 3.5 Sonnet
  * Date: 2025-09-16 3:03 PM
@@ -18,8 +19,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle, ArrowLeft, Search, Loader2 } from 'lucide-react';
-import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';  //  WHY?  
-import { PuzzleGrid } from '@/components/officer/PuzzleGrid';   // THIS IS NOT ACTUALLY FOR GRIDS!!!  It is the CARD!!  Also possibly deprecated by PuzzleInfoCard !!!
+import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';
+import { PuzzleGrid } from '@/components/officer/PuzzleGrid';
+import { PuzzleLoadingModal } from '@/components/ui/PuzzleLoadingModal';
 import {
   playFabRequestManager,
   playFabAuthManager,
@@ -38,6 +40,8 @@ export default function HARCPuzzleBrowser() {
     total,
     loading,
     error,
+    loadingProgress,
+    loadingMessage,
     filterByDifficulty,
     searchById,
     addSearchResult,
@@ -152,47 +156,41 @@ export default function HARCPuzzleBrowser() {
     setLocation(`/puzzles/solve/${puzzle.id}`);
   };
 
-  // Modern Loading Modal Component - replaces simple loading text
-  if (!player) {
+  // Show loading modal during puzzle data loading (the real bottleneck)
+  if (loading || !player) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        {/* Loading Modal with Progress Animation */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 border border-blue-200">
-          <div className="text-center">
-            {/* Animated Logo/Icon */}
-            <div className="mb-6">
-              <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-white animate-spin" />
+      <>
+        <PuzzleLoadingModal
+          isVisible={loading}
+          progress={loadingProgress}
+          statusMessage={loadingMessage}
+          secondaryMessage={
+            loading
+              ? "Processing puzzle metadata from arc-explainer API..."
+              : "Initializing HARC Platform..."
+          }
+        />
+        {/* Fallback for PlayFab initialization */}
+        {!player && !loading && (
+          <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 border border-blue-200">
+              <div className="text-center">
+                <div className="mb-6">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                  🧠 Initializing HARC Platform
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Setting up user session...
+                </p>
               </div>
-            </div>
-            
-            {/* Loading Title */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              🧠 Initializing HARC Platform
-            </h2>
-            
-            {/* Progress Indicator */}
-            <div className="mb-6">
-              <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-pulse" style={{width: '75%'}}></div>
-              </div>
-              <p className="text-sm text-gray-600 mt-2">
-                {playFabInitializing ? 'Connecting to puzzle database...' : 'Loading puzzle data...'}
-              </p>
-            </div>
-            
-            {/* MAX POWER TEXT PLACEHOLDER */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
-              <p className="text-sm text-gray-700 font-medium">
-                MAX POWER TEXT HERE
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Preparing the world's most challenging AI puzzles for human analysis
-              </p>
             </div>
           </div>
-        </div>
-      </div>
+        )}
+      </>
     );
   }
 
@@ -383,14 +381,14 @@ export default function HARCPuzzleBrowser() {
 
           </div>
 
-        {/* AI Analysis Overview - HARC Research Theme */}
+        {/* AI Analysis Overview - HARC Research Theme */}  
         <div className="order-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
             <h2 className="text-cyan-300 font-semibold text-xl flex items-center mb-2 sm:mb-0">
               🤖 AI PERFORMANCE ANALYSIS
             </h2>
             <div className="text-slate-300 text-base">
-              Where human reasoning excels over artificial intelligence
+              Where human reasoning excels over artificial intelligence  
             </div>
           </div>
 

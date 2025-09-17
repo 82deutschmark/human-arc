@@ -23,10 +23,12 @@ export interface UseOfficerPuzzlesReturn {
   stats: DifficultyStats;
   filteredPuzzles: OfficerPuzzle[];
   total: number; // Total puzzles in database
-  
+
   // State
   loading: boolean;
   error: string | null;
+  loadingProgress: number; // Progress percentage (0-100)
+  loadingMessage: string; // Current loading status message
   
   // Actions
   filterByDifficulty: (difficulty: 'impossible' | 'extremely_hard' | 'very_hard' | 'challenging' | null) => void;
@@ -58,6 +60,8 @@ export function useOfficerPuzzles(
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingMessage, setLoadingMessage] = useState('Initializing...');
   const [currentFilter, setCurrentFilter] = useState<string | null>(null);
   const [currentLimit, setCurrentLimit] = useState(initialLimit);
   const [currentSortStrategy, setCurrentSortStrategy] = useState<SortStrategy>(initialSort);
@@ -67,12 +71,20 @@ export function useOfficerPuzzles(
     try {
       setLoading(true);
       setError(null);
-      
-      console.log(`🎖️ Loading evaluation2 puzzles with rich metadata from arc-explainer...`);
-      console.log(`🚀 PRIORITY: ARC 2 - Evaluation dataset with AI performance data`);
-      
+      setLoadingProgress(0);
+      setLoadingMessage('Connecting to puzzle database...');
+
+      // Reduced console logging - progress now shown in UI
+      console.log(`🎖️ Loading evaluation2 puzzles from arc-explainer API`);
+
+      setLoadingProgress(10);
+      setLoadingMessage('Fetching puzzle metadata...');
+
       // Load evaluation2 puzzles with rich metadata from arc-explainer
       const puzzleResponse = await getEvaluation2Puzzles();
+
+      setLoadingProgress(50);
+      setLoadingMessage('Processing difficulty analysis...');
       
       // Calculate stats from loaded puzzles
       const statsData: DifficultyStats = {
@@ -86,10 +98,13 @@ export function useOfficerPuzzles(
       puzzleResponse.puzzles.forEach(puzzle => {
         statsData[puzzle.difficulty]++;
       });
-      
+
+      setLoadingProgress(70);
+      setLoadingMessage(`Sorting ${puzzleResponse.puzzles.length} puzzles by ${sortBy}...`);
+
       // Apply sorting based on strategy
       let sortedPuzzles = [...puzzleResponse.puzzles];
-      
+
       if (sortBy === 'accuracy') {
         sortedPuzzles.sort((a, b) => a.avgAccuracy - b.avgAccuracy); // Lowest accuracy first (hardest)
       } else if (sortBy === 'explanations') {
@@ -98,33 +113,41 @@ export function useOfficerPuzzles(
         sortedPuzzles.sort((a, b) => a.compositeScore - b.compositeScore); // Worst composite score first
       }
       // 'difficulty' keeps arc-explainer's default sorting (hardest first)
-      
+
+      setLoadingProgress(85);
+
       // Apply limit if specified
       if (limit && limit < sortedPuzzles.length) {
+        setLoadingMessage(`Applying limit: selecting top ${limit} puzzles...`);
         sortedPuzzles = sortedPuzzles.slice(0, limit);
-        console.log(`📊 Applied limit: showing ${limit} of ${puzzleResponse.total} evaluation2 puzzles`);
+        // Applied limit logged to console for debugging
+        console.log(`📊 Showing ${limit} of ${puzzleResponse.total} evaluation2 puzzles`);
       }
+
+      setLoadingProgress(95);
+      setLoadingMessage('Finalizing puzzle data...');
       
       setPuzzles(sortedPuzzles);
       setTotal(puzzleResponse.total);
       setStats(statsData);
       setFilteredPuzzles(sortedPuzzles);
-      
-      console.log(`✅ Loaded ${sortedPuzzles.length} evaluation2 puzzles with rich arc-explainer metadata`);
-      console.log(`📊 Difficulty breakdown:`, statsData);
-      
+
+      setLoadingProgress(100);
+      setLoadingMessage('Puzzle library ready!');
+
+      // Summary logging - detailed stats now shown in UI
+      console.log(`✅ Loaded ${sortedPuzzles.length} evaluation2 puzzles with metadata`);
+
       if (sortedPuzzles.length > 0) {
         const avgAccuracy = sortedPuzzles.reduce((sum, p) => sum + p.avgAccuracy, 0) / sortedPuzzles.length;
-        const worstAccuracy = Math.min(...sortedPuzzles.map(p => p.avgAccuracy));
         const impossibleCount = sortedPuzzles.filter(p => p.difficulty === 'impossible').length;
-        console.log(`🔥 Average AI accuracy: ${avgAccuracy.toFixed(3)}`);
-        console.log(`💀 Worst puzzle accuracy: ${worstAccuracy.toFixed(3)}`);
-        console.log(`🚫 Impossible puzzles (0% accuracy): ${impossibleCount}`);
+        console.log(`📊 Average AI accuracy: ${(avgAccuracy * 100).toFixed(1)}%, ${impossibleCount} impossible puzzles`);
       }
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load evaluation2 puzzles from arc-explainer';
       setError(errorMessage);
+      setLoadingMessage('Failed to load puzzle data');
       console.error('❌ Failed to load evaluation2 puzzles from arc-explainer:', err);
     } finally {
       setLoading(false);
@@ -206,8 +229,7 @@ export function useOfficerPuzzles(
 
   // Load data on mount
   useEffect(() => {
-    console.log(`🎖️ Initializing Officer Track with evaluation2 dataset (up to ${initialLimit} puzzles)`);
-    console.log(`🚀 Priority: ARC 2 - Evaluation puzzles with rich metadata, sorted by ${initialSort}`);
+    console.log(`🎖️ Initializing HARC puzzle browser with ${initialLimit} puzzles, sorted by ${initialSort}`);
     loadData(currentLimit, currentSortStrategy);
   }, []);
 
@@ -217,11 +239,13 @@ export function useOfficerPuzzles(
     stats,
     filteredPuzzles,
     total,
-    
+
     // State
     loading,
     error,
-    
+    loadingProgress,
+    loadingMessage,
+
     // Actions
     filterByDifficulty,
     searchById,
@@ -229,7 +253,7 @@ export function useOfficerPuzzles(
     refresh,
     setLimit,
     setSortStrategy,
-    
+
     // Current state
     currentFilter,
     currentLimit,

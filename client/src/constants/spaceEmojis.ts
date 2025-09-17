@@ -37,7 +37,7 @@ export const SPACE_EMOJIS = {
   status_alerts: ['⬛', '✅', '❌', '⚠️', '🚨', '🦺', '🔥', '❄️', '📍', '🎯'],
 
   // Weather & Climate (atmospheric conditions)
-  weather_climate: ['⬛', '🌞', '🌝', '🌛', '🌜', '🌧️', '⛈️', '🌩️', '🌨️', '❄️'],
+  weather_climate: ['⬛', '🌞', '🌪', '🌛', '🌜', '☁', '⛈️', '🌡', '🌤', '❄️'],
 
   // Status - Human Crew and Coworkers
   status_emojis: ['⬛', '😂', '😎', '🤪', '🙄', '😴', '😵', '🤗', '🤔', '😍'],
