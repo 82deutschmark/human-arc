@@ -1,5 +1,103 @@
 # Changelog
 
+## ### **Version 0.2.4**
+
+### 🔒 ARC-AGI PRIZE COMPLIANCE: 2-Attempt Limit Implementation - 2025-09-17
+**Author**: Claude Code using Sonnet 4
+**Status**: 🟢 READY FOR TESTING
+
+#### Critical ARC-AGI Prize Standards Implementation
+Implemented comprehensive 2-attempt limit system to align HARC platform with official ARC-AGI Prize testing standards where human players are allowed exactly 2 attempts per puzzle before being locked out.
+
+**Core System Components:**
+- **Backend CloudScript**: Server-side attempt tracking with `AttemptTrackingService`
+- **Client Services**: `attemptTracker.ts` with caching and batch operations
+- **UI Components**: Visual feedback with `AttemptCounter` and puzzle state indicators
+- **Data Migration**: Script to initialize existing players with attempt tracking data
+
+#### New CloudScript Functions
+**Added to `cloudscript.js`:**
+- `AttemptTrackingService` - Core attempt management with methods:
+  * `getPlayerAttemptsData()` - Retrieve player's attempt history
+  * `savePlayerAttemptsData()` - Update attempt records
+  * `getPuzzleStatus()` - Check individual puzzle status
+  * `trackPuzzleAttempt()` - Record new attempts with result
+- `GetPuzzleAttemptStatus` - Batch status checking for multiple puzzles
+- `GetSinglePuzzleAttemptStatus` - Individual puzzle status checking
+- Enhanced `_validateAndScoreArcPuzzle` - Now checks attempt limits before validation
+
+#### Client-Side Services
+**New `attemptTracker.ts` Service:**
+- Real-time attempt status checking with 30-second cache
+- Batch operations for performance (`getBatchPuzzleAttemptStatus`)
+- Helper methods: `canAttemptPuzzle()`, `isPuzzleLocked()`, `isPuzzleCompleted()`
+- Automatic cache invalidation after puzzle validation
+
+**Enhanced Validation Service:**
+- Pre-validation attempt checking in `validateARCPuzzle()`
+- Blocks submission if puzzle is locked (2 attempts exceeded)
+- Returns appropriate error messages for locked puzzles
+
+#### UI/UX Enhancements
+**New `AttemptCounter` Component:**
+- Visual status badges: Available (blue), Last Attempt (yellow), Locked (red), Completed (green)
+- Shows remaining attempts and total attempts
+- Consistent sizing and styling across interfaces
+
+**Enhanced Puzzle Cards:**
+- `PuzzleInfoCard` now shows attempt status
+- Visual state changes: locked puzzles are grayed out and non-clickable
+- Batch attempt status loading for performance in puzzle browser
+
+**Updated Interfaces:**
+- `ResponsivePuzzleSolver` - Dynamic validation button states
+- `AssessmentInterface` - Integrated with global attempt tracker
+- `HARCPuzzleBrowser` - Batch loading with performance optimization
+
+#### Data Management
+**Type Safety:**
+- Exported attempt tracking types from `attemptTracker.ts`
+- Re-exported types in `playfab.ts` for easier access
+- Added new CloudScript function constants
+
+**Migration Support:**
+- `scripts/migrate-player-attempt-data.ts` - Initialize existing players
+- Uses PlayFab Server API with admin authentication
+- Supports dry-run mode and progress tracking
+- Rate-limited processing with comprehensive error handling
+
+#### Performance Optimizations
+- **Batch API Calls**: Single request for multiple puzzle statuses
+- **Client Caching**: 30-second TTL to reduce API calls
+- **Lazy Loading**: Attempt status loaded only when needed
+- **Cache Invalidation**: Automatic refresh after puzzle attempts
+
+#### Testing Requirements
+**User should test:**
+1. **Attempt Tracking**: Verify attempts are counted correctly across sessions
+2. **Lock Mechanism**: Confirm puzzles lock after 2 failed attempts
+3. **Visual Feedback**: Check status indicators update properly
+4. **Performance**: Ensure puzzle browser loads quickly with batch status
+5. **Data Migration**: Run migration script for existing players
+
+**Admin should test:**
+- Migration script: `npx tsx scripts/migrate-player-attempt-data.ts --dry-run`
+- CloudScript deployment and function availability
+- Leaderboard integrity with attempt-limited scoring
+
+#### Breaking Changes
+- Players with existing progress need data migration before using new system
+- CloudScript functions must be deployed before client deployment
+- Attempt data structure is new and not backward compatible
+
+#### Next Steps (Pending Implementation)
+- Attempt-related event tracking for analytics
+- Admin reset script for development/testing
+- User education about 2-attempt limit
+- Full integration testing with existing data
+
+---
+
 ## ### **Version 0.2.3**
 
 ### 🚀 BULK LLM SCORING MIGRATION: Complete AI Leaderboard Population - 2025-09-15
