@@ -10,14 +10,16 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { PuzzleInfoCard } from '@/components/ui/PuzzleInfoCard';
 import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 interface PuzzleGridProps {
   puzzles: OfficerPuzzle[];
   loading?: boolean;
   onSelectPuzzle: (puzzle: OfficerPuzzle) => void;
+  attemptStatusMap?: Record<string, PuzzleAttemptStatus>;
 }
 
-export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps) {
+export function PuzzleGrid({ puzzles, loading, onSelectPuzzle, attemptStatusMap = {} }: PuzzleGridProps) {
 
   if (loading) {
     return (
@@ -63,10 +65,11 @@ export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 lg:gap-6 xl:gap-8">
       {puzzles.map((puzzle) => (
-        <PuzzleInfoCard 
-          key={puzzle.id} 
-          puzzle={puzzle} 
-          onSelectPuzzle={onSelectPuzzle} 
+        <PuzzleInfoCard
+          key={puzzle.id}
+          puzzle={puzzle}
+          onSelectPuzzle={onSelectPuzzle}
+          attemptStatus={attemptStatusMap[puzzle.id] || null}
         />
       ))}
     </div>

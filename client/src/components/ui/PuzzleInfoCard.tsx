@@ -19,6 +19,7 @@ import type { OfficerPuzzle } from '@/types/arcTypes';
 interface PuzzleInfoCardProps {
   puzzle: OfficerPuzzle;
   onSelectPuzzle: (puzzle: OfficerPuzzle) => void;
+  attemptStatus?: PuzzleAttemptStatus | null;
 }
 
 // Helper functions for badge styling
@@ -66,21 +67,24 @@ const getDatasetBadge = (dataset?: string) => {
   return styleMap[dataset] || { label: dataset.toUpperCase(), className: defaultStyle.className };
 };
 
-export function PuzzleInfoCard({ puzzle, onSelectPuzzle }: PuzzleInfoCardProps) {
-  const [attemptStatus, setAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
+export function PuzzleInfoCard({ puzzle, onSelectPuzzle, attemptStatus: propAttemptStatus }: PuzzleInfoCardProps) {
+  // Use passed attemptStatus prop, or fall back to individual loading if not provided
+  const [individualAttemptStatus, setIndividualAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
 
-  // Load attempt status for this puzzle
+  // Load attempt status individually only if not provided as prop
   useEffect(() => {
+    if (propAttemptStatus !== undefined) return; // Skip if provided as prop
+
     const loadAttemptStatus = async () => {
       if (!puzzle?.id) return;
 
       try {
         const status = await attemptTracker.getPuzzleAttemptStatus(puzzle.id);
-        setAttemptStatus(status);
+        setIndividualAttemptStatus(status);
       } catch (error) {
         console.error(`Failed to load attempt status for ${puzzle.id}:`, error);
         // Set default status on error
-        setAttemptStatus({
+        setIndividualAttemptStatus({
           status: 'available',
           attemptsRemaining: 2,
           totalAttempts: 0,
@@ -91,7 +95,10 @@ export function PuzzleInfoCard({ puzzle, onSelectPuzzle }: PuzzleInfoCardProps) 
     };
 
     loadAttemptStatus();
-  }, [puzzle?.id]);
+  }, [puzzle?.id, propAttemptStatus]);
+
+  // Use prop attempt status if available, otherwise use individual loading result
+  const attemptStatus = propAttemptStatus !== undefined ? propAttemptStatus : individualAttemptStatus;
   const difficultyBadge = getDifficultyBadge(puzzle.difficulty);
   const analysisQualityBadge = getAnalysisQualityBadge(puzzle);
   const datasetBadge = getDatasetBadge(puzzle.dataset);

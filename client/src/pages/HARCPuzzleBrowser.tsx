@@ -26,10 +26,12 @@ import {
   playFabRequestManager,
   playFabAuthManager,
   playFabUserData,
-  playFabTasks
+  playFabTasks,
+  attemptTracker
 } from '@/services/playfab';
 import type { OfficerPuzzle } from '@/types/arcTypes';
 import type { PlayFabPlayer } from '@/services/playfab';
+import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 export default function HARCPuzzleBrowser() {
   const [location, setLocation] = useLocation();
@@ -56,6 +58,10 @@ export default function HARCPuzzleBrowser() {
   const [playFabReady, setPlayFabReady] = useState(false);
   const [playFabInitializing, setPlayFabInitializing] = useState(true);
   const [player, setPlayer] = useState<PlayFabPlayer | null>(null);
+
+  // Batch attempt status loading
+  const [attemptStatusMap, setAttemptStatusMap] = useState<Record<string, PuzzleAttemptStatus>>({});
+  const [attemptStatusLoading, setAttemptStatusLoading] = useState(false);
 
   // Initialize PlayFab and load player data on mount
   useEffect(() => {
@@ -104,6 +110,45 @@ export default function HARCPuzzleBrowser() {
 
     initializePlayFab();
   }, []);
+
+  // Load attempt status for all visible puzzles in batches
+  useEffect(() => {
+    const loadBatchAttemptStatus = async () => {
+      if (!playFabReady || !filteredPuzzles.length) return;
+
+      setAttemptStatusLoading(true);
+      try {
+        console.log(`[HARCPuzzleBrowser] Loading attempt status for ${filteredPuzzles.length} puzzles...`);
+
+        // Extract puzzle IDs from filtered puzzles
+        const puzzleIds = filteredPuzzles.map(puzzle => puzzle.id);
+
+        // Load attempt status in batch
+        const batchStatus = await attemptTracker.getBatchPuzzleAttemptStatus(puzzleIds);
+
+        setAttemptStatusMap(batchStatus);
+        console.log(`[HARCPuzzleBrowser] Loaded attempt status for ${Object.keys(batchStatus).length} puzzles`);
+      } catch (error) {
+        console.error('Failed to load batch attempt status:', error);
+        // Create default status map on error
+        const defaultStatusMap: Record<string, PuzzleAttemptStatus> = {};
+        for (const puzzle of filteredPuzzles) {
+          defaultStatusMap[puzzle.id] = {
+            status: 'available',
+            attemptsRemaining: 2,
+            totalAttempts: 0,
+            canAttempt: true,
+            lockedAt: null
+          };
+        }
+        setAttemptStatusMap(defaultStatusMap);
+      } finally {
+        setAttemptStatusLoading(false);
+      }
+    };
+
+    loadBatchAttemptStatus();
+  }, [playFabReady, filteredPuzzles]);
 
   // Handle puzzle search - add found puzzle to the card display
   const handleSearch = async () => {
@@ -277,8 +322,9 @@ export default function HARCPuzzleBrowser() {
 
           <PuzzleGrid
             puzzles={filteredPuzzles}
-            loading={loading}
+            loading={loading || attemptStatusLoading}
             onSelectPuzzle={handleSelectPuzzle}
+            attemptStatusMap={attemptStatusMap}
           />
         </div>
 
