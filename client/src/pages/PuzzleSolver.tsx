@@ -77,16 +77,36 @@ export default function PuzzleSolver() {
         
         setPlayFabReady(true);
 
-        // Check if user has already completed this puzzle
-        console.log('🔍 Checking puzzle completion status for:', puzzleId);
-        const completionStatus = await playFabUserData.checkPuzzleCompletion(puzzleId);
+        // Check puzzle attempt status first (2-attempt limit)
+        const { attemptTracker } = await import('@/services/playfab/attemptTracker');
+        console.log('🔍 Checking puzzle attempt status for:', puzzleId);
+        const attemptStatus = await attemptTracker.getPuzzleAttemptStatus(puzzleId);
 
-        if (completionStatus.completed) {
+        if (attemptStatus.status === 'locked') {
+          console.log('🔒 Puzzle is locked - redirecting to puzzle list');
+          setError(`This puzzle is locked because you have exceeded the maximum number of attempts (2). You can view other available puzzles.`);
+          setLoading(false);
+          return;
+        }
+
+        if (attemptStatus.status === 'completed') {
+          // Use existing completion data logic but also show attempt status
+          console.log('🔍 Puzzle completed, checking detailed completion status');
+          const completionStatus = await playFabUserData.checkPuzzleCompletion(puzzleId);
+
           console.log('✅ Puzzle already completed, showing completion modal');
-          setCompletionData(completionStatus);
+          setCompletionData({
+            ...completionStatus,
+            attemptStatus: attemptStatus
+          });
           setShowAlreadyCompletedModal(true);
           setLoading(false);
           return; // Don't load puzzle for solving
+        }
+
+        // Log if this is the last attempt
+        if (attemptStatus.attemptsRemaining === 1) {
+          console.warn(`⚠️ Warning: This is your last attempt for puzzle ${puzzleId}`);
         }
 
         // Use the centralized service to find the puzzle

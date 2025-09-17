@@ -210,15 +210,54 @@ const AttemptTrackingService = {
         });
     },
 
-    getPuzzleStatus(attemptsData, puzzleId) {
+    getPuzzleStatus(attemptsData, puzzleId, playerId = null) {
         const puzzleState = attemptsData[puzzleId];
 
         if (!puzzleState) {
+            // Check if puzzle was completed before attempt tracking system was implemented
+            if (playerId) {
+                const legacyStatus = this.checkLegacyPuzzleCompletion(playerId, puzzleId);
+                if (legacyStatus.completed) {
+                    log.info(`[AttemptTracking] Found legacy completed puzzle ${puzzleId}, marking as completed`);
+
+                    // Create attempt tracking entry for legacy completed puzzle
+                    attemptsData[puzzleId] = {
+                        attempts: [{
+                            timestamp: legacyStatus.completionDate || new Date().toISOString(),
+                            result: "correct",
+                            solutions: [], // Legacy data doesn't have solutions
+                            timeElapsed: 0, // Legacy data doesn't have timing
+                            stepCount: 0, // Legacy data doesn't have step count
+                            attemptNumber: 1,
+                            scoreData: legacyStatus.scoreData || {},
+                            migrated: true // Flag to indicate this was migrated from legacy data
+                        }],
+                        status: "completed",
+                        attemptsRemaining: 0,
+                        lockedAt: null,
+                        completedAt: legacyStatus.completionDate || new Date().toISOString(),
+                        legacyMigration: true
+                    };
+
+                    // Save the updated attempts data
+                    this.savePlayerAttemptsData(playerId, attemptsData);
+
+                    return {
+                        status: "completed",
+                        attemptsRemaining: 0,
+                        totalAttempts: 1,
+                        canAttempt: false,
+                        lockedAt: null
+                    };
+                }
+            }
+
             return {
                 status: "available",
                 attemptsRemaining: 2,
                 totalAttempts: 0,
-                canAttempt: true
+                canAttempt: true,
+                lockedAt: null
             };
         }
 
@@ -229,6 +268,54 @@ const AttemptTrackingService = {
             canAttempt: puzzleState.status !== "locked" && puzzleState.status !== "completed",
             lockedAt: puzzleState.lockedAt || null
         };
+    },
+
+    checkLegacyPuzzleCompletion(playerId, puzzleId) {
+        try {
+            // Check multiple legacy data sources for completed puzzles
+            const playerData = PlayFabService.getPlayerData(playerId, [
+                'completedARCPuzzles',
+                'completedARC2Puzzles',
+                'humanPerformanceData'
+            ]);
+
+            // Check completed puzzle lists
+            const completedARC = Utils.safeParseJSON(playerData.Data.completedARCPuzzles?.Value, []);
+            const completedARC2 = Utils.safeParseJSON(playerData.Data.completedARC2Puzzles?.Value, []);
+
+            if (completedARC.includes(puzzleId) || completedARC2.includes(puzzleId)) {
+                log.info(`[AttemptTracking] Found ${puzzleId} in completed puzzle lists`);
+
+                // Try to get completion details from humanPerformanceData
+                const humanPerformanceData = Utils.safeParseJSON(playerData.Data.humanPerformanceData?.Value, []);
+
+                const completionRecord = humanPerformanceData.find(record =>
+                    record.puzzleId === puzzleId && record.correct === true
+                );
+
+                if (completionRecord) {
+                    return {
+                        completed: true,
+                        completionDate: completionRecord.timestamp,
+                        scoreData: completionRecord
+                    };
+                }
+
+                // Fallback: puzzle is in completed list but no detailed record
+                return {
+                    completed: true,
+                    completionDate: null,
+                    scoreData: null
+                };
+            }
+
+            // Not found in any legacy data
+            return { completed: false };
+
+        } catch (error) {
+            log.error(`[AttemptTracking] Error checking legacy completion for ${puzzleId}:`, error.message);
+            return { completed: false };
+        }
     },
 
     trackPuzzleAttempt(playFabId, puzzleId, attemptData, isCorrect) {
@@ -801,7 +888,7 @@ handlers.GetPuzzleAttemptStatus = function(args, context) {
         const statusResults = {};
 
         for (const puzzleId of puzzleIds) {
-            const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId);
+            const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId, playerId);
             statusResults[puzzleId] = status;
         }
 
@@ -827,7 +914,7 @@ handlers.GetSinglePuzzleAttemptStatus = function(args, context) {
         log.info(`[GetSinglePuzzleAttemptStatus] Checking status for puzzle ${puzzleId}`);
 
         const attemptsData = AttemptTrackingService.getPlayerAttemptsData(playerId);
-        const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId);
+        const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId, playerId);
 
         return {
             success: true,

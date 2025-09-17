@@ -257,15 +257,37 @@ export class PlayFabValidation {
 
     // CHECK ATTEMPT STATUS FIRST - CRITICAL FOR 2-ATTEMPT LIMIT
     const { attemptTracker } = await import('./attemptTracker');
+    const { playFabEvents } = await import('./events');
 
     try {
       const attemptStatus = await attemptTracker.getPuzzleAttemptStatus(args.puzzleId);
 
       console.log(`[PlayFabValidation] Attempt status for ${args.puzzleId}:`, attemptStatus);
 
+      // Log attempt status check event
+      await playFabEvents.logEvent('puzzle_attempt_status_check', {
+        puzzleId: args.puzzleId,
+        sessionId: args.sessionId,
+        status: attemptStatus.status,
+        attemptsRemaining: attemptStatus.attemptsRemaining,
+        totalAttempts: attemptStatus.totalAttempts,
+        canAttempt: attemptStatus.canAttempt,
+        timestamp: new Date().toISOString()
+      });
+
       // Block validation if puzzle is locked
       if (attemptStatus.status === 'locked') {
         console.warn(`[PlayFabValidation] Blocked validation - puzzle ${args.puzzleId} is locked`);
+
+        // Log puzzle locked event
+        await playFabEvents.logEvent('puzzle_locked_attempt_blocked', {
+          puzzleId: args.puzzleId,
+          sessionId: args.sessionId,
+          totalAttempts: attemptStatus.totalAttempts,
+          lockedAt: attemptStatus.lockedAt,
+          timestamp: new Date().toISOString()
+        });
+
         return {
           success: false,
           error: "Puzzle locked: Maximum 2 attempts exceeded",
@@ -279,10 +301,32 @@ export class PlayFabValidation {
       // Warn if this is the last attempt
       if (attemptStatus.attemptsRemaining === 1) {
         console.warn(`[PlayFabValidation] Warning: Last attempt for puzzle ${args.puzzleId}`);
+
+        // Log last attempt warning event
+        await playFabEvents.logEvent('puzzle_last_attempt_warning', {
+          puzzleId: args.puzzleId,
+          sessionId: args.sessionId,
+          attemptsRemaining: attemptStatus.attemptsRemaining,
+          totalAttempts: attemptStatus.totalAttempts,
+          timestamp: new Date().toISOString()
+        });
       }
 
     } catch (error) {
       console.error(`[PlayFabValidation] Failed to check attempt status for ${args.puzzleId}:`, error);
+
+      // Log attempt status check failure
+      try {
+        await playFabEvents.logEvent('puzzle_attempt_status_check_failed', {
+          puzzleId: args.puzzleId,
+          sessionId: args.sessionId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+          timestamp: new Date().toISOString()
+        });
+      } catch (eventError) {
+        console.error('Failed to log attempt status check failure event:', eventError);
+      }
+
       // Continue with validation despite status check failure (fail-safe)
     }
 

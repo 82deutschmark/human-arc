@@ -10,7 +10,13 @@
 
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Lock, CheckCircle, Clock } from 'lucide-react';
+import { AlertTriangle, Lock, CheckCircle, Clock, Info } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 interface AttemptCounterProps {
@@ -184,24 +190,42 @@ export function AttemptCounter({
   };
 
   return (
-    <div className={`flex flex-col items-center gap-2 ${className}`}>
-      {/* Status Badge */}
-      {getStatusBadge()}
-
-      {/* Optional Label and Message */}
-      {showLabel && (
-        <div className="text-center">
-          <div className={`text-xs font-medium ${getTextColor()}`}>
-            {getStatusMessage()}
-          </div>
-          {status.totalAttempts > 0 && (
-            <div className="text-xs text-gray-500 mt-1">
-              Total attempts: {status.totalAttempts}
-            </div>
-          )}
+    <TooltipProvider>
+      <div className={`flex flex-col items-center gap-2 ${className}`}>
+        {/* Status Badge with Educational Tooltip */}
+        <div className="flex items-center gap-1">
+          {getStatusBadge()}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="w-3 h-3 text-gray-400 hover:text-gray-600 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <div className="text-sm">
+                <div className="font-semibold mb-1">ARC-AGI Prize Standard</div>
+                <div className="mb-2">Each puzzle allows exactly <strong>2 attempts</strong> to match official research conditions.</div>
+                <div className="text-xs text-gray-300">
+                  After 2 incorrect attempts, the puzzle becomes locked and no points can be earned.
+                </div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
         </div>
-      )}
-    </div>
+
+        {/* Optional Label and Message */}
+        {showLabel && (
+          <div className="text-center">
+            <div className={`text-xs font-medium ${getTextColor()}`}>
+              {getStatusMessage()}
+            </div>
+            {status.totalAttempts > 0 && (
+              <div className="text-xs text-gray-500 mt-1">
+                Total attempts: {status.totalAttempts}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }
 
