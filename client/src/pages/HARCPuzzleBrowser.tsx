@@ -1,4 +1,5 @@
-/**
+/**  SRP and DRY Check: FAIL!!  
+ *  NEEDS AUDIT!!
  * HARC Puzzle Browser - Modernized UI
  * Authored by: Cascade using Claude 3.5 Sonnet
  * Date: 2025-09-16 3:03 PM
@@ -152,7 +153,8 @@ export default function HARCPuzzleBrowser() {
     setLocation(`/puzzles/solve/${puzzle.id}`);
   };
 
-  // Modern Loading Modal Component - replaces simple loading text
+  // Modern Loading Modal Component - replaces simple loading text  THIS DOES NOT WORK CORRECTLY!!  
+  // THIS VIOLATES SRP AND DRY!!  We need a simple loading modal panel that appears when the page is loading and tells the user to be patient while the page is loading.
   if (!player) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
@@ -187,7 +189,7 @@ export default function HARCPuzzleBrowser() {
                 MAX POWER TEXT HERE
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                Preparing the world's most challenging AI puzzles for human analysis
+                TEXT HERE  LEAVE FOR NOW
               </p>
             </div>
           </div>
@@ -383,14 +385,14 @@ export default function HARCPuzzleBrowser() {
 
           </div>
 
-        {/* AI Analysis Overview - HARC Research Theme */}
+        {/* AI Analysis Overview - HARC Research Theme */}  
         <div className="order-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
             <h2 className="text-cyan-300 font-semibold text-xl flex items-center mb-2 sm:mb-0">
               🤖 AI PERFORMANCE ANALYSIS
             </h2>
             <div className="text-slate-300 text-base">
-              Where human reasoning excels over artificial intelligence
+              Where human reasoning excels over artificial intelligence  
             </div>
           </div>
 
