@@ -38,11 +38,11 @@ export function GridWithDimensions({
     <div className={`text-center ${className}`}>
       <div className="mb-2">
         {label && (
-          <div className="text-slate-300 text-sm font-medium mb-1">
+          <div className="text-black text-xl font-bold mb-2">
             {label}
           </div>
         )}
-        <div className={`text-lg font-mono ${isCorrectSize ? 'text-slate-400' : 'text-red-400'}`}>
+        <div className={`text-2xl font-mono font-bold ${isCorrectSize ? 'text-black' : 'text-red-700'}`}>
           {currentHeight} × {currentWidth}
         </div>
       </div>
