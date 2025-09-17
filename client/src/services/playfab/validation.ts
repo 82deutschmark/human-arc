@@ -12,6 +12,8 @@ import type {
 import { playFabAuthManager } from './authManager';
 import { playFabRequestManager } from './requestManager';
 import { playFabTasks } from './tasks';
+import { attemptTracker } from './attemptTracker';
+import { playFabEvents } from './events';
 import { PLAYFAB_CONSTANTS } from '@/types/playfab';
 
 // PlayFab ExecuteCloudScript request format
@@ -256,9 +258,6 @@ export class PlayFabValidation {
     console.log(`[PlayFabValidation] Validating ARC puzzle: ${args.puzzleId}`);
 
     // CHECK ATTEMPT STATUS FIRST - CRITICAL FOR 2-ATTEMPT LIMIT
-    const { attemptTracker } = await import('./attemptTracker');
-    const { playFabEvents } = await import('./events');
-
     try {
       const attemptStatus = await attemptTracker.getPuzzleAttemptStatus(args.puzzleId);
 
