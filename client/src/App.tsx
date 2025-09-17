@@ -25,7 +25,6 @@ import OfficerTrackSimple from "@/pages/OfficerTrackSimple";
 import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
 import { TutorialPage } from '@/pages/TutorialPage';
-import { GridSizeTest } from "@/components/officer/GridSizeTest";
 import { AssessmentInterface } from "@/components/assessment/AssessmentInterface";
 import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
 import { LLMComparisonPage } from "@/pages/LLMComparisonPage";
