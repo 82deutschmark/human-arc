@@ -103,7 +103,7 @@ export function TrainingExamplesSection({
                       />
                     </GridWithDimensions>
                     <div className={`text-slate-900 ${arrowSize} font-bold`}>→</div>
-                    <GridWithDimensions grid={example.output} label="becomes this grid!  Why?">
+                    <GridWithDimensions grid={example.output} label="becomes this grid!">
                       <ResponsiveOfficerDisplayGrid
                         grid={example.output}
                         containerType="example"

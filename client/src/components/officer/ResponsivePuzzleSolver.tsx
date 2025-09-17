@@ -719,7 +719,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
             examples={trainingExamples}
             emojiSet={displayState.emojiSet}
             displayMode={displayState.displayMode}
-            title="Training Examples - Apply what you learn from them to solve the puzzle"
+            title="Training Examples - What rule gets applied to the input grid to produce that output grid? 🤔"
           />
         )}
 
