@@ -62,7 +62,6 @@ function Router() {
       <Route path="/leaderboards/:type" component={Leaderboards} />
       <Route path="/leaderboards/explanation-arena" component={ExplanationArena} />
       <Route path="/profile" component={Profile} />
-      <Route path="/grid-test" component={GridSizeTest} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
       <Route path="/about" component={About} />
       <Route component={NotFound} />
