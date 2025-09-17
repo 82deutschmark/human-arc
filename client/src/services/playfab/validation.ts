@@ -241,6 +241,7 @@ export class PlayFabValidation {
   /**
    * Validate ARC puzzle solution via CloudScript (Officer Track) with Automatic Fallback
    * If CloudScript fails, automatically falls back to client-side validation with full PlayFab integration
+   * NOW INCLUDES 2-ATTEMPT LIMIT ENFORCEMENT
    */
   public async validateARCPuzzle(args: {
     puzzleId: string;
@@ -253,6 +254,37 @@ export class PlayFabValidation {
     const startTime = Date.now();
 
     console.log(`[PlayFabValidation] Validating ARC puzzle: ${args.puzzleId}`);
+
+    // CHECK ATTEMPT STATUS FIRST - CRITICAL FOR 2-ATTEMPT LIMIT
+    const { attemptTracker } = await import('./attemptTracker');
+
+    try {
+      const attemptStatus = await attemptTracker.getPuzzleAttemptStatus(args.puzzleId);
+
+      console.log(`[PlayFabValidation] Attempt status for ${args.puzzleId}:`, attemptStatus);
+
+      // Block validation if puzzle is locked
+      if (attemptStatus.status === 'locked') {
+        console.warn(`[PlayFabValidation] Blocked validation - puzzle ${args.puzzleId} is locked`);
+        return {
+          success: false,
+          error: "Puzzle locked: Maximum 2 attempts exceeded",
+          locked: true,
+          attemptsRemaining: 0,
+          totalAttempts: attemptStatus.totalAttempts,
+          message: "This puzzle is locked due to exceeding the maximum number of attempts (2)."
+        };
+      }
+
+      // Warn if this is the last attempt
+      if (attemptStatus.attemptsRemaining === 1) {
+        console.warn(`[PlayFabValidation] Warning: Last attempt for puzzle ${args.puzzleId}`);
+      }
+
+    } catch (error) {
+      console.error(`[PlayFabValidation] Failed to check attempt status for ${args.puzzleId}:`, error);
+      // Continue with validation despite status check failure (fail-safe)
+    }
 
     try {
       // First, try CloudScript validation
@@ -279,6 +311,10 @@ export class PlayFabValidation {
       }
 
       console.log(`✅ [PlayFabValidation] CloudScript validation successful: ${validationResult.correct ? 'Correct' : 'Incorrect'}`);
+
+      // Clear attempt status cache to get fresh data on next check
+      attemptTracker.clearPuzzleCache(args.puzzleId);
+
       return validationResult;
 
     } catch (error) {
@@ -288,6 +324,10 @@ export class PlayFabValidation {
       try {
         const fallbackResult = await this.enhancedARCFallbackValidation(args);
         console.log(`🔄 [PlayFabValidation] Fallback validation result: ${fallbackResult.correct ? 'Correct' : 'Incorrect'}`);
+
+        // Clear attempt status cache to get fresh data on next check
+        attemptTracker.clearPuzzleCache(args.puzzleId);
+
         return fallbackResult;
       } catch (fallbackError) {
         console.error(`❌ [PlayFabValidation] Both CloudScript and fallback failed:`, fallbackError);
