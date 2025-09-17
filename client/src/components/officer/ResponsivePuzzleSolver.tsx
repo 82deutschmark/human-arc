@@ -31,6 +31,7 @@ import { playFabEvents } from '@/services/playfab/events';
 import { idConverter } from '@/services/idConverter';
 import { SizeSlider } from '@/components/ui/SizeSlider';
 import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
+import { PuzzleNotification, PuzzleNotificationPresets } from '@/components/ui/PuzzleNotification';
 
 interface ResponsivePuzzleSolverProps {
   puzzle: OfficerTrackPuzzle;
@@ -1011,16 +1012,26 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
             </div>
           )}
 
-          {validationResult && (
-            <div className="bg-green-900 border border-green-600 rounded-lg p-4 mt-4">
-              <div className="text-green-300 text-base">
-                <strong>✅ PlayFab Validation Complete:</strong> 
-                {getValidationMessage()}
-                {validationResult.timeElapsed && (
-                  <div>Time: {validationResult.timeElapsed.toFixed(1)}s</div>
-                )}
-              </div>
-            </div>
+          {validationResult && !validationResult.correct && (
+            <PuzzleNotification
+              type="error"
+              title="Incorrect Solution"
+              message={getValidationMessage().trim()}
+              details={validationResult.timeElapsed ? `Time elapsed: ${validationResult.timeElapsed.toFixed(1)}s` : undefined}
+              compact={false}
+              fullWidth={true}
+            />
+          )}
+
+          {validationResult && validationResult.correct && !isAssessmentMode && (
+            <PuzzleNotification
+              type="success"
+              title="Puzzle Solved!"
+              message={getValidationMessage().trim()}
+              details={validationResult.timeElapsed ? `Time elapsed: ${validationResult.timeElapsed.toFixed(1)}s` : undefined}
+              compact={false}
+              fullWidth={true}
+            />
           )}
 
         </div>
