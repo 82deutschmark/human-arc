@@ -33,7 +33,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { AttemptCounter } from '@/components/officer/AttemptCounter';
+import { AttemptCounter } from '@/components/ui/AttemptCounter';
 
 export type SubmissionStatus = 'ready' | 'validating' | 'success' | 'error' | 'locked';
 

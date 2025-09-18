@@ -9,7 +9,7 @@
 
 import React, { useMemo } from 'react';
 import { PuzzleNotification } from '@/components/ui/PuzzleNotification';
-import { AttemptCounter } from '@/components/officer/AttemptCounter';
+import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 // This is a simplified interface. The actual state will be more complex.

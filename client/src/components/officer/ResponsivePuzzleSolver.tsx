@@ -20,7 +20,7 @@ import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
-import { AttemptCounter } from '@/components/officer/AttemptCounter';
+import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EventType } from '@/types/playfab';

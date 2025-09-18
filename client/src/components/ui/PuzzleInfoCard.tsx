@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { AttemptCounter } from '@/components/officer/AttemptCounter';
+import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 import type { OfficerPuzzle } from '@/types/arcTypes';
 
