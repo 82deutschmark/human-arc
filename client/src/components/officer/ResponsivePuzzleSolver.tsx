@@ -332,7 +332,7 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
     const oldDimensions = outputDimensions[currentTestIndex];
     
     const newDimensions = [...outputDimensions];
-    newDimensions[currentTestIndex] = { width: newWidth, height: newHeight };
+    newDimensions[currentTestIndex] = { height: newHeight, width: newWidth };
     setOutputDimensions(newDimensions);
 
     // Create new empty grid with new dimensions
