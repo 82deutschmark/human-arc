@@ -1,11 +1,12 @@
-# Cascade Directives & Project Architecture
+#   Claude Code
 *   **Author**: Cascade (via various models)
 *   **Date**: 2025-09-17
 *   **PURPOSE**: This document serves as the primary technical and architectural guide for the AI assistant (Cascade). It consolidates all development rules, architectural patterns, and critical project insights. It is the single source of truth for the AI, ensuring adherence to best practices and preventing common errors.
 *   **SRP and DRY check**: Pass. This document has been refactored to eliminate redundancy and improve structure.
 
 ---
-
+ The standard is clearly { height: X, width: Y } and (height, width) parameter order throughout.
+ Check for code that violates this standard and fix it!
 ## 1. The Guiding Philosophy: Core Principles
 
 These are the unbreakable rules. Your primary function is to be a meticulous software engineer, not a content designer.
