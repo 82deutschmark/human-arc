@@ -25,7 +25,7 @@ import { useState, useEffect } from 'react';
 import { useRoute, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, ArrowLeft } from 'lucide-react';
-import { ResponsivePuzzleSolver } from '@/components/officer/ResponsivePuzzleSolver';
+import { HARCResponsiveSolverUI } from '@/components/layout/HARCResponsiveSolverUI';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { playFabRequestManager, playFabAuthManager } from '@/services/playfab';
 import { playFabUserData } from '@/services/playfab/userData';
@@ -305,7 +305,7 @@ export default function PuzzleSolver() {
 
   // Success state - render puzzle solver with just the ID
   if (puzzle) {
-    return <ResponsivePuzzleSolver puzzle={puzzle} onBack={handleBack} />;
+    return <HARCResponsiveSolverUI puzzle={puzzle} onBack={handleBack} />;
   }
 
   // Fallback - shouldn't reach here
