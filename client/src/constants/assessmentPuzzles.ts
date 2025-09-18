@@ -32,4 +32,4 @@ export const ASSESSMENT_PUZZLE_IDS = [
  //   '1caeab9d', //  Line them up!
  //   '87ab05b8', //  2/Red Fills up whatever quarter of the 4x4 grid it appears in, the rest remain 6
 // 'bc1d5164',    //  5x7 -> 3x3 where the grid is a rectangle, where a set of 2x2 grids are divided, solve by welding.
-// 
+// 'd23f8c26' //  Extract the middle column 
