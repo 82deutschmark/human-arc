@@ -3,7 +3,7 @@
 ## ### **Version 0.2.6**
 
 ### ✨ HARC PUZZLE SOLVER REFACTOR - PHASE 3 COMPLETE - 2025-09-17
-**Author**: Cascade using gpt-4-turbo  (Bizarre hallucination was using Gemini 2.5 Pro??)
+**Author**: Cascade using gpt-4-turbo  (Bizarre hallucination was using Gemini 2.5 Pro at the time!)
 **Status**: 🟢 COMPLETE
 
 #### Major Architecture Refactor - Phase 3
