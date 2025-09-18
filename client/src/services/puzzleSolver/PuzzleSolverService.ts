@@ -14,6 +14,7 @@ import type { EventType } from '@/types/playfab';
 import { playFabValidation } from '@/services/playfab/validation';
 import { playFabEvents } from '@/services/playfab/events';
 import { idConverter } from '@/services/idConverter';
+import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 
 // Simple validation request interface matching current ResponsivePuzzleSolver
 export interface ValidationRequest {
@@ -162,6 +163,101 @@ export class PuzzleSolverService {
     }
   }
 
+  /**
+   * Extract session initialization logic from ResponsivePuzzleSolver.tsx (lines 204-230).
+   * This logs the puzzle start event exactly as the original implementation.
+   */
+  public async logSessionStart(
+    sessionId: string,
+    attemptNumber: number,
+    playFabPuzzleId: string,
+    stepIndex: number,
+    totalTests: number,
+    trainingExamplesCount: number,
+    puzzleId: string
+  ): Promise<void> {
+    try {
+      await playFabEvents.logPuzzleEvent(
+        "SFMC",                    // eventName
+        sessionId,                 // sessionId
+        attemptNumber,             // attemptNumber
+        playFabPuzzleId,           // game_id (PlayFab format puzzle ID)
+        stepIndex,                 // stepIndex (starts at 0)
+        0,                         // positionX
+        0,                         // positionY
+        {                          // payloadSummary
+          totalTests: totalTests,
+          trainingExamples: trainingExamplesCount,
+          puzzleId: puzzleId
+        },
+        0,                         // deltaMs (0 for start)
+        "Officer Track Puzzle",    // game_title
+        "start",                   // status
+        "officer-track",           // category
+        "game_start",              // event_type
+        0,                         // selection_value
+        new Date().toISOString()   // game_time
+      );
+    } catch (error) {
+      // Event logging failures should not break gameplay - fail silently
+    }
+  }
+
+  /**
+   * Extract session cleanup logic from ResponsivePuzzleSolver.tsx (lines 236-265).
+   * This logs the session end event exactly as the original implementation.
+   */
+  public async logSessionEnd(
+    sessionId: string,
+    attemptNumber: number,
+    playFabPuzzleId: string,
+    stepIndex: number,
+    sessionStartTime: number,
+    puzzleId: string
+  ): Promise<void> {
+    try {
+      const sessionDuration = Date.now() - sessionStartTime;
+      await playFabEvents.logPuzzleEvent(
+        "SFMC",                    // eventName
+        sessionId,                 // sessionId
+        attemptNumber,             // attemptNumber
+        playFabPuzzleId,           // game_id (PlayFab format puzzle ID)
+        stepIndex + 1,             // stepIndex (increment for final step)
+        0,                         // positionX
+        0,                         // positionY
+        {                          // payloadSummary
+          sessionDurationMs: sessionDuration,
+          finalStepIndex: stepIndex,
+          puzzleId: puzzleId
+        },
+        sessionDuration,           // deltaMs (total session time)
+        "Officer Track Puzzle",    // game_title
+        "stop",                    // status
+        "officer-track",           // category
+        "game_completion",         // event_type
+        0,                         // selection_value
+        new Date().toISOString()   // game_time
+      );
+    } catch (error) {
+      // Event logging failures should not break gameplay - fail silently
+    }
+  }
+
+  /**
+   * Extract performance stats fetching logic from ResponsivePuzzleSolver.tsx (lines 194-199).
+   * This fetches puzzle performance data exactly as the original implementation.
+   */
+  public async fetchPuzzlePerformance(puzzleId: string): Promise<PerformanceData | null> {
+    try {
+      const stats = await arcExplainerClient.getPuzzlePerformance(puzzleId);
+      return stats;
+    } catch (error) {
+      console.error(`[PuzzleSolverService] Failed to fetch performance stats for ${puzzleId}:`, error);
+      return null;
+    }
+  }
+
+}
 
 // Export singleton instance
 export const puzzleSolverService = PuzzleSolverService.getInstance();
