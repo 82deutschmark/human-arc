@@ -10,6 +10,7 @@
  */
 
 import { playFabRequestManager } from './requestManager';
+import { playFabAuthManager } from './authManager';
 import { PLAYFAB_CONSTANTS } from '@/types/playfab';
 import { idConverter } from '@/services/idConverter';
 
@@ -106,7 +107,7 @@ export class AttemptTracker {
     console.log(`[AttemptTracker] Fetching attempt status for puzzle: ${puzzleId} (normalized: ${normalizedId})`);
 
     // Check if user is authenticated before making CloudScript call
-    const isAuthenticated = playFabRequestManager.isAuthenticated();
+    const isAuthenticated = playFabAuthManager.isAuthenticated();
     console.log(`[AttemptTracker] User authentication status: ${isAuthenticated}`);
 
     if (!isAuthenticated) {
