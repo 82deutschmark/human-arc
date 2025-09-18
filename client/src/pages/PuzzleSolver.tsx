@@ -28,6 +28,7 @@ import { AlertTriangle, ArrowLeft } from 'lucide-react';
 import { HARCResponsiveSolverUI } from '@/components/layout/HARCResponsiveSolverUI';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { playFabRequestManager, playFabAuthManager } from '@/services/playfab';
+import { attemptTracker } from '@/services/playfab/attemptTracker';
 import { playFabUserData } from '@/services/playfab/userData';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
@@ -78,7 +79,6 @@ export default function PuzzleSolver() {
         setPlayFabReady(true);
 
         // Check puzzle attempt status first (2-attempt limit)
-        const { attemptTracker } = await import('@/services/playfab/attemptTracker');
         console.log('🔍 Checking puzzle attempt status for:', puzzleId);
         const attemptStatus = await attemptTracker.getPuzzleAttemptStatus(puzzleId);
 

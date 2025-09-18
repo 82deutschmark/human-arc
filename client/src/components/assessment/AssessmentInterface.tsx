@@ -15,7 +15,8 @@ import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
-import { playFabRequestManager, playFabAuthManager, playFabUserData, attemptTracker } from '@/services/playfab';
+import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
+import { attemptTracker } from '@/services/playfab/attemptTracker';
 import { idConverter } from '@/services/idConverter';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 

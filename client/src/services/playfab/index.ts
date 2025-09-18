@@ -18,7 +18,6 @@ export { leaderboards as playFabLeaderboards } from './leaderboards';
 export { playFabProfiles } from './profiles';
 export { playFabOfficerTrack } from './officerTrack';
 export { playFabRequestManager } from './requestManager';
-export { attemptTracker } from './attemptTracker';
 
 // Export all public types
 export type * from '@/types/playfab';
