@@ -11,6 +11,7 @@
 
 import { playFabRequestManager } from './requestManager';
 import { PLAYFAB_CONSTANTS } from '@/types/playfab';
+import { idConverter } from '@/services/idConverter';
 
 // Types for attempt tracking
 export interface PuzzleAttemptStatus {
@@ -78,7 +79,20 @@ export class AttemptTracker {
    * Get attempt status for a single puzzle
    */
   public async getPuzzleAttemptStatus(puzzleId: string, useCache: boolean = true): Promise<PuzzleAttemptStatus> {
-    // Check cache first
+    // Normalize puzzle ID to ARC format for CloudScript
+    const normalizedId = idConverter.normalizeToArcId(puzzleId);
+    if (!normalizedId) {
+      console.error(`[AttemptTracker] Invalid puzzle ID format: ${puzzleId}`);
+      return {
+        status: 'available',
+        attemptsRemaining: 2,
+        totalAttempts: 0,
+        canAttempt: true,
+        lockedAt: null
+      };
+    }
+
+    // Check cache first (use original puzzleId as cache key for UI consistency)
     if (useCache) {
       const cached = this.getCachedStatus(puzzleId);
       if (cached) {
@@ -87,12 +101,12 @@ export class AttemptTracker {
       }
     }
 
-    console.log(`[AttemptTracker] Fetching attempt status for puzzle: ${puzzleId}`);
+    console.log(`[AttemptTracker] Fetching attempt status for puzzle: ${puzzleId} (normalized: ${normalizedId})`);
 
     try {
       const request = {
         FunctionName: 'GetSinglePuzzleAttemptStatus',
-        FunctionParameter: { puzzleId } as GetSinglePuzzleAttemptStatusRequest,
+        FunctionParameter: { puzzleId: normalizedId } as GetSinglePuzzleAttemptStatusRequest,
         GeneratePlayStreamEvent: false
       };
 
@@ -142,10 +156,29 @@ export class AttemptTracker {
   public async getBatchPuzzleAttemptStatus(puzzleIds: string[]): Promise<Record<string, PuzzleAttemptStatus>> {
     console.log(`[AttemptTracker] Fetching attempt status for ${puzzleIds.length} puzzles`);
 
+    // Normalize all puzzle IDs to ARC format for CloudScript
+    const normalizedIds: string[] = [];
+    const idMapping: Record<string, string> = {}; // normalizedId -> originalId
+
+    for (const puzzleId of puzzleIds) {
+      const normalizedId = idConverter.normalizeToArcId(puzzleId);
+      if (normalizedId) {
+        normalizedIds.push(normalizedId);
+        idMapping[normalizedId] = puzzleId;
+      } else {
+        console.error(`[AttemptTracker] Invalid puzzle ID format: ${puzzleId}`);
+      }
+    }
+
+    if (normalizedIds.length === 0) {
+      console.warn(`[AttemptTracker] No valid puzzle IDs to fetch`);
+      return {};
+    }
+
     try {
       const request = {
         FunctionName: 'GetPuzzleAttemptStatus',
-        FunctionParameter: { puzzleIds } as GetPuzzleAttemptStatusRequest,
+        FunctionParameter: { puzzleIds: normalizedIds } as GetPuzzleAttemptStatusRequest,
         GeneratePlayStreamEvent: false
       };
 
@@ -161,27 +194,35 @@ export class AttemptTracker {
         throw new Error(response.error || 'Failed to get puzzle attempt statuses');
       }
 
-      // Cache all results
-      for (const [puzzleId, status] of Object.entries(response.puzzleStatuses)) {
-        this.setCachedStatus(puzzleId, status);
+      // Map results back to original puzzle IDs and cache
+      const results: Record<string, PuzzleAttemptStatus> = {};
+      for (const [normalizedId, status] of Object.entries(response.puzzleStatuses)) {
+        const originalId = idMapping[normalizedId];
+        if (originalId) {
+          results[originalId] = status;
+          this.setCachedStatus(originalId, status);
+        }
       }
 
-      console.log(`[AttemptTracker] Retrieved status for ${Object.keys(response.puzzleStatuses).length} puzzles`);
-      return response.puzzleStatuses;
+      console.log(`[AttemptTracker] Retrieved status for ${Object.keys(results).length} puzzles`);
+      return results;
 
     } catch (error) {
       console.error(`[AttemptTracker] Failed to get batch attempt status:`, error);
 
-      // Return default statuses for all puzzles on error
+      // Return default statuses for all valid original puzzle IDs on error
       const defaultStatuses: Record<string, PuzzleAttemptStatus> = {};
       for (const puzzleId of puzzleIds) {
-        defaultStatuses[puzzleId] = {
-          status: 'available',
-          attemptsRemaining: 2,
-          totalAttempts: 0,
-          canAttempt: true,
-          lockedAt: null
-        };
+        // Only return defaults for IDs that passed normalization
+        if (idConverter.normalizeToArcId(puzzleId)) {
+          defaultStatuses[puzzleId] = {
+            status: 'available',
+            attemptsRemaining: 2,
+            totalAttempts: 0,
+            canAttempt: true,
+            lockedAt: null
+          };
+        }
       }
       return defaultStatuses;
     }
