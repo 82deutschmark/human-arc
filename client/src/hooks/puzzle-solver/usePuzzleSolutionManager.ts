@@ -24,6 +24,7 @@ export interface SolutionManagerState {
 export interface SolutionManagerHook {
   // State
   solutionManagerState: SolutionManagerState;
+  allTestsCompleted: boolean;
 
   // Actions
   updateCurrentSolution: (newGrid: ARCGrid) => void;
@@ -82,6 +83,8 @@ export function usePuzzleSolutionManager(options: UseSolutionManagerOptions): So
   // EXACT COPY from lines 75-76: Auto-advance state for assessment mode
   const [isAutoAdvancing, setIsAutoAdvancing] = useState(false);
   const [autoAdvanceMessage, setAutoAdvanceMessage] = useState<string | null>(null);
+
+  const allTestsCompleted = completedTests.length > 0 && completedTests.every(c => c);
 
   // Reset assessment state when puzzle or mode changes
   useEffect(() => {
@@ -200,6 +203,7 @@ export function usePuzzleSolutionManager(options: UseSolutionManagerOptions): So
 
   return {
     // State
+    allTestsCompleted,
     solutionManagerState: {
       assessmentTestsCompleted,
       showNextTestButton,

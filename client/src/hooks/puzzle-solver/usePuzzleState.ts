@@ -31,6 +31,7 @@ export interface PuzzleStateHook {
   handleSizeChange: (newHeight: number, newWidth: number) => void; // HEIGHT x WIDTH parameter order
   updateSolutions: (newSolutions: ARCGrid[]) => void;
   updateCurrentSolution: (newGrid: ARCGrid) => void;
+  updateCompletedTests: (newCompleted: boolean[]) => void;
 }
 
 export interface UsePuzzleStateOptions {
@@ -167,6 +168,10 @@ export function usePuzzleState(options: UsePuzzleStateOptions): PuzzleStateHook 
     setSolutions(newSolutions);
   }, [solutions, currentTestIndex]);
 
+  const updateCompletedTests = useCallback((newCompleted: boolean[]) => {
+    setCompletedTests(newCompleted);
+  }, []);
+
   return {
     // Core state
     currentTestIndex,
@@ -185,5 +190,6 @@ export function usePuzzleState(options: UsePuzzleStateOptions): PuzzleStateHook 
     handleSizeChange,
     updateSolutions,
     updateCurrentSolution,
+    updateCompletedTests,
   };
 }
