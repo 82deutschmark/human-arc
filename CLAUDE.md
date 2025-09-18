@@ -1,4 +1,5 @@
 #   Claude Code
+
 *   **Author**: Cascade (via various models)
 *   **Date**: 2025-09-17
 *   **PURPOSE**: This document serves as the primary technical and architectural guide for the AI assistant (Cascade). It consolidates all development rules, architectural patterns, and critical project insights. It is the single source of truth for the AI, ensuring adherence to best practices and preventing common errors.
