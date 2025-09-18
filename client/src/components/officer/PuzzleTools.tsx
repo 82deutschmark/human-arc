@@ -23,18 +23,22 @@ interface PuzzleToolsProps {
   emojiSet: EmojiSet;
   selectedValue: number;
   onValueSelect: (value: number) => void;
-  
+
   // Action handlers
   onCopyInput: () => void;
   onResetSolution: () => void;
   onReplayTutorial?: () => void;
   onValidate: () => void;
-  
+
   // Validation state
   isValidating: boolean;
   allTestsCompleted: boolean;
   isAssessmentMode?: boolean;
-  
+
+  // Attempt tracking state
+  isLocked?: boolean;
+  attemptsRemaining?: number;
+
   // Palette data
   usedValues: number[];
 }
@@ -51,6 +55,8 @@ export function PuzzleTools({
   isValidating,
   allTestsCompleted,
   isAssessmentMode = false,
+  isLocked = false,
+  attemptsRemaining = 2,
   usedValues
 }: PuzzleToolsProps) {
   // Track user interaction to control glowing pulse effect
@@ -107,18 +113,38 @@ export function PuzzleTools({
       <div className="mt-4">
         <Button
           size="lg"
-          className="w-full px-4 py-4 h-16 text-xl bg-amber-600 hover:bg-amber-700 text-white"
-          disabled={false}
-          onClick={onValidate}
+          className={`w-full px-4 py-4 h-16 text-xl ${
+            isLocked
+              ? 'bg-red-600 hover:bg-red-700 cursor-not-allowed'
+              : attemptsRemaining === 1
+                ? 'bg-yellow-600 hover:bg-yellow-700'
+                : 'bg-amber-600 hover:bg-amber-700'
+          } text-white`}
+          disabled={isLocked || isValidating}
+          onClick={isLocked ? undefined : onValidate}
         >
-          {isValidating ? '🔄 Submitting to PlayFab...' : '🎯 Submit for Official Validation'}
+          {isLocked ? (
+            '🔒 Puzzle Locked - Max Attempts Exceeded'
+          ) : isValidating ? (
+            '🔄 Submitting to PlayFab...'
+          ) : attemptsRemaining === 1 ? (
+            '⚠️ Final Attempt - Submit Solution'
+          ) : (
+            '🎯 Submit for Official Validation'
+          )}
         </Button>
-        
+
         {/* Helper text */}
         <div className="text-base text-slate-400 mt-3 text-center">
-          {isAssessmentMode ? 
-            'Submit your attempt for official assessment validation.' :
-            'Submit your solution for official PlayFab validation.'}
+          {isLocked ? (
+            'This puzzle is locked due to exceeding the maximum number of attempts (2).'
+          ) : attemptsRemaining === 1 ? (
+            'This is your final attempt - double-check your solution!'
+          ) : isAssessmentMode ? (
+            'Submit your attempt for official assessment validation.'
+          ) : (
+            'Submit your solution for official PlayFab validation.'
+          )}
         </div>
       </div>
     </>

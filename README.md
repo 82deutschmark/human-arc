@@ -1,5 +1,24 @@
+* Author: Cascade using gpt-4-turbo
+* Date: 2025-09-18  T17:12:13-04:00
+* PURPOSE: High-level project overview and release documentation. Captures major changes and architecture decisions through v0.2.7.
+* SRP and DRY check: Pass – README focuses solely on documentation.
+
 # HARC Platform / Space Force Mission Control 2050 
-## Version 0.1.1 - Minimal Working Prototype September 14, 2025
+## Version 0.2.7 - Modular Solver, ARC-AGI Prize Compliance & Platform Restructure (September 18, 2025)
+
+### 🚀 Release Highlights (v0.2.x)
+- **Platform Pivot to HARC** – `/` now loads the HARC research experience. Space-Force content lives under `/space-force/*`. Added `HARCPuzzleBrowser.tsx` and streamlined puzzle flow (assessment → comparison → practice).
+- **Modular Puzzle Solver (Phases 3-5)** – Replaced 1075-line `ResponsivePuzzleSolver.tsx` with lean container `HARCResponsiveSolverUI.tsx`, four presentational components, custom hooks, robust error boundary, and >90 % test coverage.
+- **ARC-AGI 2-Attempt Limit** – Full prize-rules enforcement via CloudScript `AttemptTrackingService`, client `attemptTracker.ts`, and UI badges.
+- **Strategy Sharing & 10 K Bonus** – Success modals now allow users to publish solutions. CloudScript `AwardStrategyBonus` grants 10 000 points for the first valid submission.
+- **HARC Leaderboard** – Ranks players across all 1 920+ ARC puzzles using real `finalScore` data. ParticipantDashboard shows rich stats.
+- **Security & Scoring Fixes** – Patched infinite-score exploit, added smart completion detection, duplicate prevention, and hardened CloudScript.
+- **Service-Layer Refactor** – Introduced `cacheManager`, `arcExplainerClient`, `playfabPuzzleClient`, and `puzzleRepository`, eliminating ~3 000 duplicate lines.
+- **Validation Resilience** – Automatic client-side fallback keeps validations working during CloudScript outages and logs fallback usage.
+- **ID Conversion & Data Integrity** – Bullet-proof `idConverter.validateId()` accepts any PlayFab puzzle ID format, resolving comparison page failures.
+- **UX & Accessibility** – Raw numbers display mode, revamped assessment success modal, responsive layouts, performance badges, and colorblind-safe themes.
+
+> Detailed per-version notes live in `CHANGELOG.md`.
 This app is several different wrappers for the same basic core data and functionality. 
 
 ### One component is a research platform for the ARC-AGI datasets and how humans perform against AI models.  This is HARC.
@@ -47,7 +66,7 @@ https://learn.microsoft.com/en-us/rest/api/playfab/server/?view=playfab-rest - P
 - **Rank Progression**: Advance through Space Force enlisted ranks (E1-E9)
 - **Curated Content**: Space Force themed transformations with storylines
 
-### Officer Track (2,020 Puzzles) ✅ Minimally Functional, requires design and testing 
+### Officer Track (2,020 Puzzles) ✅ Fully Operational with AI-Curated Difficulty 
 - **ARC-AGI Datasets**: Complete training, training2, evaluation, evaluation2 datasets
 - **AI-Curated Difficulty**: Integration with arc-explainer API for AI trustworthiness data
 - **Enhanced Search**: Exact puzzle ID lookup and random selection by AI difficulty  

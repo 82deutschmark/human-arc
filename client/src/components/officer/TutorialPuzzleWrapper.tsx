@@ -1,8 +1,8 @@
 /**
- * Tutorial Puzzle Wrapper
- * =======================
- * Wraps ResponsivePuzzleSolver with tutorial-specific enhancements.
- * This component acts as a container, orchestrating various tutorial UI elements.
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component wraps the `ResponsivePuzzleSolver` to create a tutorial-specific interface. It adds a `TutorialHeader`, `StepGuidancePanel`, and `TutorialProgressBar` to provide a guided learning experience. It orchestrates the flow of the tutorial, managing step completion and navigation.
+ * SRP and DRY check: Pass. This component's single responsibility is to provide the tutorial context around the puzzle solver. It effectively composes several other single-purpose components to create a complex UI, which is a great example of modular, reusable design.
  */
 
 import { useState, useEffect } from 'react';
@@ -105,7 +105,6 @@ export function TutorialPuzzleWrapper({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         <PermanentHintSystem 
           puzzle={puzzle}
-          tutorialMode={true}
           className="mb-4"
         />
       </div>

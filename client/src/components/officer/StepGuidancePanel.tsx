@@ -1,14 +1,8 @@
-/**NO IDEA IF THIS IS USED ANYWHERE!!!
- * 
- * Author: UNKNOWN
- * Date: UNKNOWN
- * Purpose: UNKNOWN
- * SRP and DRY check: UNKNOWN
- * Used by: UNKNOWN
- * Step Guidance Panel
- * ===================
- * A collapsible panel that displays the guidance for the current tutorial step,
- * including learning objectives, instructions, and success criteria.
+/**
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component displays a guidance panel for a single step in a tutorial. It shows the user the learning objectives, instructions, and success criteria for the current step, and provides controls for marking the step as complete and moving to the next one. It is designed to be used within a larger tutorial framework.
+ * SRP and DRY check: Pass. This component has a single responsibility: to display the guidance for a tutorial step. It is a presentational component that receives all its data and callbacks via props, making it reusable and well-encapsulated.
  */
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

@@ -1,5 +1,5 @@
 /**
- * WEDGED IN THE WRONG FOLDER!
+ * WEDGED IN THE WRONG FOLDER!!
  * Author: Claude Code using Sonnet 4
  * Date: 2025-09-12
  * PURPOSE: Clean hint system providing progressive 3-level hints for ARC puzzles. 
@@ -18,7 +18,7 @@ import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 interface PermanentHintSystemProps {
   puzzle: OfficerTrackPuzzle;
   onHintUsed?: (hintLevel: number, hintsUsedTotal: number) => void;
-  onAutoResizeGrid?: (width: number, height: number) => void;
+  onAutoResizeGrid?: (height: number, width: number) => void;
   currentTestOutput?: number[][];
   className?: string;
 }
@@ -79,7 +79,7 @@ export function PermanentHintSystem({
       const correctHeight = currentTestOutput.length;
       const correctWidth = currentTestOutput[0]?.length || 0;
       if (correctWidth > 0) {
-        onAutoResizeGrid(correctWidth, correctHeight);
+        onAutoResizeGrid(correctHeight, correctWidth);
       }
     }
 

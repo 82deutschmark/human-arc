@@ -162,6 +162,17 @@ export interface PlayFabError {
 }
 
 // =============================================================================
+// ATTEMPT TRACKING TYPES (Re-exported from attemptTracker service)
+// =============================================================================
+
+// Re-export attempt tracking types for easier access across the application
+export type {
+  PuzzleAttemptStatus,
+  PuzzleAttemptRecord,
+  PuzzleAttemptData
+} from '../services/playfab/attemptTracker';
+
+// =============================================================================
 // SERVICE CONFIGURATION
 // =============================================================================
 
@@ -207,6 +218,8 @@ export const PLAYFAB_CONSTANTS = {
     VALIDATE_ARC2_EVAL_PUZZLE: 'ValidateARC2EvalPuzzle',
     GENERATE_ANONYMOUS_NAME: 'GenerateAnonymousName',
     UPDATE_HARC_TOTAL_SCORE: 'UpdateHARCTotalScore',
+    GET_PUZZLE_ATTEMPT_STATUS: 'GetPuzzleAttemptStatus',
+    GET_SINGLE_PUZZLE_ATTEMPT_STATUS: 'GetSinglePuzzleAttemptStatus',
   },
   USER_DATA_KEYS: {
     OFFICER_PLAYER_DATA: 'officer-player-data',

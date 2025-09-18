@@ -16,7 +16,9 @@ import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
 import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/services/playfab';
+import { attemptTracker } from '@/services/playfab/attemptTracker';
 import { idConverter } from '@/services/idConverter';
+import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 // Curated assessment puzzle IDs HARDCODED BY THE DESIGNER!
 
@@ -30,13 +32,38 @@ export function AssessmentInterface() {
   const [completedPuzzles, setCompletedPuzzles] = useState<Set<string>>(new Set());
   const [showModal, setShowModal] = useState(true);
   const [hintsUsedForCurrentPuzzle, setHintsUsedForCurrentPuzzle] = useState(0);
-  // 2-attempt tracking system
-  const [attemptCounts, setAttemptCounts] = useState<Map<string, number>>(new Map());
+  // Global 2-attempt tracking system integration
+  const [currentPuzzleAttemptStatus, setCurrentPuzzleAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
   const [isAwaitingValidation, setIsAwaitingValidation] = useState(false);
   const isAdvancing = useRef(false);
   const [, navigate] = useLocation();
 
   console.log(`[Render] AssessmentInterface - Puzzle Index: ${currentPuzzleIndex}`);
+
+  // Load attempt status for current puzzle
+  useEffect(() => {
+    const loadCurrentPuzzleAttemptStatus = async () => {
+      if (!currentPuzzle?.id) return;
+
+      try {
+        const status = await attemptTracker.getPuzzleAttemptStatus(currentPuzzle.id);
+        setCurrentPuzzleAttemptStatus(status);
+        console.log(`[AssessmentInterface] Loaded attempt status for ${currentPuzzle.id}:`, status);
+      } catch (error) {
+        console.error(`Failed to load attempt status for ${currentPuzzle.id}:`, error);
+        // Set default status on error
+        setCurrentPuzzleAttemptStatus({
+          status: 'available',
+          attemptsRemaining: 2,
+          totalAttempts: 0,
+          canAttempt: true,
+          lockedAt: null
+        });
+      }
+    };
+
+    loadCurrentPuzzleAttemptStatus();
+  }, [currentPuzzle?.id]);
 
   // Initialize and load assessment puzzles
   useEffect(() => {
@@ -189,16 +216,12 @@ export function AssessmentInterface() {
   const handleNextPuzzle = async () => {
     // Check for completion first
     await checkForCompletion();
-    
+
     if (currentPuzzleIndex < puzzles.length - 1) {
       const nextPuzzleIndex = currentPuzzleIndex + 1;
       setCurrentPuzzleIndex(nextPuzzleIndex);
       resetHintsForNewPuzzle();
-      setAttemptCounts(prev => {
-        const newCounts = new Map(prev);
-        newCounts.delete(puzzles[nextPuzzleIndex].id);
-        return newCounts;
-      });
+      // Note: attempt status will be loaded automatically by useEffect when currentPuzzle changes
     }
   };
 
@@ -207,11 +230,7 @@ export function AssessmentInterface() {
       const prevPuzzleIndex = currentPuzzleIndex - 1;
       setCurrentPuzzleIndex(prevPuzzleIndex);
       resetHintsForNewPuzzle();
-      setAttemptCounts(prev => {
-        const newCounts = new Map(prev);
-        newCounts.delete(puzzles[prevPuzzleIndex].id);
-        return newCounts;
-      });
+      // Note: attempt status will be loaded automatically by useEffect when currentPuzzle changes
     }
   };
 
@@ -234,43 +253,46 @@ export function AssessmentInterface() {
   const handleAssessmentValidation = useCallback(async (puzzleId: string, validationResult: any) => {
     console.log(`🔍 handleAssessmentValidation called for puzzle ${puzzleId}`);
     console.log(`🔍 Validation result:`, validationResult);
-    
-    const currentAttempts = attemptCounts.get(puzzleId) || 0;
-    const newAttempts = currentAttempts + 1;
-    
-    console.log(`🔍 Current attempts: ${currentAttempts}, New attempts: ${newAttempts}`);
-    
-    // Update attempt count
-    const newAttemptCounts = new Map(attemptCounts);
-    newAttemptCounts.set(puzzleId, newAttempts);
-    setAttemptCounts(newAttemptCounts);
-    
-    setIsAwaitingValidation(false);
-    
-    console.log(`📝 Assessment validation for ${puzzleId}: attempt ${newAttempts}, result:`, validationResult);
-    
-    // Assessment advancement logic:
-    // - First attempt success: advancement controlled by success modal "OK" button
-    // - First attempt fail: stay on puzzle for second attempt
-    // - Second attempt (any result): auto-advance after delay
-    const shouldAutoAdvance = (newAttempts >= 2);
 
-    console.log(`🔍 Should auto-advance? ${shouldAutoAdvance} (attempts: ${newAttempts}, correct: ${validationResult?.correct})`);
+    // Refresh attempt status after validation (since CloudScript updated it)
+    try {
+      const updatedStatus = await attemptTracker.getPuzzleAttemptStatus(puzzleId, false); // Force refresh
+      setCurrentPuzzleAttemptStatus(updatedStatus);
+      console.log(`🔍 Updated attempt status for ${puzzleId}:`, updatedStatus);
 
-    if (shouldAutoAdvance && !isAdvancing.current) {
-      isAdvancing.current = true;
-      console.log(`✅ Auto-advancing after attempt ${newAttempts} for puzzle ${puzzleId}`);
-      setTimeout(() => {
-        console.log(`🚀 Calling handleNextPuzzle() now...`);
-        handleNextPuzzle();
-        isAdvancing.current = false; // Reset after advancing
-      }, 2000); // Brief delay to show result
-    } else if (newAttempts === 1 && validationResult?.correct) {
-      console.log(`🎉 First attempt success! Advancement will be controlled by success modal.`);
-    } else {
-      console.log(`🔄 Staying on puzzle ${puzzleId} after first failed attempt`);
+      const newAttempts = updatedStatus.totalAttempts;
+      console.log(`🔍 Total attempts after validation: ${newAttempts}`);
+
+      setIsAwaitingValidation(false);
+
+      console.log(`📝 Assessment validation for ${puzzleId}: attempt ${newAttempts}, result:`, validationResult);
+
+      // Assessment advancement logic:
+      // - First attempt success: advancement controlled by success modal "OK" button
+      // - First attempt fail: stay on puzzle for second attempt
+      // - Second attempt (any result): auto-advance after delay
+      const shouldAutoAdvance = (newAttempts >= 2);
+
+      console.log(`🔍 Should auto-advance? ${shouldAutoAdvance} (attempts: ${newAttempts}, correct: ${validationResult?.correct})`);
+
+      if (shouldAutoAdvance && !isAdvancing.current) {
+        isAdvancing.current = true;
+        console.log(`✅ Auto-advancing after attempt ${newAttempts} for puzzle ${puzzleId}`);
+        setTimeout(() => {
+          console.log(`🚀 Calling handleNextPuzzle() now...`);
+          handleNextPuzzle();
+          isAdvancing.current = false; // Reset after advancing
+        }, 2000); // Brief delay to show result
+      } else if (newAttempts === 1 && validationResult?.correct) {
+        console.log(`🎉 First attempt success! Advancement will be controlled by success modal.`);
+      } else {
+        console.log(`🔄 Staying on puzzle ${puzzleId} after first failed attempt`);
+      }
+    } catch (error) {
+      console.error(`Failed to refresh attempt status for ${puzzleId}:`, error);
+      setIsAwaitingValidation(false);
     }
-  }, [attemptCounts, currentPuzzleIndex, puzzles.length]);
+  }, [currentPuzzleIndex, puzzles.length]);
 
   // Custom onSolve handler that tracks validation instead of auto-advancing
   const handleAssessmentSolve = () => {
@@ -352,9 +374,9 @@ export function AssessmentInterface() {
         <div className="flex items-center gap-8">
           <p className="text-slate-300 text-base">
             Puzzle {currentPuzzleIndex + 1} of {puzzles.length}
-            {currentPuzzle && attemptCounts.get(currentPuzzle.id) && (
+            {currentPuzzle && currentPuzzleAttemptStatus && currentPuzzleAttemptStatus.totalAttempts > 0 && (
               <span className="ml-2 text-amber-300">
-                (Attempt {attemptCounts.get(currentPuzzle.id)} of 2)
+                (Attempt {currentPuzzleAttemptStatus.totalAttempts} of 2)
               </span>
             )}
           </p>

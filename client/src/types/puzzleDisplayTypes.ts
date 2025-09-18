@@ -8,7 +8,7 @@
 import type { EmojiSet } from '@/constants/spaceEmojis';
 
 /** Display mode options for puzzle visualization */
-export type DisplayMode = 'emoji' | 'arc-colors' | 'hybrid';
+export type DisplayMode = 'emoji' | 'arc-colors' | 'hybrid' | 'numbers';
 
 /** Puzzle display preferences */
 export interface PuzzleDisplayPreferences {

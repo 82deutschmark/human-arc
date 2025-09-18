@@ -1,11 +1,8 @@
 /**
- * Officer Tutorial Modal
- * ======================
- * Author: Gemini 2.5 Pro
- * Date: Sept 11, 2025
- * Purpose:
- * 5-step tutorial modal for Officer Academy onboarding
- * Reuses OnboardingModal structure with Cadet Yvonne as instructor
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component provides a multi-step tutorial modal for onboarding users to the Officer Academy. It guides them through the basic concepts of puzzle solving, from grid interaction to advanced validation. It is built on the `useTutorialProgress` hook, which manages the state and flow of the tutorial.
+ * SRP and DRY check: Pass. This component's single responsibility is to present the tutorial content and handle user interaction within the tutorial. It is well-structured and reuses the `useTutorialProgress` hook for its state management, which is a good example of DRY principles in action.
  */
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";

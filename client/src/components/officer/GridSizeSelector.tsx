@@ -1,20 +1,8 @@
 /**
- * Grid Size Selector Component
- * Author: Cascade
- * 
- * PURPOSE:
- * Allows users to specify output grid dimensions when different from input size
- * Critical for ARC puzzles where output size ≠ input size
- * 
- * HOW IT WORKS:
- * - Provides width/height dropdowns (1-30 range)
- * - Shows current dimensions
- * - Warns when changing size would affect existing solution
- * - Suggests common sizes based on training examples
- * 
- * HOW THE PROJECT USES IT:
- * - Used in ResponsivePuzzleSolver for dynamic output grid sizing
- * - Enables proper solving of ARC puzzles with size transformations
+ * Author: Cascade using Gemini 2.5 Pro (Audit)
+ * Date: 2025-09-17
+ * PURPOSE: This component provides a user interface for selecting the dimensions (height and width) of the output grid for a puzzle. It is particularly important for ARC puzzles where the output grid size may differ from the input grid size. It includes features like suggested sizes based on training examples and a warning to the user if changing the size will reset their current work. It also incorporates controls for changing the display mode and emoji set, making it a comprehensive control panel for the puzzle-solving interface.
+ * SRP and DRY check: Pass. This component's primary responsibility is to manage the grid size selection. While it also includes display mode controls, they are closely related to the presentation of the grid and are logically grouped here. The component is reusable and does not contain any puzzle-solving logic.
  */
 
 import { Button } from '@/components/ui/button';
@@ -24,12 +12,12 @@ import { SPACE_EMOJIS, EMOJI_SET_INFO, type EmojiSet } from '@/constants/spaceEm
 import type { DisplayMode } from '@/types/puzzleDisplayTypes';
 
 interface GridSizeSelectorProps {
-  /** Current grid width */
-  width: number;
   /** Current grid height */
   height: number;
+  /** Current grid width */
+  width: number;
   /** Callback when size changes */
-  onSizeChange: (width: number, height: number) => void;
+  onSizeChange: (height: number, width: number) => void;
   /** Whether there's existing solution data that would be lost */
   hasExistingData: boolean;
   /** Suggested sizes from training examples */
@@ -48,8 +36,8 @@ interface GridSizeSelectorProps {
 }
 
 export function GridSizeSelector({
-  width,
   height,
+  width,
   onSizeChange,
   hasExistingData,
   suggestedSizes = [],
@@ -63,14 +51,14 @@ export function GridSizeSelector({
   usedValues = []
 }: GridSizeSelectorProps) {
   
-  const handleSizeChange = (newWidth: number, newHeight: number) => {
+  const handleSizeChange = (newHeight: number, newWidth: number) => {
     if (hasExistingData && (newWidth !== width || newHeight !== height)) {
       const confirmed = confirm(
         `Changing grid size from ${height}×${width} to ${newHeight}×${newWidth} will reset your current solution. Continue?`
       );
       if (!confirmed) return;
     }
-    onSizeChange(newWidth, newHeight);
+    onSizeChange(newHeight, newWidth);
   };
 
   const handleDisplayModeToggle = () => {
@@ -102,19 +90,19 @@ export function GridSizeSelector({
           <div className="flex items-center gap-2">
             <input
               type="number"
-              value={width}
+              value={height}
               min="1"
               max="30"
-              onChange={(e) => handleSizeChange(parseInt(e.target.value) || 1, height)}
+              onChange={(e) => handleSizeChange(parseInt(e.target.value) || 1, width)}
               className="w-16 h-12 px-2 bg-slate-600 border border-slate-500 rounded text-amber-100 text-center text-2xl font-bold"
             />
             <span className="text-slate-400 text-3xl font-bold">×</span>
             <input
               type="number"
-              value={height}
+              value={width}
               min="1"
               max="30"
-              onChange={(e) => handleSizeChange(width, parseInt(e.target.value) || 1)}
+              onChange={(e) => handleSizeChange(height, parseInt(e.target.value) || 1)}
               className="w-16 h-12 px-2 bg-slate-600 border border-slate-500 rounded text-amber-100 text-center text-2xl font-bold"
             />
           </div>
@@ -138,7 +126,7 @@ export function GridSizeSelector({
                 size="lg"
                 variant="outline"
                 className="h-12 px-6 text-xl font-bold border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white"
-                onClick={() => handleSizeChange(suggestion.width, suggestion.height)}
+                onClick={() => handleSizeChange(suggestion.height, suggestion.width)}
               >
                 {suggestion.height}×{suggestion.width}
               </Button>

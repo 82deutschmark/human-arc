@@ -1,9 +1,9 @@
 /**
- * Display Mode Toolbar
- * ====================
- * A self-contained toolbar for selecting puzzle display modes and emoji themes.
- * Designed to be placed next to the main test case title.
- * Author: Gemini 2.5 Pro
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: Provides a toolbar for users to switch between different puzzle grid display modes ('arc-colors', 'emoji', 'hybrid') and select an emoji theme. This component is crucial for the Officer and HARC tracks, allowing users to customize their puzzle-solving interface for clarity and accessibility.
+ * It interacts with a parent component (like ResponsivePuzzleSolver) by taking the current displayMode and emojiSet as props and calling the onDisplayModeChange and onEmojiSetChange callbacks when the user makes a selection.
+ * SRP and DRY check: Pass. This component has a single responsibility: managing the display settings for the puzzle grid. It is self-contained and does not duplicate logic from other components.
  */
 
 import type { DisplayMode } from '@/types/puzzleDisplayTypes';
@@ -25,12 +25,17 @@ export function DisplayModeToolbar({ displayMode, emojiSet, onDisplayModeChange,
           <button
             onClick={() => onDisplayModeChange('arc-colors')}
             className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'arc-colors' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
+            🎨 Colors
+          </button>
+          <button
+            onClick={() => onDisplayModeChange('numbers')}
+            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'numbers' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
             🔢 Numbers
           </button>
           <button
             onClick={() => onDisplayModeChange('emoji')}
             className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'emoji' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
-            🎨 Emojis
+            🎭 Emojis
           </button>
           <button
             onClick={() => onDisplayModeChange('hybrid')}

@@ -25,7 +25,6 @@ import OfficerTrackSimple from "@/pages/OfficerTrackSimple";
 import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
 import { TutorialPage } from '@/pages/TutorialPage';
-import { GridSizeTest } from "@/components/officer/GridSizeTest";
 import { AssessmentInterface } from "@/components/assessment/AssessmentInterface";
 import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
 import { LLMComparisonPage } from "@/pages/LLMComparisonPage";
@@ -63,7 +62,6 @@ function Router() {
       <Route path="/leaderboards/:type" component={Leaderboards} />
       <Route path="/leaderboards/explanation-arena" component={ExplanationArena} />
       <Route path="/profile" component={Profile} />
-      <Route path="/grid-test" component={GridSizeTest} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
       <Route path="/about" component={About} />
       <Route component={NotFound} />

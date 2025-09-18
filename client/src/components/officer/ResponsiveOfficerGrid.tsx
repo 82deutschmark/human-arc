@@ -1,9 +1,8 @@
 /**
- * Responsive Officer Grid Component
- * =================================
- * Enhanced version of OfficerGrid with responsive sizing capabilities
- * Uses useResponsiveGridSize hook to adapt to screen size and grid dimensions
- * Supports enhanced display modes: emoji, ARC colors, and hybrid
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component is an enhanced, responsive version of the `OfficerGrid`. It uses the `useResponsiveGridSize` hook to adapt the grid's cell size to the available container space, ensuring that puzzles are viewable on a wide range of screen sizes. It supports multiple display modes (emoji, ARC colors, hybrid) and advanced interaction features like drag-to-paint. This is the preferred grid component for all new puzzle-solving interfaces.
+ * SRP and DRY check: Pass. This component's single responsibility is to render a responsive grid. It correctly uses the `useResponsiveGridSize` hook for its sizing logic and composes `EnhancedGridCell` components for rendering individual cells, demonstrating good modularity and adherence to DRY principles.
  */
 
 import { useState, useEffect } from 'react';

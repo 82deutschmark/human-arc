@@ -1,8 +1,8 @@
 /**
- * Responsive Puzzle Solver
- * =========================
- * Complete responsive puzzle solving interface with proper scaling
- * Replaces SimplePuzzleSolver with full responsive design implementation
+ * Author: Cascade using Gemini 2.5 Pro
+ * Date: 2025-09-17
+ * PURPOSE: This component is the primary interface for solving ARC puzzles. It orchestrates the entire puzzle-solving experience, including displaying training examples, handling multi-test case puzzles, managing user input and grid state, and validating solutions with the PlayFab backend. It is a central hub that composes many other smaller components to create the full solver UI.
+ * SRP and DRY check: Fail. This is a "god component" that violates the Single Responsibility Principle. It manages a wide range of concerns, including puzzle state, UI display logic, user interaction, session tracking, and backend communication. This makes the component difficult to understand, maintain, and test. It should be refactored into smaller, more focused components and custom hooks to better separate these concerns.
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -20,6 +20,7 @@ import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
+import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import type { DisplayMode, PuzzleDisplayState } from '@/types/puzzleDisplayTypes';
 import type { EventType } from '@/types/playfab';
@@ -29,6 +30,8 @@ import { playFabValidation } from '@/services/playfab/validation';
 import { playFabEvents } from '@/services/playfab/events';
 import { idConverter } from '@/services/idConverter';
 import { SizeSlider } from '@/components/ui/SizeSlider';
+import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
+import { PuzzleNotification, PuzzleNotificationPresets } from '@/components/ui/PuzzleNotification';
 
 interface ResponsivePuzzleSolverProps {
   puzzle: OfficerTrackPuzzle;
@@ -78,8 +81,40 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   // Performance stats state
   const [performanceStats, setPerformanceStats] = useState<PerformanceData | null>(null);
 
+  // Attempt tracking state
+  const [attemptStatus, setAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
+  const [attemptStatusLoading, setAttemptStatusLoading] = useState(true);
+
   const [inputCellSize, setInputCellSize] = useState(50);
   const [outputCellSize, setOutputCellSize] = useState(50);
+
+  // Load attempt status when puzzle changes
+  useEffect(() => {
+    const loadAttemptStatus = async () => {
+      if (!puzzle?.id) return;
+
+      setAttemptStatusLoading(true);
+      try {
+        const status = await attemptTracker.getPuzzleAttemptStatus(puzzle.id);
+        setAttemptStatus(status);
+        console.log(`[ResponsivePuzzleSolver] Loaded attempt status for ${puzzle.id}:`, status);
+      } catch (error) {
+        console.error(`Failed to load attempt status for ${puzzle.id}:`, error);
+        // Set default status on error
+        setAttemptStatus({
+          status: 'available',
+          attemptsRemaining: 2,
+          totalAttempts: 0,
+          canAttempt: true,
+          lockedAt: null
+        });
+      } finally {
+        setAttemptStatusLoading(false);
+      }
+    };
+
+    loadAttemptStatus();
+  }, [puzzle?.id]);
 
   // Assessment mode guidance state
   const [assessmentTestsCompleted, setAssessmentTestsCompleted] = useState<boolean[]>([]);
@@ -293,11 +328,11 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
   };
 
   // Handle output size change for current test
-  const handleSizeChange = (newWidth: number, newHeight: number) => {
+  const handleSizeChange = (newHeight: number, newWidth: number) => {
     const oldDimensions = outputDimensions[currentTestIndex];
     
     const newDimensions = [...outputDimensions];
-    newDimensions[currentTestIndex] = { width: newWidth, height: newHeight };
+    newDimensions[currentTestIndex] = { height: newHeight, width: newWidth };
     setOutputDimensions(newDimensions);
 
     // Create new empty grid with new dimensions
@@ -812,8 +847,15 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
               {/* Grid Size Controls */}
               <PuzzleSolverControls
                 currentDimensions={currentDimensions}
-                onSizeChange={handleSizeChange}
+                onSizeChange={(height, width) => handleSizeChange(height, width)}
                 getSuggestedSizes={getSuggestedSizes}
+              />
+
+              {/* Attempt Counter - ARC-AGI 2-Attempt Limit */}
+              <AttemptCounter
+                puzzleId={puzzle.id}
+                size="lg"
+                className="w-full"
               />
 
               {/* Display Controls, Actions, Palette, and Validation */}
@@ -830,6 +872,8 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 allTestsCompleted={isAssessmentMode ? false : completedTests.every(test => test)}
                 usedValues={getUsedValues()}
                 isAssessmentMode={isAssessmentMode}
+                isLocked={attemptStatus?.status === 'locked'}
+                attemptsRemaining={attemptStatus?.attemptsRemaining ?? 2}
               />
             </div>
 
@@ -928,13 +972,15 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
                 />
               </GridWithDimensions>
 
+
               {/* Hint System */}
               <div className="mt-4">
                 <PermanentHintSystem
                   puzzle={puzzle}
                   currentTestOutput={expectedOutput}
-                  onAutoResizeGrid={(width, height) => {
-                    handleSizeChange(width, height);
+                  onAutoResizeGrid={(height, width) => {
+                    console.log(`[AutoResize] Received request to resize to ${height}x${width}`);
+                    handleSizeChange(height, width);
                   }}
                   onHintUsed={(hintLevel, totalHints) => {
                     console.log(`Hint used: Level ${hintLevel}, Total: ${totalHints}`);
@@ -966,16 +1012,26 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
             </div>
           )}
 
-          {validationResult && (
-            <div className="bg-green-900 border border-green-600 rounded-lg p-4 mt-4">
-              <div className="text-green-300 text-base">
-                <strong>✅ PlayFab Validation Complete:</strong> 
-                {getValidationMessage()}
-                {validationResult.timeElapsed && (
-                  <div>Time: {validationResult.timeElapsed.toFixed(1)}s</div>
-                )}
-              </div>
-            </div>
+          {validationResult && !validationResult.correct && (
+            <PuzzleNotification
+              type="error"
+              title="Incorrect Solution"
+              message={getValidationMessage().trim()}
+              details={validationResult.timeElapsed ? `Time elapsed: ${validationResult.timeElapsed.toFixed(1)}s` : undefined}
+              compact={false}
+              fullWidth={true}
+            />
+          )}
+
+          {validationResult && validationResult.correct && !isAssessmentMode && (
+            <PuzzleNotification
+              type="success"
+              title="Puzzle Solved!"
+              message={getValidationMessage().trim()}
+              details={validationResult.timeElapsed ? `Time elapsed: ${validationResult.timeElapsed.toFixed(1)}s` : undefined}
+              compact={false}
+              fullWidth={true}
+            />
           )}
 
         </div>

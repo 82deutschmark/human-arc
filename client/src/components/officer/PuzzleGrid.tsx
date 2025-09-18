@@ -1,23 +1,24 @@
-/**MISLEADING!!!  THIS IS for displaying puzzle CARDS displaying data, not for solving puzzles!!!
- * Simple Responsive Puzzle Grid
- * 
- * CSS Grid that adapts to screen size:
- * - Mobile: 1 column
- * - Tablet: 2-3 columns  
- * - Desktop: 4+ columns
+/**
+ * Author: Cascade using gpt-4-turbo
+ * Date: 2025-09-17
+ * PURPOSE: This component arranges a collection of puzzle information cards into a responsive grid layout. It is used to display a browsable list of puzzles to the user.
+ * NAMING WARNING: The filename `PuzzleGrid.tsx` is misleading. This component does NOT render the interactive grid for solving a puzzle. Instead, it displays a grid of `PuzzleInfoCard` components. The actual puzzle-solving grid is handled by other components like `ResponsivePuzzleSolver.tsx`.
+ * SRP and DRY check: Pass. The component's single responsibility is to create a responsive layout for a list of puzzle cards. It correctly delegates the rendering of individual cards to the `PuzzleInfoCard` component, adhering to SRP.
  */
 
 import { Card, CardContent } from '@/components/ui/card';
 import { PuzzleInfoCard } from '@/components/ui/PuzzleInfoCard';
 import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 interface PuzzleGridProps {
   puzzles: OfficerPuzzle[];
   loading?: boolean;
   onSelectPuzzle: (puzzle: OfficerPuzzle) => void;
+  attemptStatusMap?: Record<string, PuzzleAttemptStatus>;
 }
 
-export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps) {
+export function PuzzleGrid({ puzzles, loading, onSelectPuzzle, attemptStatusMap = {} }: PuzzleGridProps) {
 
   if (loading) {
     return (
@@ -63,10 +64,11 @@ export function PuzzleGrid({ puzzles, loading, onSelectPuzzle }: PuzzleGridProps
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-8 gap-4 lg:gap-6 xl:gap-8">
       {puzzles.map((puzzle) => (
-        <PuzzleInfoCard 
-          key={puzzle.id} 
-          puzzle={puzzle} 
-          onSelectPuzzle={onSelectPuzzle} 
+        <PuzzleInfoCard
+          key={puzzle.id}
+          puzzle={puzzle}
+          onSelectPuzzle={onSelectPuzzle}
+          attemptStatus={attemptStatusMap[puzzle.id] || null}
         />
       ))}
     </div>
