@@ -30,6 +30,8 @@ export const EnhancedGridCell = React.memo(({
         return SPACE_EMOJIS[emojiSet][value];
       case 'arc-colors':
         return value.toString();
+      case 'numbers':
+        return value.toString();
       case 'hybrid':
         return SPACE_EMOJIS[emojiSet][value];
     }
@@ -39,8 +41,8 @@ export const EnhancedGridCell = React.memo(({
     if (displayMode === 'arc-colors' || displayMode === 'hybrid') {
       return getARCColorCSS(value);
     }
-    
-    // Emoji mode - use slate background
+
+    // Emoji mode and raw numbers mode - use slate background
     if (interactive) {
       if (isSelected) return 'rgb(100, 116, 139)'; // slate-500
       if (isHovered) return 'rgb(71, 85, 105)'; // slate-600

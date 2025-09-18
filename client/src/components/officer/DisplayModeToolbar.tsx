@@ -25,12 +25,17 @@ export function DisplayModeToolbar({ displayMode, emojiSet, onDisplayModeChange,
           <button
             onClick={() => onDisplayModeChange('arc-colors')}
             className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'arc-colors' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
+            🎨 Colors
+          </button>
+          <button
+            onClick={() => onDisplayModeChange('numbers')}
+            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'numbers' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
             🔢 Numbers
           </button>
           <button
             onClick={() => onDisplayModeChange('emoji')}
             className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'emoji' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
-            🎨 Emojis
+            🎭 Emojis
           </button>
           <button
             onClick={() => onDisplayModeChange('hybrid')}
