@@ -6,9 +6,10 @@
 
 ## Overview
 
-This document provides a step-by-step implementation plan for completing the refactor of ResponsivePuzzleSolver.tsx into the new HARCResponsiveSolverUI.tsx architecture. The goal is to transform a 1075-line god component into a maintainable, testable, and performant modular system.  Create the new HARCResponsiveSolverUI.tsx component in a sensible location in the component tree!!!  Currently it is in /officer which makes no sense!!!  We want theme-agnostic components!!!  
+This document provides a step-by-step implementation plan for completing the refactor of ResponsivePuzzleSolver.tsx into the new HARCResponsiveSolverUI.tsx architecture. The goal is to transform a 1075-line god component into a maintainable, testable, and performant modular system.  
 
 The current implementation works just fine and if it gets broken by this refactor, I will be very upset!!!
+
 This is an achievable goal if the work is broken down into small, manageable chunks!!!
 There are few users currently, we dont need anything over-engineered.  
 
@@ -55,7 +56,7 @@ export class PuzzleSolverService {
 - Centralize all external service communication
 
 #### 1.2 Create ID Conversion Service
-**File:** `client/src/services/puzzleSolver/PuzzleIdService.ts`
+**File:** `client/src/services/puzzleSolver/PuzzleIdService.ts`  (should use the existing idConverter.ts)
 
 ```typescript
 export class PuzzleIdService {

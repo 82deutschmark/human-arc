@@ -8,7 +8,7 @@
 
 ## 1. The Guiding Philosophy: Core Principles
 
-These are the unbreakable rules. Your primary function is to be a meticulous software engineer, not a content designer or a project manager.
+These are the unbreakable rules. Your primary function is to be a meticulous software engineer, not a content designer.
 
 -   **Be Theme Agnostic**: The project is a core data platform with different "themed wrappers" (Space Force, HARC). Your code must be agnostic to the theme. Never write theme-specific logic, especially for the legacy kid's game.
 -   **No Placeholders or Simulations**: All functionality must be real and data-driven. Using placeholders, stubs, or "simulated" data is deceptive and strictly forbidden. The project has rich data sources; use them.
@@ -32,11 +32,11 @@ This is the consolidated guide to writing code for this project. It merges all p
 2.  **Use Singletons Correctly**: The services in `client/src/services/playfab/` and `client/src/services/core/` are **singletons**. Do not instantiate them with `new`. Always import the pre-initialized instance (e.g., `import { playFabAuthManager } from '@/services/playfab'`).
 3.  **Avoid Service Recursion**: Never call a `get` function from within its corresponding `update` function (e.g., `getOfficerPlayerData` inside `updateOfficerPlayerData`). This creates infinite loops. Pass data as arguments instead.
 
-### C. Data Handling
+### C. Data Handling - Be More Lenient than Strict!!  
 
-1.  **CloudScript is the Source of Truth**: The client's role is to collect user input and display the server's response. All validation, scoring, and data mutation **must** be handled by server-side CloudScript (`cloudscript.js`) to ensure data integrity.
+1.  **CloudScript is the Source of Truth**: The client's role is to collect user input and display the server's response. All validation, scoring, and data mutation **must** be handled by server-side CloudScript (`cloudscript.js`) to ensure data integrity.  As a fallback, we allow the client to collect data and validate and then send this data to PlayFab for storage.  Security is light, it is a hobby research project with few bad actors.
 2.  **Safely Parse JSON**: Data from PlayFab can sometimes be a literal string `"undefined"`. Always check for this before calling `JSON.parse()` to prevent crashes.
-3.  **Use the ID Converter**: The `arc-explainer` API and PlayFab use different ID formats for the same puzzle (e.g., `007bbfb7` vs. `ARC-TR-007bbfb7`). You **must** use the service in `client/src/services/idConverter.ts` to translate between them.
+3.  **Use the ID Converter**: The `arc-explainer` API and PlayFab use different ID formats for the same puzzle (`007bbfb7` vs. e.g., `ARC-TR-007bbfb7`). You **must** use the service in `client/src/services/idConverter.ts` to translate between them.
 
 ### D. React-Specific Rules
 
@@ -44,7 +44,7 @@ This is the consolidated guide to writing code for this project. It merges all p
 
 ### E. Workflow & Process
 
--   **Plan First**: For any complex task, create a plan in the `/docs` folder. The plan should contain high-level logic and steps, not code. Get user approval before executing.
+-   **Plan First**: For any non-trivial request, create a plan in the `/docs` folder with the format DDMMYYYY-<RequestName>.md. The plan should contain your research, reasoning about the nature of the request in the context of the project, and a task list, not code. Get user approval before executing.
 -   **Debug Systematically**: Check the browser console for infinite loops. Log the entire raw API response from PlayFab, not just a `success` message. Use the scripts in the `/scripts` directory for data verification.
 -   **Commit Cleanly**: Every file you create or modify must be committed with a message that includes what the file does, how it works, how the project uses it, and your model name as the author.
 
