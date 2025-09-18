@@ -108,7 +108,8 @@ export function HARCResponsiveSolverUI({
       setPerformanceStats(stats);
     };
     const loadAttemptStatus = async () => {
-      const status = await attemptTracker.getPuzzleAttemptStatus(puzzle.id);
+      // Use User Data method to bypass CloudScript authentication issues
+      const status = await attemptTracker.getPuzzleAttemptStatusFromUserData(puzzle.id);
       setAttemptStatus(status);
     };
 

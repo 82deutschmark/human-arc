@@ -102,6 +102,34 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
     setValidationError(null);
 
     try {
+      // CHECK ATTEMPT STATUS BEFORE VALIDATION using User Data (bypasses CloudScript auth issues)
+      const attemptStatus = await attemptTracker.getPuzzleAttemptStatusFromUserData(puzzle.id);
+      console.log(`[useSolutionValidation] User Data attempt status for ${puzzle.id}:`, attemptStatus);
+
+      // Block validation if puzzle is locked
+      if (attemptStatus.status === 'locked') {
+        console.warn(`[useSolutionValidation] Blocked validation - puzzle ${puzzle.id} is locked`);
+
+        const lockedResult = {
+          success: false,
+          correct: false,
+          locked: true,
+          error: "Puzzle locked: Maximum 2 attempts exceeded",
+          attemptsRemaining: 0,
+          totalAttempts: attemptStatus.totalAttempts,
+          message: "This puzzle is locked due to exceeding the maximum number of attempts (2)."
+        };
+
+        setValidationResult(lockedResult);
+        setShowFailureModal(true);
+        return;
+      }
+
+      // Show warning for last attempt
+      if (attemptStatus.attemptsRemaining === 1) {
+        console.warn(`[useSolutionValidation] Warning: Last attempt for puzzle ${puzzle.id}`);
+      }
+
       // Create validation request using the same structure as Phase 1 PuzzleSolverService
       const validationRequest: ValidationRequest = {
         puzzle,
