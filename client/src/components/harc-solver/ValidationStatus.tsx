@@ -9,6 +9,7 @@
 
 import React, { useMemo } from 'react';
 import { PuzzleNotification } from '@/components/ui/PuzzleNotification';
+import { FailureModal } from '@/components/ui/FailureModal';
 import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
@@ -18,6 +19,7 @@ export interface ValidationState {
   validationResult: { correct: boolean; fallback?: boolean; basePoints?: number; speedBonus?: number; efficiencyBonus?: number; finalScore?: number; } | null;
   validationError: string | null;
   showSuccessModal: boolean;
+  showFailureModal: boolean;
 }
 
 export interface ValidationStatusProps {
@@ -29,6 +31,7 @@ export interface ValidationStatusProps {
   onSubmit: () => void;
   onRetry: () => void;
   onNextPuzzle?: () => void;
+  setShowFailureModal: (show: boolean) => void;
 }
 
 export const ValidationStatus = React.memo(({
@@ -40,32 +43,13 @@ export const ValidationStatus = React.memo(({
   onSubmit,
   onRetry,
   onNextPuzzle,
+  setShowFailureModal,
 }: ValidationStatusProps) => {
 
   // Memoize validation feedback to prevent unnecessary re-computation
   const validationFeedback = useMemo(() => {
-    if (validationState.validationError) {
-      return (
-        <PuzzleNotification
-          type="error"
-          title="Validation Error"
-          message={validationState.validationError}
-          fullWidth={true}
-        />
-      );
-    }
-
-    if (validationState.validationResult && !validationState.validationResult.correct) {
-      return (
-        <PuzzleNotification
-          type="error"
-          title="Incorrect Solution"
-          message="One or more test cases failed. Please review your solution and try again."
-          fullWidth={true}
-        />
-      );
-    }
-
+    // For errors and incorrect solutions, we now use modals instead of tiny notifications
+    // Only show success notifications inline (modals are handled separately)
     if (validationState.validationResult && validationState.validationResult.correct && !isAssessmentMode) {
       return (
         <PuzzleNotification
@@ -79,7 +63,6 @@ export const ValidationStatus = React.memo(({
 
     return null;
   }, [
-    validationState.validationError,
     validationState.validationResult,
     isAssessmentMode
   ]);
@@ -94,6 +77,26 @@ export const ValidationStatus = React.memo(({
 
       {validationFeedback}
 
+      {/* FailureModal for prominent error feedback */}
+      <FailureModal
+        open={validationState.showFailureModal}
+        onClose={() => setShowFailureModal(false)}
+        title={validationState.validationError ? "Validation Error" : "Incorrect Solution"}
+        message={
+          validationState.validationError
+            ? validationState.validationError
+            : "One or more test cases failed. Please review your solution and try again."
+        }
+        puzzleId={puzzleId}
+        attemptsRemaining={attemptStatus?.attemptsRemaining ?? 2}
+        totalAttempts={2}
+        isLocked={attemptStatus?.status === 'locked'}
+        onRetry={() => {
+          setShowFailureModal(false);
+          onRetry();
+        }}
+      />
+
       {/* The main action button logic will be part of PuzzleTools,
           but this component is responsible for displaying the status that informs those actions */}
     </div>
@@ -106,12 +109,14 @@ export const ValidationStatus = React.memo(({
     JSON.stringify(prevProps.validationState.validationResult) === JSON.stringify(nextProps.validationState.validationResult) &&
     prevProps.validationState.validationError === nextProps.validationState.validationError &&
     prevProps.validationState.showSuccessModal === nextProps.validationState.showSuccessModal &&
+    prevProps.validationState.showFailureModal === nextProps.validationState.showFailureModal &&
     JSON.stringify(prevProps.attemptStatus) === JSON.stringify(nextProps.attemptStatus) &&
     prevProps.isAssessmentMode === nextProps.isAssessmentMode &&
     prevProps.allTestsCompleted === nextProps.allTestsCompleted &&
     prevProps.onSubmit === nextProps.onSubmit &&
     prevProps.onRetry === nextProps.onRetry &&
-    prevProps.onNextPuzzle === nextProps.onNextPuzzle
+    prevProps.onNextPuzzle === nextProps.onNextPuzzle &&
+    prevProps.setShowFailureModal === nextProps.setShowFailureModal
   );
 });
 

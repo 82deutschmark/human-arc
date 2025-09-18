@@ -17,6 +17,7 @@ export interface ValidationState {
   validationResult: any | null;
   validationError: string | null;
   showSuccessModal: boolean;
+  showFailureModal: boolean;
 }
 
 export interface SolutionValidationHook {
@@ -27,6 +28,7 @@ export interface SolutionValidationHook {
   validateSolution: () => Promise<void>;
   clearValidationState: () => void;
   setShowSuccessModal: (show: boolean) => void;
+  setShowFailureModal: (show: boolean) => void;
 
   // Computed
   canSubmit: boolean;
@@ -81,8 +83,9 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
   const [validationResult, setValidationResult] = useState<any>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Additional state for success modal
+  // Additional state for success and failure modals
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showFailureModal, setShowFailureModal] = useState(false);
 
   // Convert puzzle ID to PlayFab format - use the first variant (CloudScript will search all batches)
   const playFabVariants = idConverter.getAllPlayFabVariants(puzzle.id);
@@ -125,9 +128,11 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
 
       console.log('✅ [useSolutionValidation] PlayFab validation result:', result);
 
-      // Show success modal for correct answers
+      // Show success modal for correct answers, failure modal for incorrect
       if (result?.correct) {
         setShowSuccessModal(true);
+      } else {
+        setShowFailureModal(true);
       }
 
       // In assessment mode, use validation result callback for advancement logic
@@ -149,6 +154,7 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
     } catch (error: any) {
       console.error('❌ [useSolutionValidation] Validation error:', error);
       setValidationError(error.message || 'Validation failed');
+      setShowFailureModal(true);
     } finally {
       setIsValidating(false);
     }
@@ -175,6 +181,7 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
     setValidationError(null);
     setIsValidating(false);
     setShowSuccessModal(false);
+    setShowFailureModal(false);
   }, []);
 
   return {
@@ -183,13 +190,15 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
       isValidating,
       validationResult,
       validationError,
-      showSuccessModal
+      showSuccessModal,
+      showFailureModal
     },
 
     // Actions
     validateSolution,
     clearValidationState,
     setShowSuccessModal,
+    setShowFailureModal,
 
     // Computed
     canSubmit

@@ -236,6 +236,7 @@ export function HARCResponsiveSolverUI({
           allTestsCompleted={solutionManager.allTestsCompleted}
           onSubmit={solutionValidation.validateSolution}
           onRetry={handleRetry}
+          setShowFailureModal={solutionValidation.setShowFailureModal}
         />
 
       </main>
