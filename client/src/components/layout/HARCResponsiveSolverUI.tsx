@@ -126,9 +126,9 @@ export function HARCResponsiveSolverUI({
     [puzzleState.solutions, puzzleState.currentTestIndex]
   );
 
-  // Memoize current dimensions for performance
+  // Memoize current dimensions for performance - HEIGHT x WIDTH standard
   const currentDimensions = useMemo(() =>
-    puzzleState.outputDimensions[puzzleState.currentTestIndex],
+    puzzleState.outputDimensions[puzzleState.currentTestIndex] || { height: 3, width: 3 },
     [puzzleState.outputDimensions, puzzleState.currentTestIndex]
   );
 
