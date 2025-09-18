@@ -1,5 +1,5 @@
 // Authored by: Cascade using Claude 3.5 Sonnet
-// Date: 2025-09-15T18:56:07.218Z
+// Date: 2025-09-18T05:13:44.635Z
 // Purpose: Source of truth for AI model to PlayFab ID mappings
 // How it works: Maps arc-explainer model keys to their corresponding PlayFab player IDs
 // Project usage: Used by client-side code to reference AI players and for duplicate detection during registration
@@ -421,6 +421,22 @@ export const AI_MODEL_PLAYFAB_MAPPINGS: Record<string, AIModelMapping> = {
     playFabId: '6FB06EE024D952E9',
     customId: 'AI_OPENROUTER_STEPFUN_AI_STEP3',
     registrationDate: '2025-09-15T18:56:07.217Z'
+  },
+  'qwen/qwen-plus-2025-07-28:thinking': {
+    key: 'qwen/qwen-plus-2025-07-28:thinking',
+    name: 'Qwen: Qwen Plus 0728 (thinking)',
+    provider: 'OpenRouter',
+    playFabId: '4212DFF7625B7142',
+    customId: 'AI_OPENROUTER_QWEN_QWEN_PLUS_2025_07_28_THINKING',
+    registrationDate: '2025-09-18T05:13:17.715Z'
+  },
+  'z-ai/glm-4.5': {
+    key: 'z-ai/glm-4.5',
+    name: 'Z-AI GLM 4.5',
+    provider: 'OpenRouter',
+    playFabId: '1035483D7EC687C5',
+    customId: 'AI_OPENROUTER_Z_AI_GLM_4_5',
+    registrationDate: '2025-09-18T05:13:44.634Z'
   }
 };
 
