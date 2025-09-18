@@ -81,6 +81,8 @@ export class AttemptTracker {
   public async getPuzzleAttemptStatus(puzzleId: string, useCache: boolean = true): Promise<PuzzleAttemptStatus> {
     // Normalize puzzle ID to ARC format for CloudScript
     const normalizedId = idConverter.normalizeToArcId(puzzleId);
+    console.log(`[AttemptTracker] ID normalization: ${puzzleId} -> ${normalizedId}`);
+
     if (!normalizedId) {
       console.error(`[AttemptTracker] Invalid puzzle ID format: ${puzzleId}`);
       return {
@@ -103,6 +105,21 @@ export class AttemptTracker {
 
     console.log(`[AttemptTracker] Fetching attempt status for puzzle: ${puzzleId} (normalized: ${normalizedId})`);
 
+    // Check if user is authenticated before making CloudScript call
+    const isAuthenticated = playFabRequestManager.isAuthenticated();
+    console.log(`[AttemptTracker] User authentication status: ${isAuthenticated}`);
+
+    if (!isAuthenticated) {
+      console.warn(`[AttemptTracker] User not authenticated, returning default status for ${puzzleId}`);
+      return {
+        status: 'available',
+        attemptsRemaining: 2,
+        totalAttempts: 0,
+        canAttempt: true,
+        lockedAt: null
+      };
+    }
+
     try {
       const request = {
         FunctionName: 'GetSinglePuzzleAttemptStatus',
@@ -113,12 +130,15 @@ export class AttemptTracker {
       const result = await playFabRequestManager.makeRequest('executeCloudScript', request);
 
       if (result.Error) {
+        console.error(`[AttemptTracker] CloudScript API error for ${puzzleId}:`, result.Error);
         throw new Error(`CloudScript error: ${result.Error.Error} - ${result.Error.Message}`);
       }
 
       const response = result.FunctionResult as GetSinglePuzzleAttemptStatusResponse;
+      console.log(`[AttemptTracker] CloudScript response for ${puzzleId}:`, response);
 
       if (!response.success) {
+        console.error(`[AttemptTracker] CloudScript function failed for ${puzzleId}:`, response);
         throw new Error(response.error || 'Failed to get puzzle attempt status');
       }
 
