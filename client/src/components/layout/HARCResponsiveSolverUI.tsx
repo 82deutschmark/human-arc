@@ -5,7 +5,7 @@
  * SRP and DRY check: Pass. This component's sole responsibility is to manage state via hooks and coordinate the flow of data to its child presentational components. It contains no direct business or UI rendering logic.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExplainerClient';
 import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
@@ -119,6 +119,54 @@ export function HARCResponsiveSolverUI({
   // --- DERIVED STATE ---
 
   const currentTest = puzzle.test?.[puzzleState.currentTestIndex];
+
+  // Memoize current solution for performance
+  const currentSolution = useMemo(() =>
+    puzzleState.solutions[puzzleState.currentTestIndex] || [],
+    [puzzleState.solutions, puzzleState.currentTestIndex]
+  );
+
+  // Memoize current dimensions for performance
+  const currentDimensions = useMemo(() =>
+    puzzleState.outputDimensions[puzzleState.currentTestIndex],
+    [puzzleState.outputDimensions, puzzleState.currentTestIndex]
+  );
+
+  // Memoize callback functions to prevent unnecessary re-renders
+  const handleCellInteraction = useCallback((row: number, col: number) => {
+    const newGrid = [...currentSolution];
+    newGrid[row][col] = displayState.selectedValue;
+    solutionManager.updateCurrentSolution(newGrid);
+  }, [currentSolution, displayState.selectedValue, solutionManager.updateCurrentSolution]);
+
+  const handleCopyInput = useCallback(() => {
+    if (currentTest?.input) {
+      solutionManager.updateCurrentSolution(currentTest.input.map(row => [...row]));
+    }
+  }, [currentTest?.input, solutionManager.updateCurrentSolution]);
+
+  const handleResetSolution = useCallback(() => {
+    if (currentDimensions) {
+      const { height, width } = currentDimensions;
+      const emptyGrid = Array(height).fill(null).map(() => Array(width).fill(0));
+      solutionManager.updateCurrentSolution(emptyGrid);
+    }
+  }, [currentDimensions, solutionManager.updateCurrentSolution]);
+
+  const handleHintUsed = useCallback((hintLevel: number, totalHints: number) => {
+    sessionLogger.logPlayerAction('hint_used', 0, hintLevel, {
+      hintLevel,
+      totalHintsUsed: totalHints,
+      testCase: puzzleState.currentTestIndex,
+      puzzleId: puzzle.id
+    });
+  }, [sessionLogger.logPlayerAction, puzzleState.currentTestIndex, puzzle.id]);
+
+  const handleRetry = useCallback(() => {
+    // TODO: Implement retry logic
+    console.log('Retry validation requested');
+  }, []);
+
   if (!puzzle || !currentTest) {
     return <div className="min-h-screen bg-slate-900 text-amber-50 flex items-center justify-center">Loading puzzle...</div>;
   }
@@ -159,31 +207,23 @@ export function HARCResponsiveSolverUI({
           testInput={currentTest.input}
           expectedOutput={currentTest.output}
           trainingExamples={puzzle.train || []}
-          currentSolution={puzzleState.solutions[puzzleState.currentTestIndex] || []}
-          currentDimensions={puzzleState.outputDimensions[puzzleState.currentTestIndex]}
+          currentSolution={currentSolution}
+          currentDimensions={currentDimensions}
           displayState={displayState}
           isAssessmentMode={isAssessmentMode}
           allTestsCompleted={solutionManager.allTestsCompleted}
           isValidating={solutionValidation.validationState.isValidating}
           isLocked={attemptStatus?.status === 'locked'}
           attemptsRemaining={attemptStatus?.attemptsRemaining ?? 2}
-          onCellInteraction={(row, col) => {
-            const newGrid = [...puzzleState.solutions[puzzleState.currentTestIndex]];
-            newGrid[row][col] = displayState.selectedValue;
-            solutionManager.updateCurrentSolution(newGrid);
-          }}
+          onCellInteraction={handleCellInteraction}
           onSizeChange={puzzleState.handleSizeChange}
-          onCopyInput={() => solutionManager.updateCurrentSolution(currentTest.input.map(row => [...row]))}
-          onResetSolution={() => {
-            const { height, width } = puzzleState.outputDimensions[puzzleState.currentTestIndex];
-            const emptyGrid = Array(height).fill(null).map(() => Array(width).fill(0));
-            solutionManager.updateCurrentSolution(emptyGrid);
-          }}
+          onCopyInput={handleCopyInput}
+          onResetSolution={handleResetSolution}
           onValidate={solutionValidation.validateSolution}
           onDisplayModeChange={displayState.handleDisplayModeChange}
           onEmojiSetChange={displayState.handleEmojiSetChange}
           onValueSelect={displayState.handleValueSelect}
-          onHintUsed={(hintLevel, totalHints) => sessionLogger.logPlayerAction('hint_used', 0, hintLevel, { hintLevel, totalHintsUsed: totalHints, testCase: puzzleState.currentTestIndex, puzzleId: puzzle.id })}
+          onHintUsed={handleHintUsed}
           onAutoResizeGrid={puzzleState.handleSizeChange}
           updateCurrentSolution={solutionManager.updateCurrentSolution}
         />
@@ -195,7 +235,7 @@ export function HARCResponsiveSolverUI({
           isAssessmentMode={isAssessmentMode}
           allTestsCompleted={solutionManager.allTestsCompleted}
           onSubmit={solutionValidation.validateSolution}
-          onRetry={() => { /* TODO: Implement retry logic */ }}
+          onRetry={handleRetry}
         />
 
       </main>
