@@ -1,10 +1,13 @@
 /**
  * Author: Cascade using gpt-4-turbo
  * Date: 2025-09-17T21:18:20-04:00
+ * Modified: 2025-09-18 - Phase 4.2 Performance Optimizations
  * PURPOSE: This component displays the validation status of the user's solution. It provides clear feedback on success, failure, or errors, and includes controls for submitting or retrying the puzzle.
  * SRP and DRY check: Pass. This component's responsibility is strictly to present validation feedback and actions. It relies on parent components for state and logic, ensuring it remains a dumb presentational component.
+ * PERFORMANCE: Wrapped with React.memo and uses useMemo for validation feedback
  */
 
+import React, { useMemo } from 'react';
 import { PuzzleNotification } from '@/components/ui/PuzzleNotification';
 import { AttemptCounter } from '@/components/officer/AttemptCounter';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
@@ -28,7 +31,7 @@ export interface ValidationStatusProps {
   onNextPuzzle?: () => void;
 }
 
-export const ValidationStatus = ({
+export const ValidationStatus = React.memo(({
   puzzleId,
   validationState,
   attemptStatus,
@@ -39,7 +42,8 @@ export const ValidationStatus = ({
   onNextPuzzle,
 }: ValidationStatusProps) => {
 
-  const renderValidationFeedback = () => {
+  // Memoize validation feedback to prevent unnecessary re-computation
+  const validationFeedback = useMemo(() => {
     if (validationState.validationError) {
       return (
         <PuzzleNotification
@@ -74,7 +78,11 @@ export const ValidationStatus = ({
     }
 
     return null;
-  };
+  }, [
+    validationState.validationError,
+    validationState.validationResult,
+    isAssessmentMode
+  ]);
 
   return (
     <div className="mt-4 w-full flex flex-col items-center space-y-4">
@@ -83,11 +91,28 @@ export const ValidationStatus = ({
           <AttemptCounter puzzleId={puzzleId} size="lg" className="w-full mb-4" />
         )}
       </div>
-      
-      {renderValidationFeedback()}
 
-      {/* The main action button logic will be part of PuzzleTools, 
+      {validationFeedback}
+
+      {/* The main action button logic will be part of PuzzleTools,
           but this component is responsible for displaying the status that informs those actions */}
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return (
+    prevProps.puzzleId === nextProps.puzzleId &&
+    prevProps.validationState.isValidating === nextProps.validationState.isValidating &&
+    JSON.stringify(prevProps.validationState.validationResult) === JSON.stringify(nextProps.validationState.validationResult) &&
+    prevProps.validationState.validationError === nextProps.validationState.validationError &&
+    prevProps.validationState.showSuccessModal === nextProps.validationState.showSuccessModal &&
+    JSON.stringify(prevProps.attemptStatus) === JSON.stringify(nextProps.attemptStatus) &&
+    prevProps.isAssessmentMode === nextProps.isAssessmentMode &&
+    prevProps.allTestsCompleted === nextProps.allTestsCompleted &&
+    prevProps.onSubmit === nextProps.onSubmit &&
+    prevProps.onRetry === nextProps.onRetry &&
+    prevProps.onNextPuzzle === nextProps.onNextPuzzle
+  );
+});
+
+ValidationStatus.displayName = 'ValidationStatus';

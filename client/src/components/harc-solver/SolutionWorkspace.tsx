@@ -1,11 +1,13 @@
 /**
  * Author: Cascade using gpt-4-turbo
  * Date: 2025-09-17T21:18:20-04:00
+ * Modified: 2025-09-18 - Phase 4.2 Performance Optimizations
  * PURPOSE: This component provides the main user interface for solving a puzzle test case. It includes the test input grid, the interactive solution grid, and all associated tools for manipulation and display.
  * SRP and DRY check: Pass. This component is responsible only for presenting the puzzle-solving workspace. All state management and business logic are provided via props.
+ * PERFORMANCE: Wrapped with React.memo and uses useMemo/useCallback for expensive computations
  */
 
-import { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import type { ARCGrid, OfficerTrackPuzzle, ARCExample } from '@/types/arcTypes';
 import type { PuzzleDisplayState, DisplayMode } from '@/types/puzzleDisplayTypes';
 import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
@@ -44,7 +46,7 @@ export interface SolutionWorkspaceProps {
   updateCurrentSolution: (newGrid: ARCGrid) => void;
 }
 
-export const SolutionWorkspace = ({
+export const SolutionWorkspace = React.memo(({
   puzzle,
   currentTestIndex,
   totalTests,
@@ -75,7 +77,8 @@ export const SolutionWorkspace = ({
   const [inputCellSize, setInputCellSize] = useState(50);
   const [outputCellSize, setOutputCellSize] = useState(50);
 
-  const getSuggestedSizes = () => {
+  // Memoize suggested sizes computation to avoid recalculation on every render
+  const suggestedSizes = useMemo(() => {
     const suggestions: Array<{ width: number; height: number; label: string }> = [];
     const seenSizes = new Set<string>();
 
@@ -83,7 +86,7 @@ export const SolutionWorkspace = ({
       const outputHeight = example.output?.length || 0;
       const outputWidth = example.output?.[0]?.length || 0;
       const sizeKey = `${outputWidth}x${outputHeight}`;
-      
+
       if (!seenSizes.has(sizeKey) && outputWidth > 0 && outputHeight > 0) {
         seenSizes.add(sizeKey);
         suggestions.push({
@@ -95,24 +98,36 @@ export const SolutionWorkspace = ({
     });
 
     return suggestions.slice(0, 4); // Limit to 4 suggestions
-  };
+  }, [trainingExamples]);
 
-  const getUsedValues = (): number[] => {
+  // Memoize getSuggestedSizes callback
+  const getSuggestedSizes = useCallback(() => suggestedSizes, [suggestedSizes]);
+
+  // Memoize used values computation - expensive operation
+  const usedValues = useMemo((): number[] => {
     const allGrids = [
       ...trainingExamples.flatMap(ex => [ex.input, ex.output]),
       testInput,
       expectedOutput
     ].filter(grid => grid && grid.length > 0);
 
-    const usedValues = new Set<number>();
-        allGrids.forEach((grid: ARCGrid) => {
+    const usedValuesSet = new Set<number>();
+    allGrids.forEach((grid: ARCGrid) => {
       grid.forEach((row: number[]) => {
-        row.forEach((cell: number) => usedValues.add(cell));
+        row.forEach((cell: number) => usedValuesSet.add(cell));
       });
     });
 
-    return Array.from(usedValues).sort((a, b) => a - b);
-  };
+    return Array.from(usedValuesSet).sort((a, b) => a - b);
+  }, [trainingExamples, testInput, expectedOutput]);
+
+  // Memoize expected dimensions computation
+  const expectedDimensions = useMemo(() => {
+    return expectedOutput.length > 0 ? {
+      width: expectedOutput[0]?.length || 0,
+      height: expectedOutput.length
+    } : undefined;
+  }, [expectedOutput]);
 
   return (
     <div className="w-full">
@@ -173,7 +188,7 @@ export const SolutionWorkspace = ({
             onValidate={onValidate}
             isValidating={isValidating}
             allTestsCompleted={allTestsCompleted}
-            usedValues={getUsedValues()}
+            usedValues={usedValues}
             isAssessmentMode={isAssessmentMode}
             isLocked={isLocked}
             attemptsRemaining={attemptsRemaining}
@@ -197,10 +212,7 @@ export const SolutionWorkspace = ({
           </div>
           <GridWithDimensions
             grid={currentSolution}
-            expectedDimensions={expectedOutput.length > 0 ? {
-              width: expectedOutput[0]?.length || 0,
-              height: expectedOutput.length
-            } : undefined}
+            expectedDimensions={expectedDimensions}
             showExpected={true}
           >
             <ResponsiveOfficerGrid
@@ -228,4 +240,35 @@ export const SolutionWorkspace = ({
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison function for React.memo
+  return (
+    prevProps.puzzle.id === nextProps.puzzle.id &&
+    prevProps.currentTestIndex === nextProps.currentTestIndex &&
+    prevProps.totalTests === nextProps.totalTests &&
+    JSON.stringify(prevProps.testInput) === JSON.stringify(nextProps.testInput) &&
+    JSON.stringify(prevProps.expectedOutput) === JSON.stringify(nextProps.expectedOutput) &&
+    JSON.stringify(prevProps.trainingExamples) === JSON.stringify(nextProps.trainingExamples) &&
+    JSON.stringify(prevProps.currentSolution) === JSON.stringify(nextProps.currentSolution) &&
+    JSON.stringify(prevProps.currentDimensions) === JSON.stringify(nextProps.currentDimensions) &&
+    JSON.stringify(prevProps.displayState) === JSON.stringify(nextProps.displayState) &&
+    prevProps.isAssessmentMode === nextProps.isAssessmentMode &&
+    prevProps.allTestsCompleted === nextProps.allTestsCompleted &&
+    prevProps.isValidating === nextProps.isValidating &&
+    prevProps.isLocked === nextProps.isLocked &&
+    prevProps.attemptsRemaining === nextProps.attemptsRemaining &&
+    prevProps.onCellInteraction === nextProps.onCellInteraction &&
+    prevProps.onSizeChange === nextProps.onSizeChange &&
+    prevProps.onCopyInput === nextProps.onCopyInput &&
+    prevProps.onResetSolution === nextProps.onResetSolution &&
+    prevProps.onValidate === nextProps.onValidate &&
+    prevProps.onDisplayModeChange === nextProps.onDisplayModeChange &&
+    prevProps.onEmojiSetChange === nextProps.onEmojiSetChange &&
+    prevProps.onValueSelect === nextProps.onValueSelect &&
+    prevProps.onHintUsed === nextProps.onHintUsed &&
+    prevProps.onAutoResizeGrid === nextProps.onAutoResizeGrid &&
+    prevProps.updateCurrentSolution === nextProps.updateCurrentSolution
+  );
+});
+
+SolutionWorkspace.displayName = 'SolutionWorkspace';
