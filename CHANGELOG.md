@@ -1539,17 +1539,3 @@ This version represents the successful unification of PlayFab and arc-explainer 
 ### Changed
 - Updated README with PlayFab integration details
 
-## [0.0.1] - 2025-09-02 7:41 PM - Claude 4 Sonnet Thinking via Cascade
-
-### Added
-- PlayFab service integration for task management
-- Task migration script for PlayFab
-- PlayFab Task Migration Plan documentation
-- Feature Parity Plan documentation
-
-### Changed
-- Updated FIQTest to use PlayFab service instead of server API
-- Refactored task loading to support PlayFab backend
-
-### Fixed
-- Various bug fixes and performance improvements

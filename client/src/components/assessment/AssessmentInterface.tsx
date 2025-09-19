@@ -10,7 +10,7 @@ import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 import { ResponsivePuzzleSolver } from '@/components/officer/ResponsivePuzzleSolver';
-import { Navbar } from '@/components/layout/Navbar';
+import { PuzzleHeader } from '@/components/harc-solver/PuzzleHeader';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
@@ -19,6 +19,7 @@ import { playFabRequestManager, playFabAuthManager, playFabUserData } from '@/se
 import { attemptTracker } from '@/services/playfab/attemptTracker';
 import { idConverter } from '@/services/idConverter';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
+import type { PerformanceData } from '@/services/core/arcExplainerClient';
 
 // Curated assessment puzzle IDs HARDCODED BY THE DESIGNER!
 
@@ -35,6 +36,7 @@ export function AssessmentInterface() {
   // Global 2-attempt tracking system integration
   const [currentPuzzleAttemptStatus, setCurrentPuzzleAttemptStatus] = useState<PuzzleAttemptStatus | null>(null);
   const [isAwaitingValidation, setIsAwaitingValidation] = useState(false);
+  const [performanceStats, setPerformanceStats] = useState<PerformanceData | null>(null);
   const isAdvancing = useRef(false);
   const [, navigate] = useLocation();
 
@@ -65,6 +67,24 @@ export function AssessmentInterface() {
     };
 
     loadCurrentPuzzleAttemptStatus();
+  }, [currentPuzzle?.id]);
+
+  // Load performance stats when current puzzle changes
+  useEffect(() => {
+    const loadPerformanceStats = async () => {
+      if (!currentPuzzle?.id) return;
+
+      try {
+        // Get enhanced puzzle data which includes performance stats
+        const enhancedPuzzle = await puzzleRepository.findById(currentPuzzle.id, true);
+        setPerformanceStats(enhancedPuzzle?.aiPerformance || null);
+      } catch (error) {
+        console.error(`Failed to load performance stats for ${currentPuzzle.id}:`, error);
+        setPerformanceStats(null);
+      }
+    };
+
+    loadPerformanceStats();
   }, [currentPuzzle?.id]);
 
   // Initialize and load assessment puzzles
@@ -356,31 +376,41 @@ export function AssessmentInterface() {
         onClose={() => setShowModal(false)} 
       />
 
-      <Navbar title="Human - ARC Assessment">
-        <div className="flex items-center gap-8">
-          <p className="text-slate-300 text-base">
-            Puzzle {currentPuzzleIndex + 1} of {puzzles.length}
-            {currentPuzzle && currentPuzzleAttemptStatus && currentPuzzleAttemptStatus.totalAttempts > 0 && (
-              <span className="ml-2 text-amber-300">
-                (Attempt {currentPuzzleAttemptStatus.totalAttempts} of 2)
-              </span>
-            )}
-          </p>
-          <div className="flex gap-4">
-            <Button 
-              onClick={() => setShowModal(true)} 
-              variant="outline" 
-              size="lg"
-              className="border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-slate-900"
-            >
-              About Assessment
-            </Button>
-            <Button onClick={handleBackToLanding} variant="outline" size="lg" className="border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900">
-              Exit Assessment
-            </Button>
+      <PuzzleHeader
+        puzzle={currentPuzzle}
+        performanceStats={performanceStats}
+        isAssessmentMode={true}
+        onBack={handleBackToLanding}
+      />
+      
+      {/* Assessment-specific controls */}
+      <div className="bg-slate-800 border-b border-slate-700 sticky top-16 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between">
+            <p className="text-slate-300 text-base">
+              Puzzle {currentPuzzleIndex + 1} of {puzzles.length}
+              {currentPuzzle && currentPuzzleAttemptStatus && currentPuzzleAttemptStatus.totalAttempts > 0 && (
+                <span className="ml-2 text-amber-300">
+                  (Attempt {currentPuzzleAttemptStatus.totalAttempts} of 2)
+                </span>
+              )}
+            </p>
+            <div className="flex gap-4">
+              <Button 
+                onClick={() => setShowModal(true)} 
+                variant="outline" 
+                size="lg"
+                className="border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-slate-900"
+              >
+                About Assessment
+              </Button>
+              <Button onClick={handleBackToLanding} variant="outline" size="lg" className="border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900">
+                Exit Assessment
+              </Button>
+            </div>
           </div>
         </div>
-      </Navbar>
+      </div>
 
       {/* The ResponsivePuzzleSolver */}
       <ResponsivePuzzleSolver

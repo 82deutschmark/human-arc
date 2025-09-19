@@ -1,4 +1,4 @@
-/**
+/**  THIS COMPONENT WILL BE DEPRECATED FOR HARCResponsiveSolverUI.tsx  !!!
  * Author: Cascade using Gemini 2.5 Pro
  * Date: 2025-09-17
  * PURPOSE: This component is the primary interface for solving ARC puzzles. It orchestrates the entire puzzle-solving experience, including displaying training examples, handling multi-test case puzzles, managing user input and grid state, and validating solutions with the PlayFab backend. It is a central hub that composes many other smaller components to create the full solver UI.
