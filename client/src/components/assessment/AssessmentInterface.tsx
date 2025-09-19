@@ -40,6 +40,8 @@ export function AssessmentInterface() {
 
   console.log(`[Render] AssessmentInterface - Puzzle Index: ${currentPuzzleIndex}`);
 
+  const currentPuzzle = puzzles[currentPuzzleIndex];
+
   // Load attempt status for current puzzle
   useEffect(() => {
     const loadCurrentPuzzleAttemptStatus = async () => {
@@ -341,22 +343,6 @@ export function AssessmentInterface() {
             Redirecting you to the performance comparison page...
           </p>
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-400 mx-auto"></div>
-        </div>
-      </div>
-    );
-  }
-
-  const currentPuzzle = puzzles[currentPuzzleIndex];
-
-  if (!currentPuzzle) {
-    return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-amber-400 text-4xl mb-4">🧩</div>
-          <div>No puzzle data available.</div>
-          <Button onClick={handleBackToLanding} className="mt-4 bg-amber-600 hover:bg-amber-700">
-            Return to Home
-          </Button>
         </div>
       </div>
     );
