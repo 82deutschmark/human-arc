@@ -189,7 +189,6 @@ export class PlayFabRequestManager {
     // Update session token if login operation
     if (responseData.data?.SessionTicket) {
       playFabAuthManager.updateSessionToken(responseData.data.SessionTicket);
-      this.strategyManager.setSessionToken(responseData.data.SessionTicket);
     }
 
     return responseData.data as TResponse;
