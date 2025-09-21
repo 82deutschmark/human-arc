@@ -1,5 +1,39 @@
 # Changelog
 
+## ### **Version 0.2.8**
+
+### 🔧 CRITICAL VALIDATION FIX - HARCResponsiveSolverUI - 2025-09-21
+**Author**: Claude Code using Sonnet 4
+**Status**: 🟢 PRODUCTION READY
+
+#### The Problem
+The new modular `HARCResponsiveSolverUI` component was incorrectly validating puzzles as wrong even when solutions were correct, while the old `ResponsivePuzzleSolver` (used by Assessment Interface) worked perfectly.
+
+#### Root Cause Analysis
+**Issue**: The 2-attempt feature introduced pre-validation attempt checking in `useSolutionValidation.ts` that was blocking the validation flow before it reached PlayFab/CloudScript.
+
+**Key Discovery**: The working `ResponsivePuzzleSolver.tsx` calls `playFabValidation.validateARCPuzzle()` directly without pre-validation checks, letting PlayFab handle attempt tracking internally.
+
+#### Technical Fixes Applied
+1. **Removed Pre-Validation Attempt Blocking** - Eliminated `attemptTracker.getPuzzleAttemptStatusFromUserData()` check that was preventing validation
+2. **Direct PlayFab Validation Call** - Changed from `puzzleSolverService.validatePuzzleWithPlayFab()` to direct `playFabValidation.validateARCPuzzle()` call
+3. **Identical Validation Arguments** - Restored exact same validation argument structure as working component
+4. **Added Missing Import** - Fixed `attemptTracker` import that was causing runtime errors
+
+#### Validation Flow Restored
+**Before**: Pre-validation check → Service layer → PlayFab (with interference)
+**After**: Direct PlayFab validation (exactly like working old component)
+
+#### Impact
+- ✅ **HARCResponsiveSolverUI now validates correctly** - No more false negatives
+- ✅ **Maintains 2-attempt limit** - PlayFab/CloudScript handles attempt tracking properly
+- ✅ **Identical behavior to working component** - Assessment Interface validation flow preserved
+- ✅ **Production ready** - https://human-arc.gptpluspro.com/puzzles/solve/79cce52d now works correctly
+
+**Testing**: Verified with puzzle `79cce52d` - validation now works as expected.
+
+---
+
 ## ### **Version 0.2.7**
 
 ### 🚀 HARC PUZZLE SOLVER REFACTOR - PHASES 4 & 5 COMPLETE - 2025-09-18
