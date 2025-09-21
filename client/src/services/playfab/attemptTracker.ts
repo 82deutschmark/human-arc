@@ -122,45 +122,60 @@ export class AttemptTracker {
     }
 
     try {
-      const request = {
-        FunctionName: 'GetSinglePuzzleAttemptStatus',
-        FunctionParameter: { puzzleId: normalizedId } as GetSinglePuzzleAttemptStatusRequest,
-        GeneratePlayStreamEvent: false
-      };
+      // Try CloudScript first (can fail due to context.currentPlayerId issues)
+      try {
+        const request = {
+          FunctionName: 'GetSinglePuzzleAttemptStatus',
+          FunctionParameter: { puzzleId: normalizedId } as GetSinglePuzzleAttemptStatusRequest,
+          GeneratePlayStreamEvent: false
+        };
 
-      const result = await playFabRequestManager.makeRequest('executeCloudScript', request);
+        const result = await playFabRequestManager.makeRequest('executeCloudScript', request);
 
-      if (result.Error) {
-        console.error(`[AttemptTracker] CloudScript API error for ${puzzleId}:`, result.Error);
-        throw new Error(`CloudScript error: ${result.Error.Error} - ${result.Error.Message}`);
+        if (result.Error) {
+          console.warn(`[AttemptTracker] CloudScript API error for ${puzzleId}, falling back to User Data:`, result.Error);
+          throw new Error(`CloudScript error: ${result.Error.Error} - ${result.Error.Message}`);
+        }
+
+        const response = result.FunctionResult as GetSinglePuzzleAttemptStatusResponse;
+        console.log(`[AttemptTracker] CloudScript response for ${puzzleId}:`, response);
+
+        if (!response || !response.success) {
+          console.warn(`[AttemptTracker] CloudScript function failed for ${puzzleId}, falling back to User Data:`, response);
+          throw new Error(response?.error || 'CloudScript function failed');
+        }
+
+        const status: PuzzleAttemptStatus = {
+          status: response.status,
+          attemptsRemaining: response.attemptsRemaining,
+          totalAttempts: response.totalAttempts,
+          canAttempt: response.canAttempt,
+          lockedAt: response.lockedAt
+        };
+
+        // Cache the result
+        this.setCachedStatus(puzzleId, status);
+
+        console.log(`[AttemptTracker] CloudScript status for ${puzzleId}:`, status);
+        return status;
+
+      } catch (cloudScriptError) {
+        console.warn(`[AttemptTracker] CloudScript failed for ${puzzleId}, using User Data fallback:`, cloudScriptError);
+
+        // Fallback to User Data method (bypasses CloudScript auth issues)
+        const fallbackStatus = await this.getPuzzleAttemptStatusFromUserData(puzzleId);
+        console.log(`[AttemptTracker] User Data fallback status for ${puzzleId}:`, fallbackStatus);
+
+        // Cache the fallback result
+        this.setCachedStatus(puzzleId, fallbackStatus);
+
+        return fallbackStatus;
       }
-
-      const response = result.FunctionResult as GetSinglePuzzleAttemptStatusResponse;
-      console.log(`[AttemptTracker] CloudScript response for ${puzzleId}:`, response);
-
-      if (!response.success) {
-        console.error(`[AttemptTracker] CloudScript function failed for ${puzzleId}:`, response);
-        throw new Error(response.error || 'Failed to get puzzle attempt status');
-      }
-
-      const status: PuzzleAttemptStatus = {
-        status: response.status,
-        attemptsRemaining: response.attemptsRemaining,
-        totalAttempts: response.totalAttempts,
-        canAttempt: response.canAttempt,
-        lockedAt: response.lockedAt
-      };
-
-      // Cache the result
-      this.setCachedStatus(puzzleId, status);
-
-      console.log(`[AttemptTracker] Status for ${puzzleId}:`, status);
-      return status;
 
     } catch (error) {
-      console.error(`[AttemptTracker] Failed to get attempt status for ${puzzleId}:`, error);
+      console.error(`[AttemptTracker] Complete failure for ${puzzleId}:`, error);
 
-      // Return default status on error (assume available)
+      // Return default status on complete failure (assume available)
       return {
         status: 'available',
         attemptsRemaining: 2,

@@ -17,6 +17,7 @@ import { ResponsiveOfficerDisplayGrid, ResponsiveOfficerGrid } from '@/component
 import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
 import { PuzzleTools } from '@/components/officer/PuzzleTools';
 import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
+import { Button } from '@/components/ui/button';
 
 export interface SolutionWorkspaceProps {
   puzzle: OfficerTrackPuzzle;
@@ -141,12 +142,32 @@ export const SolutionWorkspace = React.memo(({
               </span>
             )}
           </h2>
-          <DisplayModeToolbar 
-            displayMode={displayState.displayMode} 
+          <DisplayModeToolbar
+            displayMode={displayState.displayMode}
             onDisplayModeChange={onDisplayModeChange}
             emojiSet={displayState.emojiSet}
             onEmojiSetChange={onEmojiSetChange}
           />
+          {/* Submit Button moved next to theme controls */}
+          <Button
+            className={`px-6 py-4 text-xl font-bold rounded-lg transition-all duration-300 ${
+              attemptsRemaining === 1
+                ? 'bg-yellow-600 hover:bg-yellow-700'
+                : 'bg-amber-600 hover:bg-amber-700'
+            } text-white ring-2 ring-amber-400 shadow-lg shadow-amber-400/30 animate-pulse [animation-duration:4s]`}
+            disabled={isLocked || isValidating}
+            onClick={isLocked ? undefined : onValidate}
+          >
+            {isLocked ? (
+              '🔒 Locked'
+            ) : isValidating ? (
+              '🔄 Submitting...'
+            ) : attemptsRemaining === 1 ? (
+              '⚠️ Final Attempt'
+            ) : (
+              '🎯 Submit'
+            )}
+          </Button>
         </div>
       </div>
 
@@ -185,13 +206,8 @@ export const SolutionWorkspace = React.memo(({
             onValueSelect={onValueSelect}
             onCopyInput={onCopyInput}
             onResetSolution={onResetSolution}
-            onValidate={onValidate}
-            isValidating={isValidating}
-            allTestsCompleted={allTestsCompleted}
             usedValues={usedValues}
             isAssessmentMode={isAssessmentMode}
-            isLocked={isLocked}
-            attemptsRemaining={attemptsRemaining}
           />
         </div>
 
