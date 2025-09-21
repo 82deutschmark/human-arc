@@ -39,6 +39,7 @@ import LeaderboardLanding from "@/pages/LeaderboardLanding";
 import { LoadingSplash } from "@/components/game/LoadingSplash";
 import { OnboardingModal } from "@/components/game/OnboardingModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import DynamicFavicon from '@/components/util/DynamicFavicon';
 
 function Router() {
   // Apply dynamic document metadata based on current route
@@ -80,6 +81,7 @@ function App() {
     <ErrorBoundary>
       <TooltipProvider>
         <Toaster />
+        <DynamicFavicon />
         <Router />
         <OnboardingModal open={showOnboarding} onClose={handleOnboardingComplete} />
       </TooltipProvider>

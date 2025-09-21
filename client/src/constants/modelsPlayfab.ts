@@ -1,5 +1,5 @@
 // Authored by: Cascade using Claude 3.5 Sonnet
-// Date: 2025-09-18T05:13:44.635Z
+// Date: 2025-09-21T02:38:52.568Z
 // Purpose: Source of truth for AI model to PlayFab ID mappings
 // How it works: Maps arc-explainer model keys to their corresponding PlayFab player IDs
 // Project usage: Used by client-side code to reference AI players and for duplicate detection during registration
@@ -437,6 +437,14 @@ export const AI_MODEL_PLAYFAB_MAPPINGS: Record<string, AIModelMapping> = {
     playFabId: '1035483D7EC687C5',
     customId: 'AI_OPENROUTER_Z_AI_GLM_4_5',
     registrationDate: '2025-09-18T05:13:44.634Z'
+  },
+  'x-ai/grok-4-fast:free': {
+    key: 'x-ai/grok-4-fast:free',
+    name: 'Grok 4 Fast',
+    provider: 'OpenRouter',
+    playFabId: 'E40EF54572B3B49F',
+    customId: 'AI_OPENROUTER_X_AI_GROK_4_FAST_FREE',
+    registrationDate: '2025-09-21T02:38:52.568Z'
   }
 };
 
