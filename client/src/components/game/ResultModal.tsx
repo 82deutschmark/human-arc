@@ -1,4 +1,4 @@
-/**
+/**VERY OLD COMPONENT FOR KIDS GAME.  KEPT AS REFERENCE.
  * ResultModal Component
  * --------------------------------------------------------
  * Author: Cascade AI
