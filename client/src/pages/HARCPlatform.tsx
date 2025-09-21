@@ -78,10 +78,12 @@ export default function HARCPlatform() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      <Navbar
-        title="Human ARC Platform"
-        rightContent={
-          <div className="flex items-center space-x-3">
+      <Navbar title="Human ARC Platform" />
+
+      {/* Centered Navigation Buttons */}
+      <div className="bg-white border-b border-gray-200 py-4">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <Button
               onClick={handleStartAssessment}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold"
@@ -107,8 +109,8 @@ export default function HARCPlatform() {
               🧩 Puzzle Library
             </Button>
           </div>
-        }
-      />
+        </div>
+      </div>
       
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-blue-50 to-white py-12">
@@ -131,7 +133,7 @@ export default function HARCPlatform() {
           >
             <div className="text-center w-full">
               <div className="text-4xl mb-3">🚀</div>
-              <div className="font-bold text-xl mb-2">Compare to the State of the Art</div>
+              <div className="font-bold text-xl mb-2">Compare Yourself to AI</div>
               <div className="text-base opacity-90 leading-relaxed">Start the Intro</div>
             </div>
           </Button>
@@ -154,7 +156,7 @@ export default function HARCPlatform() {
             <div className="text-center w-full">
               <div className="text-4xl mb-3">🏆</div>
               <div className="font-bold text-xl mb-2">Leaderboard</div>
-              <div className="text-base opacity-90 leading-relaxed">Compare with other researchers</div>
+              <div className="text-base opacity-90 leading-relaxed">Compare and compete!</div>
             </div>
           </Button>
 
@@ -164,8 +166,8 @@ export default function HARCPlatform() {
           >
             <div className="text-center w-full">
               <div className="text-4xl mb-3">🧩</div>
-              <div className="font-bold text-xl mb-2">Puzzle Library</div>
-              <div className="text-base opacity-90 leading-relaxed">Practice with research puzzles</div>
+              <div className="font-bold text-xl mb-2">Directly from ARC-AGI-2 Data</div>
+              <div className="text-base opacity-90 leading-relaxed">Test yourself on the exact same puzzles</div>
             </div>
           </Button>
         </div>
@@ -271,8 +273,8 @@ export default function HARCPlatform() {
               <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
                 The Abstract Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning.
                 The HARC Platform extends this work by collecting systematic human performance data,
-                enabling direct human vs AI comparisons on identical reasoning tasks. Your participation contributes to our
-                understanding of the unique capabilities that distinguish human and artificial intelligence.
+                enabling direct human vs AI comparisons on identical reasoning tasks. Someday it might contribute to the
+                understanding of the unique capabilities that distinguish human and artificial intelligence.  Collaborators to the project are always welcome!
               </p>
             </CardContent>
           </Card>
