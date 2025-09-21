@@ -13,7 +13,7 @@ Comprehensive analysis of `d:\1Projects\sfmc\client\src\components` reveals seve
 ### 2. Duplicate Puzzle Solver Systems
 - **ResponsivePuzzleSolver.tsx** (42KB) - Legacy god component that admits SRP violation in its own comments
 - **HARCResponsiveSolverUI.tsx** - Modern refactored version with proper SRP architecture
-- Both implement identical puzzle solving functionality
+- Both SHOULD have identical puzzle solving functionality
 
 ### 3. Component Sprawl by Category
 - **Grid components**: 43+ files across multiple folders

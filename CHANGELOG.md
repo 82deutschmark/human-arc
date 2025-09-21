@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3.0
+Claude completed the validation fix.  The current client side validation and then sending to PlayFab is the correct process. 
+
+
 ## ### **Version 0.2.9**
 
 ### 🕵️‍♂️ CRITICAL AUTHENTICATION FAILURE INVESTIGATION - 2025-09-21
