@@ -766,6 +766,42 @@ handlers.UpdateHARCTotalScore = function(args, context) {
 };
 
 // =============================================================================
+// ATTEMPT STATUS HANDLERS
+// =============================================================================
+
+handlers.GetSinglePuzzleAttemptStatus = function(args, context) {
+    /**
+     * @purpose: Get the attempt status for a single puzzle.
+     * @author: Cascade (GPT-4)
+     * @date: 2025-09-21
+     * @param {object} args - The arguments passed to the function.
+     * @param {string} args.puzzleId - The ID of the puzzle to check.
+     * @param {object} context - The PlayFab context object.
+     * @returns {object} - The status of the puzzle attempt.
+     * @throws {Error} - If the player ID is missing.
+     */
+    try {
+        Utils.assertArgs(args, ['puzzleId']);
+        const { puzzleId } = args;
+        const playerId = context.currentPlayerId;
+        Utils.assert(playerId, 'Player ID is required for GetSinglePuzzleAttemptStatus.');
+
+        const attemptsData = AttemptTrackingService.getPlayerAttemptsData(playerId);
+        const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId, playerId);
+
+        return {
+            success: true,
+            puzzleId: puzzleId,
+            ...status
+        };
+
+    } catch (error) {
+        log.error("GetSinglePuzzleAttemptStatus error", { error: error.message, stack: error.stack, args });
+        return { success: false, error: `Failed to get puzzle attempt status: ${error.message}` };
+    }
+};
+
+// =============================================================================
 // STRATEGY BONUS FUNCTION - Universal 10K Bonus for All Scoring Systems
 // =============================================================================
 

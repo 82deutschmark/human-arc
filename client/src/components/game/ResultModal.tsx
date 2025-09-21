@@ -15,7 +15,7 @@
  *   - Called from MissionControl after task solution validation
  *   - Integrates with PlayFab-only data flow for game results
  */
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getRandomTrainer, getRandomOfficer } from "@/constants/trainers";
 import type { TaskValidationResult } from "@/services/playfab";
@@ -41,6 +41,8 @@ export function ResultModal({ open, onClose, result, onRetry }: ResultModalProps
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md bg-slate-800 border border-slate-600 text-slate-50">
+        <DialogTitle className="sr-only">Task Result</DialogTitle>
+        <DialogDescription className="sr-only">Summary of your performance on the completed task.</DialogDescription>
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-2">
             <img 

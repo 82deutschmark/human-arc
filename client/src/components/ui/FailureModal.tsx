@@ -10,7 +10,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface Props {
   open: boolean;
@@ -90,13 +90,11 @@ export function FailureModal({
         className={`
           max-w-lg mx-auto bg-gradient-to-br from-slate-800 to-slate-900
           border-2 ${borderColor} text-white text-center p-8
-          transform transition-all duration-500 ease-out
-          ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
+          rounded-2xl shadow-2xl transform transition-all duration-300 scale-100
         `}
-        style={{
-          animation: isVisible ? 'FailureEntrance 0.6s ease-out' : undefined
-        }}
       >
+        <DialogTitle className="sr-only">Puzzle Attempt Failed</DialogTitle>
+        <DialogDescription className="sr-only">You have failed to solve the puzzle. You have {attemptsRemaining} attempt(s) remaining.</DialogDescription>
         {/* Failure emojis */}
         <div className="flex justify-center space-x-2 mb-6 text-4xl">
           {failureEmojis.map((emoji, index) => (

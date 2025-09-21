@@ -163,7 +163,7 @@ export function useSessionLogger(options: UseSessionLoggerOptions): SessionLogge
 
       logSessionEnd();
     };
-  }, [sessionId, puzzle.id, attemptNumber, playFabPuzzleId, stepIndex, totalTests, trainingExamples.length]); // Only re-run when puzzle changes, not on every step
+  }, [sessionId, puzzle.id, attemptNumber, playFabPuzzleId, totalTests, trainingExamples.length]); // Only re-run when puzzle changes, not on every step
 
   // Utility to increment attempt number (used after validation)
   const incrementAttemptNumber = useCallback(() => {
