@@ -1,5 +1,32 @@
 # Changelog
 
+## ### **Version 0.2.9**
+
+### 🕵️‍♂️ CRITICAL AUTHENTICATION FAILURE INVESTIGATION - 2025-09-21
+**Author**: Cascade using Gemini 2.5 Pro
+**Status**: 🔵 INVESTIGATION COMPLETE - IMPLEMENTATION PLAN CREATED
+
+#### The Problem
+A persistent, critical authentication failure was identified where all server-side CloudScript calls were failing because `context.currentPlayerId` was `undefined`. This forced the entire system to rely on a client-side validation fallback, creating a significant security and data integrity risk.
+
+#### Root Cause Analysis
+My investigation revealed a fundamental architectural flaw in how the client-side API services handle the PlayFab session token. The token was being held in a stateful property within the `ClientApiStrategy`, which quickly became stale. The core issue was that the fresh session token, while correctly retrieved by the `PlayFabRequestManager`, was not being passed down through the service layers on a per-request basis.
+
+**The result**: API calls to PlayFab were being made with missing or invalid `X-Authorization` headers, leading to the authentication failure.
+
+#### Action Taken: Created a Detailed Implementation Plan
+Instead of implementing a partial fix, I have created a comprehensive implementation plan for the next developer (Claude) to perform a full architectural refactoring of the authentication flow.
+
+**New Documentation**:
+- **File**: `docs/21SeptPlayerIDFindings.md`
+- **Purpose**: Provides a clear, step-by-step task list for Claude to follow. It is tailored to an AI agent, with explicit instructions and no ambiguous code snippets.
+- **The Plan**: The plan refactors the API services to handle the session token in a stateless, per-request manner, ensuring every authenticated API call includes a fresh, valid token. This will resolve the issue at its source.
+
+#### Next Steps
+Claude is to pick up the task and execute the plan detailed in `docs/21SeptPlayerIDFindings.md`.
+
+---
+
 ## ### **Version 0.2.8**
 
 ### 🔧 CRITICAL VALIDATION FIX - HARCResponsiveSolverUI - 2025-09-21
