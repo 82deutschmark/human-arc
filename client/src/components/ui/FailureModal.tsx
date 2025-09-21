@@ -32,7 +32,7 @@ interface Props {
  * @returns Array of random failure emojis
  */
 function getRandomFailureEmojis(count: number = 5): string[] {
-  const failureEmojis = ['😞', '🤔', '💭', '😕', '🙁', '🤷‍♂️', '😓', '😤', '💡', '🧐'];
+  const failureEmojis = ['🙊', '🤔', '💭', '😕', '🙄', '🤷‍♂️', '🙈', '😨', '⛔', '🧐'];
   const selectedEmojis: string[] = [];
 
   // Get random emojis ensuring variety
