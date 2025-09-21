@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft } from 'lucide-react';
+import { Navbar } from '@/components/layout/Navbar';
 import {
   playFabRequestManager,
   playFabAuthManager,
@@ -77,64 +78,37 @@ export default function HARCPlatform() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
-      {/* Smart Header with Navigation */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => setLocation('/')}
-                variant="ghost"
-                className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-2"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Home
-              </Button>
-              <h1 className="text-2xl font-bold text-blue-600">
-                🧠 HARC PLATFORM
-              </h1>
-              <Badge className="bg-blue-600 text-white font-bold">
-                RESEARCH HUB
-              </Badge>
-              {playFabReady && (
-                <Badge className="bg-green-600 text-white">
-                  ✓ Connected
-                </Badge>
-              )}
-            </div>
-
-            <div className="flex space-x-3">
-              <Button
-                onClick={handleStartAssessment}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                📋 Take Assessment
-              </Button>
-              <Button
-                onClick={handleViewDashboard}
-                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                📊 View Dashboard
-              </Button>
-              <Button
-                onClick={() => setLocation('/leaderboards/harc_leaderboard')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                🏆 Leaderboard
-              </Button>
-              <Button
-                onClick={handleViewPuzzleLibrary}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
-              >
-                🧩 Puzzle Library
-              </Button>
-            </div>
+      <Navbar
+        title="Human ARC Platform"
+        rightContent={
+          <div className="flex items-center space-x-3">
+            <Button
+              onClick={handleStartAssessment}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              📋 Take Assessment
+            </Button>
+            <Button
+              onClick={handleViewDashboard}
+              className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+            >
+              📊 View Dashboard
+            </Button>
+            <Button
+              onClick={() => setLocation('/leaderboards/harc_leaderboard')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+            >
+              🏆 Leaderboard
+            </Button>
+            <Button
+              onClick={handleViewPuzzleLibrary}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
+            >
+              🧩 Puzzle Library
+            </Button>
           </div>
-        </div>
-      </header>
+        }
+      />
       
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-blue-50 to-white py-12">
@@ -150,51 +124,48 @@ export default function HARCPlatform() {
 
       {/* Action Buttons - Right below Hero */}
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
           <Button
             onClick={handleStartAssessment}
-            className="bg-green-600 hover:bg-green-700 text-white p-6 h-auto"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white p-8 h-auto shadow-lg transform hover:scale-105 transition-all duration-200"
           >
-            <div className="text-center">
-              <div className="text-2xl mb-2">🚀</div>
-              <div className="font-bold text-lg">Start Assessment</div>
-              <div className="text-sm opacity-90 mt-1">Begin your cognitive evaluation</div>
+            <div className="text-center w-full">
+              <div className="text-4xl mb-3">🚀</div>
+              <div className="font-bold text-xl mb-2">Compare to the State of the Art</div>
+              <div className="text-base opacity-90 leading-relaxed">Start the Intro</div>
             </div>
           </Button>
 
           <Button
             onClick={handleViewDashboard}
-            variant="outline"
-            className="border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white p-6 h-auto"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white p-8 h-auto shadow-lg transform hover:scale-105 transition-all duration-200"
           >
-            <div className="text-center">
-              <div className="text-2xl mb-2">📈</div>
-              <div className="font-bold text-lg">View Dashboard</div>
-              <div className="text-sm opacity-90 mt-1">See your performance results</div>
+            <div className="text-center w-full">
+              <div className="text-4xl mb-3">📈</div>
+              <div className="font-bold text-xl mb-2">View Dashboard</div>
+              <div className="text-base opacity-90 leading-relaxed">See your performance results</div>
             </div>
           </Button>
 
           <Button
             onClick={() => setLocation('/leaderboards/harc_leaderboard')}
-            variant="outline"
-            className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white p-6 h-auto"
+            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white p-8 h-auto shadow-lg transform hover:scale-105 transition-all duration-200"
           >
-            <div className="text-center">
-              <div className="text-2xl mb-2">🏆</div>
-              <div className="font-bold text-lg">Leaderboard</div>
-              <div className="text-sm opacity-90 mt-1">Compare with other researchers</div>
+            <div className="text-center w-full">
+              <div className="text-4xl mb-3">🏆</div>
+              <div className="font-bold text-xl mb-2">Leaderboard</div>
+              <div className="text-base opacity-90 leading-relaxed">Compare with other researchers</div>
             </div>
           </Button>
 
           <Button
             onClick={handleViewPuzzleLibrary}
-            variant="outline"
-            className="border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white p-6 h-auto"
+            className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white p-8 h-auto shadow-lg transform hover:scale-105 transition-all duration-200"
           >
-            <div className="text-center">
-              <div className="text-2xl mb-2">🧩</div>
-              <div className="font-bold text-lg">Puzzle Library</div>
-              <div className="text-sm opacity-90 mt-1">Practice with research puzzles</div>
+            <div className="text-center w-full">
+              <div className="text-4xl mb-3">🧩</div>
+              <div className="font-bold text-xl mb-2">Puzzle Library</div>
+              <div className="text-base opacity-90 leading-relaxed">Practice with research puzzles</div>
             </div>
           </Button>
         </div>
@@ -216,80 +187,95 @@ export default function HARCPlatform() {
 
         {/* Key Features */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
-          <Card className="bg-white border-gray-200 shadow-sm">
-            <CardHeader>
-              <h3 className="text-xl font-bold text-blue-700 text-center">🧩 Assessment</h3>
+          <Card className="bg-white border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <CardHeader className="bg-gradient-to-br from-emerald-50 to-teal-50 border-b border-emerald-100">
+              <h3 className="text-xl font-bold text-emerald-700 text-center flex items-center justify-center gap-2">
+                <span className="text-2xl">🧩</span> Assessment
+              </h3>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 text-center">
+            <CardContent className="p-6">
+              <p className="text-gray-700 text-center leading-relaxed">
                 We have curated some ARC-AGI puzzles as an easy introduction to the puzzles.
-
+                Get started with carefully selected challenges designed to showcase the depth of abstract reasoning.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200 shadow-sm">
-            <CardHeader>
-              <h3 className="text-xl font-bold text-blue-700 text-center">📊 Analysis</h3>
+          <Card className="bg-white border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <CardHeader className="bg-gradient-to-br from-blue-50 to-indigo-50 border-b border-blue-100">
+              <h3 className="text-xl font-bold text-blue-700 text-center flex items-center justify-center gap-2">
+                <span className="text-2xl">📊</span> Analysis
+              </h3>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 text-center">
+            <CardContent className="p-6">
+              <p className="text-gray-700 text-center leading-relaxed">
                 View detailed comparisons of your performance against the latest state of the art AI models, with insights into
-                how you compare to the best AI models.
+                how you compare to the best AI models and where humans excel.
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-200 shadow-sm">
-            <CardHeader>
-              <h3 className="text-xl font-bold text-blue-700 text-center">🔬 Research</h3>
+          <Card className="bg-white border-gray-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <CardHeader className="bg-gradient-to-br from-purple-50 to-pink-50 border-b border-purple-100">
+              <h3 className="text-xl font-bold text-purple-700 text-center flex items-center justify-center gap-2">
+                <span className="text-2xl">🔬</span> Research
+              </h3>
             </CardHeader>
-            <CardContent>
-              <p className="text-gray-700 text-center">
-                Building a dataset of human performance on abstract reasoning tasks. Prove your worth
-                to the future cybernetic overlords? Impress your friends?
+            <CardContent className="p-6">
+              <p className="text-gray-700 text-center leading-relaxed">
+                Building a dataset of human performance on abstract reasoning tasks. Contribute to research while
+                discovering your cognitive strengths in novel problem-solving.
               </p>
             </CardContent>
           </Card>
         </div>
 
         {/* How It Works */}
-        <Card className="bg-white border-gray-200 shadow-sm mb-12">
-          <CardHeader>
-            <h3 className="text-2xl font-bold text-blue-700 text-center">How It Works</h3>
+        <Card className="bg-gradient-to-br from-blue-50 via-white to-purple-50 border-blue-200 shadow-xl mb-12">
+          <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <h3 className="text-2xl font-bold text-center">How It Works</h3>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start space-x-4">
-              <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">1</div>
-              <div>
-                <h4 className="font-bold text-blue-700 mb-1">Complete the Assessment</h4>
-                <p className="text-gray-700">Solve a curated set of Abstract Reasoning Corpus (ARC) puzzles that measure different aspects of cognitive reasoning.</p>
+          <CardContent className="space-y-6 p-8">
+            <div className="flex items-start space-x-6">
+              <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
+              <div className="flex-1">
+                <h4 className="font-bold text-emerald-700 mb-2 text-lg">Complete the Assessment</h4>
+                <p className="text-gray-700 leading-relaxed">Solve a curated set of Abstract Reasoning Corpus (ARC) puzzles that measure different aspects of cognitive reasoning. Each puzzle tests your ability to identify patterns and rules in novel visual scenarios.</p>
               </div>
             </div>
-            <div className="flex items-start space-x-4">
-              <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">2</div>
-              <div>
-                <h4 className="font-bold text-blue-700 mb-1">Receive Your Cognitive Performance Score</h4>
-                <p className="text-gray-700">Get a detailed breakdown of your performance against state-of-the-art AI models and other humans!</p>
+            <div className="flex items-start space-x-6">
+              <div className="bg-gradient-to-br from-amber-500 to-orange-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">2</div>
+              <div className="flex-1">
+                <h4 className="font-bold text-amber-700 mb-2 text-lg">Receive Your Cognitive Performance Score</h4>
+                <p className="text-gray-700 leading-relaxed">Get a detailed breakdown of your performance against state-of-the-art AI models and other humans! See where you excel and discover the unique strengths of human reasoning.</p>
               </div>
             </div>
-            <div className="flex items-start space-x-4">
-              <div className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">3</div>
-              <div>
-                <h4 className="font-bold text-blue-700 mb-1">Ongoing Cognitive Training</h4>
-                <p className="text-gray-700">Fluid intelligence is the ability to solve novel problems that haven't been seen before. This is where AI breakdown and humans excel.  By regularly solving puzzles, you can improve your fluid intelligence and cognitive reasoning skills.</p>
+            <div className="flex items-start space-x-6">
+              <div className="bg-gradient-to-br from-purple-500 to-pink-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">3</div>
+              <div className="flex-1">
+                <h4 className="font-bold text-purple-700 mb-2 text-lg">Ongoing Cognitive Training</h4>
+                <p className="text-gray-700 leading-relaxed">Fluid intelligence is the ability to solve novel problems that haven't been seen before. This is where AI breaks down and humans excel. By regularly solving puzzles, you can improve your fluid intelligence and cognitive reasoning skills.</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Research Context */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-500 text-sm max-w-2xl mx-auto">
-            The Abstract Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning.
-            The HARC Platform extends this work by collecting systematic human performance data,
-            enabling direct human vs AI comparisons on identical reasoning tasks.
-          </p>
+        <div className="mt-12">
+          <Card className="bg-gradient-to-r from-slate-50 to-gray-50 border-slate-200 shadow-lg">
+            <CardContent className="p-8 text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <span className="text-3xl">🔬</span>
+                <h3 className="text-xl font-bold text-slate-700">Research Foundation</h3>
+              </div>
+              <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
+                The Abstract Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning.
+                The HARC Platform extends this work by collecting systematic human performance data,
+                enabling direct human vs AI comparisons on identical reasoning tasks. Your participation contributes to our
+                understanding of the unique capabilities that distinguish human and artificial intelligence.
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Space Force Easter Egg Link */}
