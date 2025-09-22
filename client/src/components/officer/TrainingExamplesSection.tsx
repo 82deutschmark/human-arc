@@ -44,7 +44,7 @@ export function TrainingExamplesSection({
   if (!examples || examples.length === 0) {
     return (
       <div className={`text-center p-8 ${className}`}>
-        <div className="text-slate-400">No training examples available</div>
+        <div className="text-muted-foreground">No training examples available</div>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export function TrainingExamplesSection({
   };
 
   return (
-    <div className={`bg-slate-800 border border-slate-600 rounded-lg p-6 ${className}`}>
+    <div className={`bg-card border border-border rounded-lg p-6 ${className}`}>
         {/* Section Header */}
         <div className="flex items-center justify-between mb-6 flex-shrink-0">
           <h2 className="text-amber-400 text-2xl font-bold flex items-center">
@@ -80,13 +80,13 @@ export function TrainingExamplesSection({
               const arrowSize = "text-xl";
 
               return (
-                <div key={index} className={`flex-shrink-0 ${getExampleBgClass(index)} rounded-lg border-4 border-slate-400 shadow-lg ${cardPadding} relative overflow-hidden`}>
-                  <div className="absolute top-0 left-0 w-4 h-4 border-l-4 border-t-4 border-slate-600 rounded-tl-lg"></div>
-                  <div className="absolute top-0 right-0 w-4 h-4 border-r-4 border-t-4 border-slate-600 rounded-tr-lg"></div>
-                  <div className="absolute bottom-0 left-0 w-4 h-4 border-l-4 border-b-4 border-slate-600 rounded-bl-lg"></div>
-                  <div className="absolute bottom-0 right-0 w-4 h-4 border-r-4 border-b-4 border-slate-600 rounded-br-lg"></div>
+                <div key={index} className={`flex-shrink-0 ${getExampleBgClass(index)} rounded-lg border-4 border-border shadow-lg ${cardPadding} relative overflow-hidden`}>
+                  <div className="absolute top-0 left-0 w-4 h-4 border-l-4 border-t-4 border-muted-foreground rounded-tl-lg"></div>
+                  <div className="absolute top-0 right-0 w-4 h-4 border-r-4 border-t-4 border-muted-foreground rounded-tr-lg"></div>
+                  <div className="absolute bottom-0 left-0 w-4 h-4 border-l-4 border-b-4 border-muted-foreground rounded-bl-lg"></div>
+                  <div className="absolute bottom-0 right-0 w-4 h-4 border-r-4 border-b-4 border-muted-foreground rounded-br-lg"></div>
                   
-                  <h3 className={`text-slate-900 ${headerSize} mb-1 text-center`}>
+                  <h3 className={`text-foreground ${headerSize} mb-1 text-center`}>
                     EX {index + 1}
                   </h3>
                   <div className="flex items-center gap-1.5">
@@ -99,7 +99,7 @@ export function TrainingExamplesSection({
                         fixedCellSize={cellSize}
                       />
                     </GridWithDimensions>
-                    <div className={`text-slate-900 ${arrowSize} font-bold`}>→</div>
+                    <div className={`text-foreground ${arrowSize} font-bold`}>→</div>
                     <GridWithDimensions grid={example.output} label="becomes this grid!">
                       <ResponsiveOfficerDisplayGrid
                         grid={example.output}

@@ -50,16 +50,16 @@ export function TestCaseNavigation({
   const progressPercentage = Math.round((completedCount / totalTests) * 100);
 
   return (
-    <div className={`bg-slate-100/90 rounded-lg p-3 border border-slate-400 ${className}`}>
+    <div className={`bg-card rounded-lg p-3 border border-border ${className}`}>
       {/* Inline Header Layout for Efficiency */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <h3 className="text-slate-700 text-base font-bold">
+          <h3 className="text-foreground text-base font-bold">
             🎯 TEST CASES
           </h3>
           <Badge 
             variant="outline" 
-            className={`text-sm ${completedCount === totalTests ? 'text-green-700 border-green-600 bg-green-100' : 'text-slate-600 border-slate-400 bg-white'}`}
+            className={`text-sm ${completedCount === totalTests ? 'text-green-700 border-green-600 bg-green-100' : 'text-muted-foreground border-border bg-background'}`}
           >
             {completedCount}/{totalTests}
           </Badge>
@@ -74,13 +74,13 @@ export function TestCaseNavigation({
       {/* Detailed Progress Bar - Only for Complex Puzzles (4+ tests) */}
       {totalTests >= 4 && (
         <div className="mb-2">
-          <div className="flex justify-between text-sm text-slate-600 mb-1">
+          <div className="flex justify-between text-sm text-muted-foreground mb-1">
             <span>Progress</span>
             <span>{progressPercentage}%</span>
           </div>
-          <div className="w-full bg-slate-300 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div 
-              className="bg-slate-600 h-2 rounded-full transition-all duration-300 shadow-sm"
+              className="bg-primary h-2 rounded-full transition-all duration-300 shadow-sm"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -100,11 +100,11 @@ export function TestCaseNavigation({
               variant={isActive ? "default" : "outline"}
               className={`
                 relative h-8 flex items-center justify-center gap-1.5
-                ${isActive 
-                  ? 'bg-slate-600 hover:bg-slate-700 text-white border-slate-500 shadow-md' 
+                ${isActive
+                  ? 'bg-primary hover:bg-primary/90 text-primary-foreground border-primary shadow-md' 
                   : isCompleted
                     ? 'bg-green-600 hover:bg-green-700 text-white border-green-500 shadow-sm'
-                    : 'border-slate-400 text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-500'
+                    : 'border-border text-foreground bg-background hover:bg-muted hover:border-primary'
                 }
                 transition-all duration-200
               `}
@@ -124,8 +124,8 @@ export function TestCaseNavigation({
       </div>
 
       {/* Current Test Info */}
-      <div className="mt-4 text-sm text-slate-400 text-center">
-        Currently solving: <span className="text-amber-400 font-semibold">Test Case {currentTestIndex + 1}</span>
+      <div className="mt-4 text-sm text-muted-foreground text-center">
+        Currently solving: <span className="text-primary font-semibold">Test Case {currentTestIndex + 1}</span>
         {completedTests[currentTestIndex] && (
           <span className="text-green-400 ml-2">✓ Completed</span>
         )}

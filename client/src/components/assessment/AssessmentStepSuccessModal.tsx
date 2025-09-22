@@ -334,7 +334,7 @@ export function AssessmentStepSuccessModal({
             )}
           </div>
 
-          {/* Strategy Submission Section */}
+          {/* Strategy Submission Section  THIS NEEDS DEBUGGING NOT CURRENTLY WORKING CORRECTLY */}
           <div className="mt-6 pt-4 border-t border-slate-700">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-amber-400 text-lg">💭</span>

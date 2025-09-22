@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle, ArrowLeft, Search, Loader2 } from 'lucide-react';
+import { Navbar } from '@/components/layout/Navbar';
 import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';
 import { PuzzleGrid } from '@/components/officer/PuzzleGrid';
 import { PuzzleLoadingModal } from '@/components/ui/PuzzleLoadingModal';
@@ -29,7 +30,7 @@ import {
   playFabTasks,
   attemptTracker
 } from '@/services/playfab';
-import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { EnhancedPuzzle } from '@/services/core/puzzleRepository';
 import type { PlayFabPlayer } from '@/services/playfab';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
@@ -44,6 +45,11 @@ export default function HARCPuzzleBrowser() {
     error,
     loadingProgress,
     loadingMessage,
+    loadingStages,
+    currentStage,
+    detailedStatus,
+    performanceMetrics,
+    enhancedError,
     filterByDifficulty,
     searchById,
     addSearchResult,
@@ -190,7 +196,7 @@ export default function HARCPuzzleBrowser() {
   };
 
   // Handle puzzle selection from grid - navigate to dedicated solver page
-  const handleSelectPuzzle = (puzzle: OfficerPuzzle) => {
+  const handleSelectPuzzle = (puzzle: EnhancedPuzzle) => {
     // Prevent navigation while PlayFab is still initializing
     if (playFabInitializing) {
       alert('Please wait for the system to initialize before loading puzzles...');
@@ -214,6 +220,10 @@ export default function HARCPuzzleBrowser() {
               ? "Processing puzzle metadata from arc-explainer API..."
               : "Initializing HARC Platform..."
           }
+          loadingStages={loadingStages}
+          detailedStatus={detailedStatus}
+          performanceMetrics={performanceMetrics}
+          enhancedError={enhancedError || undefined}
         />
         {/* Fallback for PlayFab initialization */}
         {!player && !loading && (
@@ -240,54 +250,37 @@ export default function HARCPuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      {/* Header */}
-      <header className="bg-slate-800/50 border-b border-slate-700 shadow-lg">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => setLocation('/')}
-                variant="ghost"
-                className="text-sky-400 hover:text-white hover:bg-slate-700 p-2"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to HARC
-              </Button>
-              <h1 className="text-2xl font-bold text-cyan-400">
-                🧠 PUZZLE LIBRARY
-              </h1>
-              <Badge className="bg-cyan-500 text-white font-bold">
-                HARC PLATFORM
-              </Badge>
-            </div>
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar
+        title="🧠 HARC Puzzle Library"
+        showBackButton={true}
+        onBack={() => setLocation('/')}
+      />
 
-            <div className="flex space-x-3">
-              <Button
-                onClick={() => setLocation('/assessment')}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                📋 Take Assessment
-              </Button>
-              <Button
-                onClick={() => setLocation('/dashboard')}
-                className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
-                disabled={playFabInitializing}
-              >
-                📊 View Dashboard
-              </Button>
-              <Button
-                onClick={() => setLocation('/leaderboards/harc_leaderboard')}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                🏆 Leaderboard
-              </Button>
-            </div>
+      {/* Compact Search Bar */}
+      <div className="bg-slate-100 border-b border-slate-200 shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3">
+          <div className="flex items-center gap-3">
+            <label className="text-slate-700 text-sm font-medium whitespace-nowrap">🔍 Find Puzzle:</label>
+            <Input
+              type="text"
+              placeholder="Enter puzzle ID (e.g., 494ef9d7)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              className="bg-white border-slate-300 text-slate-900 h-9 text-sm px-3 flex-1 max-w-xs"
+              disabled={playFabInitializing}
+            />
+            <Button
+              onClick={handleSearch}
+              disabled={playFabInitializing || searching || !searchQuery.trim()}
+              className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-800 disabled:opacity-50 h-9 px-4 font-semibold text-sm"
+            >
+              {playFabInitializing ? 'Init...' : searching ? 'Searching...' : 'Find'}
+            </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
         {/* CSS Grid Layout - Puzzle-First Priority */}
@@ -295,29 +288,38 @@ export default function HARCPuzzleBrowser() {
 
         {/* Move Puzzle Grid to Top Priority */}
         <div className="order-1">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-cyan-300 font-bold text-2xl flex items-center">
-              🧩 AVAILABLE PUZZLES
-              <Badge className="ml-4 bg-cyan-500 text-white text-base px-3 py-1">
-                {filteredPuzzles.length} puzzles
-              </Badge>
-              {currentFilter && (
-                <Badge className="ml-3 bg-sky-500 text-white text-base px-3 py-1">
-                  {currentFilter.replace('_', ' ').toUpperCase()}
-                </Badge>
-              )}
-            </h2>
+          <div className="mb-6">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h2 className="text-red-300 font-bold text-2xl flex items-center mb-2">
+                  🧩 MOST CHALLENGING ARC-AGI PUZZLES
+                  <Badge className="ml-4 bg-cyan-500 text-white text-base px-3 py-1">
+                    {filteredPuzzles.length} puzzles
+                  </Badge>
+                  {currentFilter && (
+                    <Badge className="ml-3 bg-sky-500 text-white text-base px-3 py-1">
+                      {currentFilter.replace('_', ' ').toUpperCase()}
+                    </Badge>
+                  )}
+                </h2>
+                <p className="text-slate-800 text-base max-w-4xl">
+                  These represent the top 50+ most difficult puzzles from the official ARC-AGI evaluation datasets,
+                  ranked by AI failure rate.
+                  Each puzzle comes with performance data from state-of-the-art language model evaluations.
+                </p>
+              </div>
 
-            {currentFilter && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => filterByDifficulty(null)}
-                className="border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white text-base px-4 py-2"
-              >
-                Clear Filter
-              </Button>
-            )}
+              {currentFilter && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => filterByDifficulty(null)}
+                  className="border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white text-base px-4 py-2 mt-1"
+                >
+                  Clear Filter
+                </Button>
+              )}
+            </div>
           </div>
 
           <PuzzleGrid
@@ -349,57 +351,13 @@ export default function HARCPuzzleBrowser() {
           </div>
         )}
 
-          {/* Puzzle Search & Controls - Compact Layout */}
+          {/* Puzzle Limit Controls */}
           <div className="order-2 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-            <h2 className="text-cyan-300 font-semibold text-xl mb-4 flex items-center">
-              🔍 PUZZLE DISCOVERY
-            </h2>
-
-          {/* System Status Indicator */}
-          {playFabInitializing && (
-              <div className="bg-sky-900/50 border border-sky-700 rounded p-3 mb-3">
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-400 mr-4"></div>
-                  <span className="text-sky-300 text-base">Initializing PlayFab connection for puzzle data access...</span>
-                </div>
-              </div>
-          )}
-
-          {!playFabInitializing && !playFabReady && (
-              <div className="bg-amber-900/50 border border-amber-700 rounded p-3 mb-3">
-                <div className="text-amber-300 text-base">
-                  ⚠️ PlayFab connection failed - puzzle loading may be limited to arc-explainer data only
-                </div>
-              </div>
-          )}
-
-            {/* Search Row - Enhanced Layout */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <Input
-              type="text"
-              placeholder="Enter puzzle ID (e.g., 494ef9d7)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="bg-slate-700 border-slate-600 text-white flex-1 h-12 text-base px-4"
-              disabled={playFabInitializing}
-            />
-            <Button
-              onClick={handleSearch}
-              disabled={playFabInitializing || searching || !searchQuery.trim()}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white disabled:bg-cyan-800 disabled:opacity-50 h-12 px-6 font-semibold text-base"
-            >
-              {playFabInitializing ? 'Initializing...' : searching ? 'Searching...' : 'Find Puzzle'}
-            </Button>
-          </div>
-
-            {/* Limit Controls - Enhanced Layout */}
-            <div className="border-t border-slate-600 pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                  <label htmlFor="limit-select" className="text-base font-medium text-sky-300">
-                    Show hardest:
-                  </label>
+                <label htmlFor="limit-select" className="text-base font-medium text-sky-300">
+                  Show hardest:
+                </label>
                 <select
                   id="limit-select"
                   value={currentLimit}
@@ -415,26 +373,20 @@ export default function HARCPuzzleBrowser() {
                 </select>
               </div>
 
-                <div className="text-slate-300 text-base">
-                  Showing {filteredPuzzles.length} of {total} total analyzed puzzles
-                </div>
+              <div className="text-slate-300 text-base">
+                Showing {filteredPuzzles.length} of {total} total analyzed puzzles
               </div>
             </div>
-
-            <p className="text-slate-400 text-sm mt-3">
-              Search for specific puzzles by their ID or adjust the number of hardest puzzles to display
-            </p>
-
           </div>
 
         {/* AI Analysis Overview - HARC Research Theme */}  
         <div className="order-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
             <h2 className="text-cyan-300 font-semibold text-xl flex items-center mb-2 sm:mb-0">
-              🤖 AI PERFORMANCE ANALYSIS
+              🤖 OFFICIAL ARC-AGI ANALYSIS
             </h2>
             <div className="text-slate-300 text-base">
-              Where human reasoning excels over artificial intelligence  
+              Real performance data from GPT-4, Claude, Gemini evaluation on these exact puzzles
             </div>
           </div>
 
@@ -452,7 +404,7 @@ export default function HARCPuzzleBrowser() {
 
                 <div className="bg-slate-700/50 rounded-lg p-3 text-center border-l-4 border-red-500">
                   <div className="text-2xl font-bold text-red-400">
-                    {filteredPuzzles.filter(p => p.avgAccuracy === 0).length}
+                    {filteredPuzzles.filter(p => (p.aiPerformance?.avgAccuracy || 0) === 0).length}
                   </div>
                   <div className="text-sm text-slate-300">🚫 AI Failures</div>
                   <div className="text-xs text-slate-400">0% success rate</div>
@@ -462,7 +414,7 @@ export default function HARCPuzzleBrowser() {
                   <div className="text-2xl font-bold text-amber-400">
                     {(() => {
                       const overconfident = filteredPuzzles.filter(p =>
-                        p.avgAccuracy < 0.5 && (p.avgConfidence || 0) > 70
+                        (p.aiPerformance?.avgAccuracy || 0) < 0.5 && (p.aiPerformance?.avgConfidence || 0) > 70
                       ).length;
                       return `${Math.round((overconfident / filteredPuzzles.length) * 100)}%`;
                     })()}
@@ -473,7 +425,7 @@ export default function HARCPuzzleBrowser() {
 
                 <div className="bg-slate-700/50 rounded-lg p-3 text-center border-l-4 border-green-500">
                   <div className="text-2xl font-bold text-green-400">
-                    {filteredPuzzles.reduce((sum, p) => sum + p.totalExplanations, 0).toLocaleString()}
+                    {filteredPuzzles.reduce((sum, p) => sum + (p.aiPerformance?.totalExplanations || 0), 0).toLocaleString()}
                   </div>
                   <div className="text-sm text-slate-300">🔬 AI Attempts</div>
                   <div className="text-xs text-slate-400">Research data</div>
@@ -485,17 +437,17 @@ export default function HARCPuzzleBrowser() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-cyan-300 font-semibold text-lg flex items-center">
-                      🔬 Research Contribution
+                      🔬 Official ARC-AGI Benchmark
                     </h3>
                     <p className="text-slate-300 text-base mt-1">
-                      If researchers ever wanted it the data is here 🤷‍♂️
+                      Direct from the ARC-AGI GitHub - the same evaluation set used for frontier AI research
                     </p>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-cyan-300">
                       {(() => {
                         const avg = filteredPuzzles.length > 0
-                          ? Math.round(filteredPuzzles.reduce((sum, p) => sum + p.avgAccuracy, 0) / filteredPuzzles.length * 100)
+                          ? Math.round(filteredPuzzles.reduce((sum, p) => sum + (p.aiPerformance?.avgAccuracy || 0), 0) / filteredPuzzles.length * 100)
                           : 0;
                         return `${avg}%`;
                       })()}
@@ -507,16 +459,17 @@ export default function HARCPuzzleBrowser() {
             </div>
           )}
 
-          <div className="mt-4 text-center text-sm text-slate-400 bg-slate-900/50 rounded-lg p-3">
-            🧠 <strong>Human - ARC Research:</strong> Will your advantage slip as the state of the art advances?
+          <div className="mt-4 text-center text-sm text-muted-foreground bg-muted rounded-lg p-3">
+            🧠 <strong>Official ARC-AGI Evaluation:</strong> These are the exact same puzzles from the ARC-AGI GitHub repository used to benchmark GPT-4, Claude, Gemini, and other state-of-the-art LLMs
           </div>
         </div>
 
-          {/* Footer Info */} 
-          <div className="order-4 text-center text-slate-400 text-base bg-slate-800/50 rounded-lg p-4">
-            <p>🤖 Puzzle performance data sourced from arc-explainer AI analysis</p>
-            <p className="mt-2">Practice on puzzles that challenge the most advanced AI systems</p>
-            <div className="mt-3 pt-3 border-t border-slate-700">
+          {/* Footer Info */}
+          <div className="order-4 text-center text-muted-foreground text-base bg-muted rounded-lg p-4">
+            <p>🧩 <strong>Official ARC-AGI Repository:</strong> All puzzles sourced directly from the ARC-AGI GitHub repository</p>
+            <p className="mt-2">📊 AI performance data from arc-explainer analysis of state-of-the-art language models</p>
+            <p className="mt-2">🎯 <strong>Research Impact:</strong> Test yourself on the same challenges used to evaluate GPT-4, Claude, Gemini, and other frontier AI systems</p>
+            <div className="mt-3 pt-3 border-t border-border">
               <Button
                 onClick={() => setLocation('/space-force')}
                 variant="ghost"

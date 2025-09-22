@@ -9,9 +9,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
-import { ResponsivePuzzleSolver } from '@/components/officer/ResponsivePuzzleSolver';
+import { HARCResponsiveSolverUI } from '@/components/layout/HARCResponsiveSolverUI';
 import { PuzzleHeader } from '@/components/harc-solver/PuzzleHeader';
-import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
@@ -325,7 +324,7 @@ export function AssessmentInterface() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
           <div>Loading Assessment...</div>
@@ -336,11 +335,11 @@ export function AssessmentInterface() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-400 text-4xl mb-4">⚠️</div>
           <div className="text-red-400 font-semibold mb-2">Assessment Loading Failed</div>
-          <div className="text-slate-400 mb-4">{error}</div>
+          <div className="text-muted-foreground mb-4">{error}</div>
           <Button onClick={handleBackToLanding} className="bg-amber-600 hover:bg-amber-700">
             Return to Home
           </Button>
@@ -352,14 +351,14 @@ export function AssessmentInterface() {
   // Show completion screen and auto-navigate
   if (isComplete) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="text-6xl mb-4">🎉</div>
           <h1 className="text-3xl font-bold text-amber-400 mb-4">Assessment Complete!</h1>
-          <p className="text-slate-300 mb-6">
+          <p className="text-muted-foreground mb-6">
             Congratulations! You've completed all assessment puzzles.
           </p>
-          <p className="text-slate-300 mb-8">
+          <p className="text-muted-foreground mb-8">
             Redirecting you to the performance comparison page...
           </p>
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-400 mx-auto"></div>
@@ -383,11 +382,11 @@ export function AssessmentInterface() {
         onBack={handleBackToLanding}
       />
       
-      {/* Assessment-specific controls */}
-      <div className="bg-slate-800 border-b border-slate-700 sticky top-16 z-40">
+      {/* Assessment-specific controls IMPORTANT TO KEEP*/}
+      <div className="bg-card border-b border-border sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
-            <p className="text-slate-300 text-base">
+            <p className="text-muted-foreground text-base">
               Puzzle {currentPuzzleIndex + 1} of {puzzles.length}
               {currentPuzzle && currentPuzzleAttemptStatus && currentPuzzleAttemptStatus.totalAttempts > 0 && (
                 <span className="ml-2 text-amber-300">
@@ -412,8 +411,8 @@ export function AssessmentInterface() {
         </div>
       </div>
 
-      {/* The ResponsivePuzzleSolver */}
-      <ResponsivePuzzleSolver
+      {/* The HARCResponsiveSolverUI - Modern HARC solver interface */}
+      <HARCResponsiveSolverUI
         puzzle={currentPuzzle}
         onBack={handleBackToLanding}
         isAssessmentMode={true}
@@ -423,28 +422,21 @@ export function AssessmentInterface() {
         hideHeader={true}
       />
 
-      {/* Hint System - positioned adjacent to puzzle grids */}
-      <div className="max-w-4xl mx-auto px-4 pb-4">
-        <PermanentHintSystem
-          puzzle={currentPuzzle}
-          onHintUsed={handleHintUsed}
-          className="mx-auto max-w-2xl"
-        />
-      </div>
+      {/* Hint System is now handled within HARCResponsiveSolverUI */}
 
       {/* Navigation controls */}
-      <div className="bg-slate-800 p-4">
+      <div className="bg-card p-4">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <Button 
-            onClick={handlePreviousPuzzle} 
+          <Button
+            onClick={handlePreviousPuzzle}
             disabled={currentPuzzleIndex === 0}
             variant="outline"
             size="lg"
           >
             ← Previous
           </Button>
-          
-          <div className="text-slate-300 text-lg">
+
+          <div className="text-foreground text-lg">
             {currentPuzzleIndex + 1} / {puzzles.length}
           </div>
           
@@ -458,8 +450,8 @@ export function AssessmentInterface() {
         </div>
       </div>
 
-      {/* Tiny PlayFab ID debug display */}
-      <div className="fixed bottom-2 right-2 text-xs text-slate-500 font-mono bg-slate-800 px-2 py-1 rounded opacity-75">
+      {/* Tiny PlayFab ID debug display -- NEEDS FIXED TO SHOW ENTIRE ID */}
+      <div className="fixed bottom-2 right-2 text-xs text-muted-foreground font-mono bg-card px-2 py-1 rounded opacity-75">
         ID: {playFabAuthManager.getPlayFabId()?.slice(-8) || 'loading...'}
       </div>
     </div>

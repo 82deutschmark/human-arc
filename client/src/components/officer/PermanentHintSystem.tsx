@@ -179,35 +179,35 @@ export function PermanentHintSystem({
   }
 
   return (
-    <Card className={`bg-slate-800 border-amber-400 ${className}`}>
+    <Card className={`bg-card border-border ${className}`}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-amber-400 font-bold text-lg">Puzzle Hints</h3>
-          <Badge variant="outline" className="border-slate-500 text-slate-300">
+          <h3 className="text-primary font-bold text-lg">Puzzle Hints</h3>
+          <Badge variant="outline" className="border-border text-muted-foreground">
             {hintState.totalHintsUsed} used
           </Badge>
         </div>
         
         <div className="space-y-3">
           {/* Level 1 Hint: Grid Size */}
-          <div className="border border-slate-600 rounded-lg p-3">
+          <div className="border border-border rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-amber-300 font-semibold">Level 1: Output Grid Size</span>
+              <span className="text-primary font-semibold">Level 1: Output Grid Size</span>
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={revealLevel1Hint}
                 disabled={hintState.level1Revealed}
-                className="text-xs border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900"
+                className="text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 {hintState.level1Revealed ? 'Revealed' : 'Reveal'}
               </Button>
             </div>
             {hintState.level1Revealed && (
-              <div className="text-slate-200 text-sm bg-slate-700 p-2 rounded">
+              <div className="text-foreground text-sm bg-muted p-2 rounded">
                 <strong>Grid Size Hint:</strong> {getExpectedOutputDimensions()}
                 {currentTestOutput && currentTestOutput.length > 0 && (
-                  <div className="mt-2 p-2 bg-green-900 border border-green-600 rounded text-green-200">
+                  <div className="mt-2 p-2 bg-green-100 border border-green-300 rounded text-green-800 dark:bg-green-900 dark:border-green-600 dark:text-green-200">
                     ✅ <strong>Auto-resized your grid to {currentTestOutput.length} × {currentTestOutput[0]?.length || 0}</strong>
                   </div>
                 )}
@@ -216,21 +216,21 @@ export function PermanentHintSystem({
           </div>
 
           {/* Level 2 Hint: Transformation Types */}
-          <div className="border border-slate-600 rounded-lg p-3">
+          <div className="border border-border rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-amber-300 font-semibold">Level 2: ARC Transformations</span>
+              <span className="text-primary font-semibold">Level 2: ARC Transformations</span>
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={revealLevel2Hint}
                 disabled={hintState.level2Revealed}
-                className="text-xs border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900"
+                className="text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 {hintState.level2Revealed ? 'Revealed' : 'Reveal'}
               </Button>
             </div>
             {hintState.level2Revealed && (
-              <div className="text-slate-200 text-sm bg-slate-700 p-2 rounded">
+              <div className="text-foreground text-sm bg-muted p-2 rounded">
                 <strong>Transformation Types:</strong> This puzzle likely involves one of the 40 common ARC-AGI transformation patterns such as rotation, reflection, pattern completion, object counting, or conditional rules.
                 <br />
                 <em>(TypesModal with full list will be available in next update)</em>
@@ -239,29 +239,29 @@ export function PermanentHintSystem({
           </div>
 
           {/* Level 3 Hint: Solution Explanation */}
-          <div className="border border-slate-600 rounded-lg p-3">
+          <div className="border border-border rounded-lg p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-amber-300 font-semibold">Level 3: Solution Explanation</span>
+              <span className="text-primary font-semibold">Level 3: Solution Explanation</span>
               <Button 
                 size="sm" 
                 variant="outline"
                 onClick={revealLevel3Hint}
                 disabled={hintState.level3Revealed}
-                className="text-xs border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900"
+                className="text-xs border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 {hintState.level3Revealed ? 'Revealed' : 'Reveal'}
               </Button>
             </div>
             {hintState.level3Revealed && (
-              <div className="text-slate-200 text-sm bg-slate-700 p-2 rounded">
+              <div className="text-foreground text-sm bg-muted p-2 rounded">
                 {hintState.level3Loading && (
                   <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-400"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                     Loading explanation from arc-explainer API...
                   </div>
                 )}
                 {hintState.level3Error && (
-                  <div className="text-red-400">
+                  <div className="text-destructive">
                     <strong>Error:</strong> {hintState.level3Error}
                   </div>
                 )}
@@ -276,7 +276,7 @@ export function PermanentHintSystem({
         </div>
         
         {hintState.totalHintsUsed > 0 && (
-          <div className="mt-4 text-xs text-slate-400 text-center">
+          <div className="mt-4 text-xs text-muted-foreground text-center">
             Hint penalty: -{hintState.totalHintsUsed * 5} points
           </div>
         )}

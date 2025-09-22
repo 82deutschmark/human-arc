@@ -173,9 +173,9 @@ export const SolutionWorkspace = React.memo(({
 
       <div className="flex flex-col lg:flex-row gap-4 w-full">
         {/* Test Input */}
-        <div className="flex-1 bg-slate-800 border border-slate-600 rounded p-4">
+        <div className="flex-1 bg-card border rounded p-4">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-amber-300 text-3xl font-bold text-center">Test Input</h3>
+            <h3 className="text-primary text-3xl font-bold text-center">Test Input</h3>
             <div className="w-1/2">
               <SizeSlider value={inputCellSize} onChange={setInputCellSize} min={25} max={75} label="Grid Size" />
             </div>
@@ -212,12 +212,12 @@ export const SolutionWorkspace = React.memo(({
         </div>
 
         {/* User Solution */}
-        <div className="flex-1 bg-slate-800 border border-slate-600 rounded p-4">
+        <div className="flex-1 bg-card border rounded p-4">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-amber-300 text-3xl font-bold text-center">
+            <h3 className="text-primary text-3xl font-bold text-center">
               Your Solution
               {isAssessmentMode && totalTests > 1 && (
-                <span className="text-slate-400 text-xl font-normal ml-2">
+                <span className="text-muted-foreground text-xl font-normal ml-2">
                   - Test {currentTestIndex + 1} of {totalTests}
                 </span>
               )}

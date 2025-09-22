@@ -70,20 +70,20 @@ export function PuzzleTools({
         onValueSelect={onValueSelect}
         usedValues={usedValues}
         displayMode={displayMode}
-        className="bg-slate-800 border border-slate-600 rounded-lg p-5 w-full mb-4"
+        className="bg-card border border-border rounded-lg p-5 w-full mb-4"
       />
 
 
       {/* Action Controls - Puzzle Actions */}
-      <div className="bg-slate-800 border border-slate-600 rounded-lg p-5 w-full">
-        <h4 className="text-amber-300 text-2xl font-bold mb-4 text-center">PUZZLE ACTIONS</h4>
+      <div className="bg-card border border-border rounded-lg p-5 w-full">
+        <h4 className="text-primary text-2xl font-bold mb-4 text-center">PUZZLE ACTIONS</h4>
         
         {/* Primary Actions Row */}
         <div className="flex flex-wrap gap-3 justify-center">
           <Button 
             size="lg" 
             variant="outline" 
-            className="border-blue-600 text-blue-400 hover:bg-blue-600 hover:text-white text-xl font-bold px-6 py-4 h-16 flex-1 sm:flex-none min-w-[140px]" 
+            className="border-primary text-primary hover:bg-primary hover:text-primary-foreground text-xl font-bold px-6 py-4 h-16 flex-1 sm:flex-none min-w-[140px]" 
             onClick={onCopyInput}
           >
             Copy Input
@@ -91,7 +91,7 @@ export function PuzzleTools({
           <Button 
             size="lg" 
             variant="outline" 
-            className="border-red-600 text-red-400 hover:bg-red-600 hover:text-white text-xl font-bold px-6 py-4 h-16 flex-1 sm:flex-none min-w-[140px]" 
+            className="border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground text-xl font-bold px-6 py-4 h-16 flex-1 sm:flex-none min-w-[140px]" 
             onClick={onResetSolution}
           >
             Reset
@@ -100,7 +100,7 @@ export function PuzzleTools({
             <Button 
               size="lg" 
               variant="outline" 
-              className="border-purple-600 text-purple-400 hover:bg-purple-600 hover:text-white text-xl font-bold px-6 py-4 h-16 flex-1 sm:flex-none min-w-[140px]"
+              className="border-secondary text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground text-xl font-bold px-6 py-4 h-16 flex-1 sm:flex-none min-w-[140px]"
               onClick={onReplayTutorial}
             >
               Replay Tutorial

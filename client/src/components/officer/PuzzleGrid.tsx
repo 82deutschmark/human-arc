@@ -8,13 +8,13 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { PuzzleInfoCard } from '@/components/ui/PuzzleInfoCard';
-import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { EnhancedPuzzle } from '@/services/core/puzzleRepository';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
 interface PuzzleGridProps {
-  puzzles: OfficerPuzzle[];
+  puzzles: EnhancedPuzzle[];
   loading?: boolean;
-  onSelectPuzzle: (puzzle: OfficerPuzzle) => void;
+  onSelectPuzzle: (puzzle: EnhancedPuzzle) => void;
   attemptStatusMap?: Record<string, PuzzleAttemptStatus>;
 }
 

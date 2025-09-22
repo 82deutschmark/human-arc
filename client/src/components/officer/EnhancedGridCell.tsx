@@ -44,11 +44,11 @@ export const EnhancedGridCell = React.memo(({
 
     // Emoji mode and raw numbers mode - use slate background
     if (interactive) {
-      if (isSelected) return 'rgb(100, 116, 139)'; // slate-500
-      if (isHovered) return 'rgb(71, 85, 105)'; // slate-600
-      return 'rgb(51, 65, 85)'; // slate-700
+      if (isSelected) return 'hsl(var(--muted))'; // Selected state
+      if (isHovered) return 'hsl(var(--muted) / 0.8)'; // Hovered state
+      return 'hsl(var(--muted))'; // Default interactive
     }
-    return 'rgb(71, 85, 105)'; // slate-600
+    return 'hsl(var(--muted) / 0.5)'; // Non-interactive
   };
 
   const getTextColor = () => {
@@ -58,21 +58,21 @@ export const EnhancedGridCell = React.memo(({
       return isDarkBackground ? 'white' : 'black';
     }
     
-    // Emoji mode - use amber text
-    return 'rgb(251, 191, 36)'; // amber-400
+    // Emoji mode - use primary text
+    return 'hsl(var(--primary))'; // primary color
   };
 
   const getBorderColor = () => {
     if (isSelected) {
-      return 'rgb(251, 191, 36)'; // amber-400
+      return 'hsl(var(--primary))'; // primary color
     }
     if (isHovered) {
-      return 'rgb(251, 191, 36)'; // amber-400 with lower opacity
+      return 'hsl(var(--primary))'; // primary color
     }
     if (displayMode === 'arc-colors' || displayMode === 'hybrid') {
-      return 'rgb(100, 116, 139)'; // slate-500
+      return 'hsl(var(--border))'; // border color
     }
-    return 'rgb(148, 163, 184)'; // slate-400
+    return 'hsl(var(--border))'; // default border
   };
 
   const getFontSize = () => {
@@ -141,10 +141,10 @@ export const EnhancedGridCell = React.memo(({
   if (interactive) {
     if (isHovered) {
       cellStyles.transform = 'scale(1.05)';
-      cellStyles.boxShadow = '0 2px 8px rgba(251, 191, 36, 0.3)';
+      cellStyles.boxShadow = '0 2px 8px hsl(var(--primary) / 0.3)';
     }
     if (isSelected) {
-      cellStyles.boxShadow = '0 0 0 2px rgb(251, 191, 36), 0 2px 8px rgba(251, 191, 36, 0.5)';
+      cellStyles.boxShadow = '0 0 0 2px hsl(var(--primary)), 0 2px 8px hsl(var(--primary) / 0.5)';
     }
   }
 
@@ -182,9 +182,9 @@ export const EnhancedGridCell = React.memo(({
             right: '-2px',
             width: '8px',
             height: '8px',
-            backgroundColor: 'rgb(251, 191, 36)',
+            backgroundColor: 'hsl(var(--primary))',
             borderRadius: '50%',
-            border: '1px solid rgb(51, 65, 85)',
+            border: '1px solid hsl(var(--border))',
             pointerEvents: 'none'
           }}
         />

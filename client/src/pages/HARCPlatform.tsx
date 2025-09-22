@@ -80,37 +80,6 @@ export default function HARCPlatform() {
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Navbar title="Human ARC Platform" />
 
-      {/* Centered Navigation Buttons */}
-      <div className="bg-white border-b border-gray-200 py-4">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Button
-              onClick={handleStartAssessment}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-            >
-              📋 Take Assessment
-            </Button>
-            <Button
-              onClick={handleViewDashboard}
-              className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-            >
-              📊 View Dashboard
-            </Button>
-            <Button
-              onClick={() => setLocation('/leaderboards/harc_leaderboard')}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-            >
-              🏆 Leaderboard
-            </Button>
-            <Button
-              onClick={handleViewPuzzleLibrary}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
-            >
-              🧩 Puzzle Library
-            </Button>
-          </div>
-        </div>
-      </div>
       
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-blue-50 to-white py-12">
@@ -242,7 +211,7 @@ export default function HARCPlatform() {
               <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
               <div className="flex-1">
                 <h4 className="font-bold text-emerald-700 mb-2 text-lg">Complete the Assessment</h4>
-                <p className="text-gray-700 leading-relaxed">Solve a curated set of Abstract Reasoning Corpus (ARC) puzzles that measure different aspects of cognitive reasoning. Each puzzle tests your ability to identify patterns and rules in novel visual scenarios.</p>
+                <p className="text-gray-700 leading-relaxed">Solve a curated set of Abstract Reasoning Corpus (ARC) puzzles that measure different aspects of cognitive reasoning. Each puzzle tests your ability to identify patterns and rules in novel scenarios.</p>
               </div>
             </div>
             <div className="flex items-start space-x-6">

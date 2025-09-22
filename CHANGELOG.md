@@ -1,3 +1,169 @@
+## Version 0.3.6 - Enhanced Navigation with Colored Button Variants
+**Author**: Claude Code using Sonnet 4
+**Date**: 2025-09-22
+**Status**: 🟢 PRODUCTION READY - NAVIGATION ENHANCEMENT
+
+#### Summary
+Eliminated duplicate navigation from HARC landing page and enhanced the navbar with attractive color-coded button variants using proper shadcn component architecture.
+
+#### Key Improvements
+- **Removed Duplicate Navigation**: Eliminated redundant button section from HARCPlatform landing page (lines 83-112)
+- **Enhanced Navbar Styling**: Applied color-coded navigation buttons using proper shadcn Button variants
+- **Official ARC-AGI Messaging**: Strengthened content to emphasize puzzles come directly from ARC-AGI GitHub repository
+- **Proper shadcn Architecture**: Implemented custom Button variants instead of manual className styling
+
+#### Technical Implementation
+- **Custom Button Variants**: Added 5 new variants to shadcn Button component using `cva` (class-variance-authority)
+  - `assessment`: Green (`bg-green-600 hover:bg-green-700`)
+  - `dashboard`: Amber (`bg-amber-600 hover:bg-amber-700`)
+  - `leaderboard`: Blue (`bg-blue-600 hover:bg-blue-700`)
+  - `puzzles`: Purple (`bg-purple-600 hover:bg-purple-700`)
+  - `about`: Slate (`bg-slate-600 hover:bg-slate-700`)
+- **NavButton Component**: Created helper component using shadcn Button with proper TypeScript typing
+- **Content Enhancement**: Updated HARC messaging to stress official ARC-AGI evaluation context
+
+#### Files Changed
+- ✅ **Enhanced**: `client/src/components/ui/button.tsx` - added 5 custom navigation variants
+- ✅ **Enhanced**: `client/src/components/layout/Navbar.tsx` - colorful navigation buttons with NavButton component
+- ✅ **Simplified**: `client/src/pages/HARCPlatform.tsx` - removed duplicate navigation section
+- ✅ **Enhanced**: `client/src/pages/HARCPuzzleBrowser.tsx` - emphasized official ARC-AGI repository source
+
+#### User Experience Impact
+- 🎯 **Cleaner Landing Page**: Removed redundant navigation, focus on main call-to-action buttons
+- 🎯 **Colorful Navigation**: Easy-to-identify color-coded navbar buttons for each section
+- 🎯 **Consistent Branding**: Unified navigation experience across all HARC pages
+- 🎯 **Research Credibility**: Clear messaging about official ARC-AGI GitHub repository source
+
+#### Testing Instructions
+1. Visit `/` - landing page should have single set of large action buttons, no duplicate navbar
+2. Check navbar across all pages - should have colorful navigation buttons
+3. Verify color coding: green=assessment, amber=dashboard, blue=leaderboard, purple=puzzles, slate=about
+4. Confirm HARC pages emphasize official ARC-AGI repository and LLM evaluation context
+
+## Version 0.3.5 - Search Bar UX Improvements and HARC Navbar Fix
+**Author**: Claude Code using Sonnet 4
+**Date**: 2025-09-22
+**Status**: 🟢 PRODUCTION READY - UX IMPROVEMENTS
+
+#### Summary
+Improved puzzle search user experience by moving search bars to prominent header positions and fixed HARC platform to use proper navbar component with Profile access.
+
+#### Key Improvements
+- **Search Bar Relocation**: Moved puzzle search from buried sections to prominent header positions on both platforms
+- **Compact Design**: Replaced large "PUZZLE DISCOVERY" sections with single-line search bars
+- **HARC Navbar Fix**: Replaced custom header with proper `Navbar` component to restore Profile button access
+- **UI Consistency**: Standardized search bar placement and styling across Officer Track and HARC platforms
+
+#### Technical Changes
+- **OfficerTrackSimple**: Search bar moved to header below main title, compact single-line design
+- **HARCPuzzleBrowser**: Search bar moved to header, replaced custom header with standard `Navbar` component
+- **Layout Optimization**: Removed duplicate search sections, simplified puzzle discovery to limit controls only
+
+#### Files Changed
+- ✅ **Enhanced**: `client/src/pages/OfficerTrackSimple.tsx` - compact header search bar, simplified discovery section
+- ✅ **Enhanced**: `client/src/pages/HARCPuzzleBrowser.tsx` - proper Navbar component, compact header search bar
+- ✅ **Fixed**: HARC platform Profile button access via standard navbar
+
+#### User Experience Impact
+- 🎯 **Faster Puzzle Discovery**: Search is immediately visible at top of page
+- 🎯 **Consistent Navigation**: HARC platform now has proper navbar with Profile access
+- 🎯 **Cleaner Interface**: Removed redundant search sections, focus on puzzle grid
+- 🎯 **Mobile Friendly**: Compact search bars work better on smaller screens
+
+#### Testing Instructions
+1. Visit `/space-force/officer-track` - search bar should be in header below title
+2. Visit `/puzzles` - should have proper navbar with Profile button and header search
+3. Test search functionality from header positions on both platforms
+4. Verify Profile button access on HARC platform
+
+## Version 0.3.4 - Enhanced Puzzle Loading Modal with Real Progress Tracking
+**Author**: Claude Code using Sonnet 4
+**Date**: 2025-09-22
+**Status**: 🟢 PRODUCTION READY - MAJOR UX ENHANCEMENT
+
+#### Major Enhancement
+Completely redesigned puzzle loading system to provide real-time progress tracking and meaningful status information instead of generic loading spinners.
+
+#### Key Features Implemented
+- **Real Progress Tracking**: Replaced fake hardcoded percentages with actual operation-based progress calculation
+- **Live Performance Metrics**: Shows puzzle counts, AI accuracy statistics, and processing times in real-time
+- **Detailed Status Messages**: Displays actual API endpoints being called and operations being performed
+- **Interactive Loading Stages**: Expandable view showing all loading stages with timing information
+- **Enhanced Error Handling**: Contextual error messages with actionable suggestions for users
+
+#### Technical Implementation
+- **New Types System**: `loadingTypes.ts` with LoadingStage, DetailedStatus, PerformanceMetrics, EnhancedError interfaces
+- **Stage-Based Progress**: 6-stage loading system (Init → API Call → Data Fetch → Processing → Sorting → Finalize)
+- **Real-Time Calculations**: Progress calculated from completed stages, performance metrics updated live
+- **Backward Compatibility**: Enhanced modal works with legacy props while adding new functionality
+
+#### Critical Tailwind CSS Fix
+- **Root Cause**: Version conflict between `@tailwindcss/vite` v4 plugin and `tailwindcss` v3 dependencies
+- **Solution**: Removed v4 Vite plugin, added traditional PostCSS configuration for proper v3 processing
+- **Result**: All `@apply` utilities and `@layer` directives now work correctly
+
+#### Components Enhanced
+- **PuzzleLoadingModal**: Completely rewritten with rich progress display and error states
+- **useOfficerPuzzles**: Added real progress tracking with detailed status updates
+- **HARCPuzzleBrowser**: Integrated with enhanced loading system
+- **EnhancedGridCell**: Fixed syntax error in border property
+
+#### Files Changed
+- ✅ **New**: `client/src/types/loadingTypes.ts` - Enhanced loading system types
+- ✅ **New**: `docs/22SeptPuzzleLoadingModalPlan.md` - Implementation plan documentation
+- ✅ **New**: `postcss.config.js` - Traditional Tailwind v3 PostCSS configuration
+- ✅ **Enhanced**: `client/src/components/ui/PuzzleLoadingModal.tsx` - Real progress tracking modal
+- ✅ **Enhanced**: `client/src/hooks/useOfficerPuzzles.ts` - Stage-based progress system
+- ✅ **Enhanced**: `client/src/pages/HARCPuzzleBrowser.tsx` - Integrated enhanced loading
+- ✅ **Fixed**: `client/src/components/officer/EnhancedGridCell.tsx` - Border syntax error
+- ✅ **Fixed**: `vite.config.ts` - Removed conflicting v4 Tailwind plugin
+
+#### User Experience Impact
+- 🎯 **Meaningful Progress**: Users see exactly what operations are happening and why
+- 🎯 **Performance Visibility**: Live statistics show puzzle processing metrics
+- 🎯 **Error Guidance**: Contextual error messages with specific suggestions
+- 🎯 **Technical Transparency**: Optional technical details for debugging
+- 🎯 **Real-Time Updates**: No more fake progress bars, all progress is actual work completed
+
+#### Testing Instructions
+1. Navigate to `/puzzles` to see enhanced loading modal
+2. Observe real-time progress tracking through all 6 stages
+3. Check "Loading Details" to see stage-by-stage progress
+4. Note live performance metrics (puzzle counts, accuracy stats)
+5. Test error handling by disconnecting internet during load
+
+## Version 0.3.3 - CRITICAL FIX: Remove Global Dark Theme Override
+**Author**: Cascade using Claude 4 Sonnet  
+**Date**: 2025-09-21  
+**Status**: 🟢 PRODUCTION READY - CRITICAL THEME FIX
+
+#### Major Discovery
+Found root cause of persistent dark theme: `index.html` contained `<body class="dark">` which was globally forcing dark theme across entire application, overriding all CSS custom properties and design system tokens.
+
+#### Root Cause Analysis
+- **Problem**: `client/index.html` line 65 had `<body class="dark">`
+- **Impact**: Applied `.dark` CSS class globally, changing all CSS custom properties to dark values
+- **Override Chain**: HTML class → `.dark` CSS selector → CSS custom properties → shadcn/ui components
+- **Scope**: Affected ALL pages, not just Space Force theme
+
+#### Technical Fix
+- **Removed**: `class="dark"` from `<body>` element in `index.html`
+- **Result**: Now uses `:root` light theme CSS custom properties by default
+- **CSS Structure**: Light theme default, dark theme opt-in via classes
+
+#### Files Changed
+- ✅ **Fixed**: `client/index.html` - removed `class="dark"` from body element
+- ✅ **Updated**: `client/src/index.css` - proper light/dark theme architecture  
+- ✅ **Updated**: `client/src/pages/HARCDashboard.tsx` - uses design system tokens
+
+#### Impact
+- 🎯 **HARC Platform**: Now displays proper light theme (white cards, dark text)
+- 🎯 **DashboardComparisonCard**: shadcn/ui components use correct light theme tokens
+- 🎯 **Design System**: CSS custom properties work as intended
+- 🎯 **Space Force**: Can opt into dark theme with specific classes when needed
+
+---
+
 ## Version 0.3.2 - HARCDashboard: Scalable Performance Comparison
 **Author**: Cascade using Claude 4 Sonnet  
 **Date**: 2025-09-21  
