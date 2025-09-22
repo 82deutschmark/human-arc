@@ -35,7 +35,7 @@ export function Navbar({
   }
 
   return (
-    <nav className={`bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm ${className}`}>
+    <nav className={`bg-background border-b border-border sticky top-0 z-50 shadow-sm ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left side - Logo and title */}
@@ -45,13 +45,13 @@ export function Navbar({
                 variant="ghost"
                 size="sm"
                 onClick={onBack}
-                className="mr-4 text-gray-600 hover:bg-gray-100"
+                className="mr-4"
               >
                 &larr; Back
               </Button>
             )}
             <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 {title}
               </span>
             </Link>
@@ -72,14 +72,14 @@ export function Navbar({
                 ) : isAuthenticated ? (
                   <Button
                     asChild
-                    className="border border-blue-500 bg-white text-blue-600 hover:bg-blue-50"
+                    variant="outline"
                   >
                     <Link href="/profile">My Profile</Link>
                   </Button>
                 ) : (
                   <Button
                     asChild
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    variant="default"
                   >
                     <Link href="/login">Sign In</Link>
                   </Button>
@@ -120,8 +120,8 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
       href={href}
       className={`text-sm font-medium transition-colors ${
         isActive
-          ? 'text-blue-600 font-semibold'
-          : 'text-gray-600 hover:text-blue-600'
+          ? 'text-primary font-semibold'
+          : 'text-muted-foreground hover:text-primary'
       }`}
     >
       {children}

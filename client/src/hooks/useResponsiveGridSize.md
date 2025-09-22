@@ -1,7 +1,20 @@
 /**
- * useResponsiveGridSize Hook
- * ==========================
- * Calculates optimal cell size based on grid dimensions, container type, and viewport
+ * DEPRECATED - DO NOT USE THIS FILE
+ * ==================================
+ * This file has been deprecated as part of the HARC UI refactoring (Task 2.1).
+ *
+ * REASON FOR DEPRECATION:
+ * This hook was the root cause of layout issues by using JavaScript-driven,
+ * pixel-based responsive design instead of CSS-first approach with Tailwind.
+ *
+ * REPLACEMENT:
+ * Use CSS Grid with fractional units (fr) and Tailwind responsive utilities
+ * in the new ResponsiveGrid component (client/src/components/ui/ResponsiveGrid.tsx).
+ *
+ * DATE DEPRECATED: 2025-09-22
+ * DEPRECATED BY: Sonnet 4
+ *
+ * Original purpose: Calculates optimal cell size based on grid dimensions, container type, and viewport
  */
 
 import { useState, useEffect } from 'react';
