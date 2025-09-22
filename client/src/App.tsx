@@ -26,7 +26,7 @@ import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
 import { TutorialPage } from '@/pages/TutorialPage';
 import { AssessmentInterface } from "@/components/assessment/AssessmentInterface";
-import { PersonalPerformanceComparison } from "@/pages/PersonalPerformanceComparison";
+import HARCDashboard from "@/pages/HARCDashboard";
 import { LLMComparisonPage } from "@/pages/LLMComparisonPage";
 import HARCPlatform from "@/pages/HARCPlatform";
 import Leaderboards from "@/pages/Leaderboards";
@@ -57,8 +57,8 @@ function Router() {
       <Route path="/officer-track/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/puzzles" component={HARCPuzzleBrowser} />
       <Route path="/puzzles/solve/:puzzleId" component={PuzzleSolver} />
-      <Route path="/dashboard" component={PersonalPerformanceComparison} />
-      <Route path="/comparison" component={PersonalPerformanceComparison} />
+      <Route path="/dashboard" component={HARCDashboard} />
+      <Route path="/comparison" component={HARCDashboard} />
       <Route path="/leaderboards/harc_leaderboard" component={Leaderboards} />
       <Route path="/leaderboards/explanation-arena" component={ExplanationArena} />
       <Route path="/profile" component={Profile} />

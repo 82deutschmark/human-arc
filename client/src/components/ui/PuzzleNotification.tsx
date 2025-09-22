@@ -1,5 +1,7 @@
 /**
- *
+ * NOT SURE how or if this is used!!  Ideally it should be an advanced helper function that compares
+ * player solution to the correct solution and displays mismatches on the grid.  This should work
+ * with the FailureModal which is in components\FailureModal.tsx 
  * Author: Claude Code using Sonnet 4
  * Date: 2025-09-17
  * PURPOSE: Reusable notification component for displaying various types of puzzle-related messages.
