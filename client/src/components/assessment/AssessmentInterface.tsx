@@ -9,9 +9,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
-import { ResponsivePuzzleSolver } from '@/components/officer/ResponsivePuzzleSolver';
+import { HARCResponsiveSolverUI } from '@/components/layout/HARCResponsiveSolverUI';
 import { PuzzleHeader } from '@/components/harc-solver/PuzzleHeader';
-import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
 import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';
@@ -412,8 +411,8 @@ export function AssessmentInterface() {
         </div>
       </div>
 
-      {/* The ResponsivePuzzleSolver  WE WANT TO SWITCH TO THE HARC VERSION HARCResponsiveSolverUI.tsx */}
-      <ResponsivePuzzleSolver
+      {/* The HARCResponsiveSolverUI - Modern HARC solver interface */}
+      <HARCResponsiveSolverUI
         puzzle={currentPuzzle}
         onBack={handleBackToLanding}
         isAssessmentMode={true}
@@ -423,14 +422,7 @@ export function AssessmentInterface() {
         hideHeader={true}
       />
 
-      {/* Hint System - positioned adjacent to puzzle grids I THINK THIS IS ALREADY HANDLED IN THE HARC VERSION */}
-      <div className="max-w-4xl mx-auto px-4 pb-4">
-        <PermanentHintSystem
-          puzzle={currentPuzzle}
-          onHintUsed={handleHintUsed}
-          className="mx-auto max-w-2xl"
-        />
-      </div>
+      {/* Hint System is now handled within HARCResponsiveSolverUI */}
 
       {/* Navigation controls */}
       <div className="bg-card p-4">
