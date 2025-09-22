@@ -8,6 +8,7 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useLocation } from 'wouter';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
 import { playFabValidation } from '@/services/playfab/validation';
 import { idConverter } from '@/services/idConverter';
@@ -79,6 +80,8 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
     incrementAttemptNumber
   } = options;
 
+  const [, setLocation] = useLocation();
+
   // EXACT COPY from lines 64-66: Validation state
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
@@ -132,10 +135,16 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
 
       console.log('✅ [useSolutionValidation] PlayFab validation result:', result);
 
-      // Show success modal for correct answers, failure modal for incorrect
+      // Show success modal for correct answers, failure modal for incorrect (but not locked)
       if (result?.correct) {
         setShowSuccessModal(true);
+      } else if (result?.locked) {
+        // For locked puzzles, don't show failure modal - redirect immediately to dashboard
+        console.log('🔒 [useSolutionValidation] Puzzle is locked, redirecting to dashboard...');
+        // Trigger immediate navigation to dashboard
+        setLocation('/dashboard');
       } else {
+        // Show failure modal for incorrect attempts that aren't locked
         setShowFailureModal(true);
       }
 

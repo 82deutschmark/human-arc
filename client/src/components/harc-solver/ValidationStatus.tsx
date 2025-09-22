@@ -48,9 +48,9 @@ export const ValidationStatus = React.memo(({
 }: ValidationStatusProps) => {
   const [, setLocation] = useLocation();
 
-  const handleNavigateToNewPuzzle = () => {
-    // Navigate to puzzle browser so user can choose a new puzzle
-    setLocation('/puzzles');
+  const handleNavigateToDashboard = () => {
+    // Navigate to dashboard to view progress
+    setLocation('/dashboard');
   };
 
   // Memoize validation feedback to prevent unnecessary re-computation
@@ -102,7 +102,7 @@ export const ValidationStatus = React.memo(({
           setShowFailureModal(false);
           onRetry();
         }}
-        onNavigateToNewPuzzle={handleNavigateToNewPuzzle}
+        onNavigateToDashboard={handleNavigateToDashboard}
       />
 
       {/* The main action button logic will be part of PuzzleTools,

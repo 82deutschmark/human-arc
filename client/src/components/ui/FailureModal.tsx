@@ -24,7 +24,7 @@ interface Props {
   isLocked?: boolean;
   onRetry?: () => void;
   showDesignerNotes?: boolean;
-  onNavigateToNewPuzzle?: () => void;
+  onNavigateToDashboard?: () => void;
 }
 
 /**
@@ -57,7 +57,7 @@ export function FailureModal({
   isLocked = false,
   onRetry,
   showDesignerNotes = true,
-  onNavigateToNewPuzzle
+  onNavigateToDashboard
 }: Props) {
   const [failureEmojis, setFailureEmojis] = useState<string[]>([]);
   const [isVisible, setIsVisible] = useState(false);
@@ -161,46 +161,57 @@ export function FailureModal({
         )}
 
         {/* Action buttons */}
-        <div className="mt-6 flex gap-3 justify-center">
+        <div className="mt-6 flex flex-col gap-3">
           {isLocked ? (
-            // For locked puzzles, redirect to puzzle browser
-            <button
-              onClick={() => {
-                onClose();
-                if (onNavigateToNewPuzzle) {
-                  onNavigateToNewPuzzle();
-                } else {
-                  // Fallback navigation - go to puzzle browser
-                  window.location.href = '/puzzles';
-                }
-              }}
-              className="px-6 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
-            >
-              🎯 Try Different Puzzle
-            </button>
-          ) : (
-            // For non-locked puzzles, show both options
+            // For locked puzzles, show only dashboard option
             <>
-              <button
-                onClick={onClose}
-                className="px-6 py-3 text-lg font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
-              >
-                🔍 Review Solution
-              </button>
-              <button
-                onClick={() => {
-                  onClose();
-                  if (onNavigateToNewPuzzle) {
-                    onNavigateToNewPuzzle();
-                  } else {
-                    // Fallback navigation - go to puzzle browser
-                    window.location.href = '/puzzles';
-                  }
-                }}
-                className="px-6 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
-              >
-                🎯 Try Different Puzzle
-              </button>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    onClose();
+                    if (onNavigateToDashboard) {
+                      onNavigateToDashboard();
+                    } else {
+                      // Fallback navigation - go to dashboard
+                      window.location.href = '/dashboard';
+                    }
+                  }}
+                  className="px-6 py-3 text-lg font-bold rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition-all duration-200 hover:scale-105 shadow-lg"
+                >
+                  📊 View Dashboard
+                </button>
+              </div>
+              <p className="text-center text-muted-foreground text-sm">
+                Check your progress and attempt count on the dashboard
+              </p>
+            </>
+          ) : (
+            // For non-locked puzzles, show only review option
+            <>
+              <div className="flex justify-center">
+                <button
+                  onClick={onClose}
+                  className="px-6 py-3 text-lg font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
+                >
+                  🔍 Review Solution
+                </button>
+              </div>
+              <div className="flex justify-center mt-2">
+                <button
+                  onClick={() => {
+                    onClose();
+                    if (onNavigateToDashboard) {
+                      onNavigateToDashboard();
+                    } else {
+                      // Fallback navigation - go to dashboard
+                      window.location.href = '/dashboard';
+                    }
+                  }}
+                  className="px-4 py-2 text-sm font-medium rounded-md bg-amber-100 hover:bg-amber-200 text-amber-800 transition-all duration-200"
+                >
+                  📊 View Progress
+                </button>
+              </div>
             </>
           )}
         </div>
