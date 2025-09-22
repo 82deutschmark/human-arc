@@ -383,7 +383,7 @@ export function AssessmentInterface() {
         onBack={handleBackToLanding}
       />
       
-      {/* Assessment-specific controls */}
+      {/* Assessment-specific controls IMPORTANT TO KEEP*/}
       <div className="bg-slate-800 border-b border-slate-700 sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
@@ -412,7 +412,7 @@ export function AssessmentInterface() {
         </div>
       </div>
 
-      {/* The ResponsivePuzzleSolver */}
+      {/* The ResponsivePuzzleSolver  WE WANT TO SWITCH TO THE HARC VERSION HARCResponsiveSolverUI.tsx */}
       <ResponsivePuzzleSolver
         puzzle={currentPuzzle}
         onBack={handleBackToLanding}
@@ -423,7 +423,7 @@ export function AssessmentInterface() {
         hideHeader={true}
       />
 
-      {/* Hint System - positioned adjacent to puzzle grids */}
+      {/* Hint System - positioned adjacent to puzzle grids I THINK THIS IS ALREADY HANDLED IN THE HARC VERSION */}
       <div className="max-w-4xl mx-auto px-4 pb-4">
         <PermanentHintSystem
           puzzle={currentPuzzle}
@@ -458,7 +458,7 @@ export function AssessmentInterface() {
         </div>
       </div>
 
-      {/* Tiny PlayFab ID debug display */}
+      {/* Tiny PlayFab ID debug display -- NEEDS FIXED TO SHOW ENTIRE ID */}
       <div className="fixed bottom-2 right-2 text-xs text-slate-500 font-mono bg-slate-800 px-2 py-1 rounded opacity-75">
         ID: {playFabAuthManager.getPlayFabId()?.slice(-8) || 'loading...'}
       </div>

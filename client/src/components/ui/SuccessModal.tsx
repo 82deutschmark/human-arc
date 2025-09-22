@@ -406,7 +406,7 @@ export function SuccessModal({
           </div>
         )}
 
-        {/* LLM Analysis Section */}
+        {/* LLM Analysis Section I WANT TO COLLAPSE THIS SECTION by default!!!*/}
         {puzzleId && (
           <div className="my-6 text-center bg-slate-700/30 p-4 rounded-lg border border-cyan-400/30">
             <div className="flex items-center justify-center gap-2 mb-3">
