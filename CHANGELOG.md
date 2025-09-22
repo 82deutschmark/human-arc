@@ -1,3 +1,33 @@
+## Version 0.3.2 - HARCDashboard: Scalable Performance Comparison
+**Author**: Cascade using Claude 4 Sonnet  
+**Date**: 2025-09-21  
+**Status**: 🟢 PRODUCTION READY
+
+#### Summary
+Replaced problematic `PersonalPerformanceComparison.tsx` with new `HARCDashboard.tsx` that scales from 5-50+ puzzle comparisons with modern UI.
+
+#### Key Improvements
+- **Scalable Architecture**: Handles 5 cards (new users) to 50+ cards (power users)
+- **Proper Theme**: Light theme (`bg-gray-50`) matching HARCPlatform design system
+- **Correct Navbar**: "Human ARC Platform" title with proper styling
+- **Advanced Controls**: Grid/list view, pagination (6-48 per page), search, filtering, sorting
+- **Compact Design**: shadcn/ui Card components instead of oversized gradients
+- **Performance**: Efficient pagination and filtering for large datasets
+
+#### Technical Details
+- **DRY Compliance**: Reuses `PuzzleComparisonCard` and shadcn components
+- **SRP Compliance**: Single responsibility (performance dashboard)
+- **Responsive**: 1-3 column grid adapts to screen size
+- **Authentication**: Proper PlayFab request manager usage
+- **Data Flow**: Uses `idConverter.ts` for puzzle ID handling
+
+#### Files Changed
+- ✅ **Added**: `client/src/pages/HARCDashboard.tsx` (423 lines)
+- ✅ **Updated**: `client/src/App.tsx` - routes `/dashboard` and `/comparison` now use HARCDashboard
+- ⚠️ **Deprecated**: `PersonalPerformanceComparison.tsx` (to be removed)
+
+---
+
 ## Version 0.3.1
 Working on PuzzleComparisonCard and PersonalPerformanceComparison.
 
