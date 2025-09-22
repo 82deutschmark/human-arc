@@ -1,9 +1,27 @@
 /**
- * Author: Cascade using gpt-4-turbo
- * Date: 2025-09-17
- * PURPOSE: This component provides UI controls for adjusting the output grid size of a puzzle. It was extracted from `ResponsivePuzzleSolver.tsx` to adhere to the Single Responsibility Principle. It allows users to select width and height via dropdowns and offers quick-select buttons for common sizes derived from the puzzle's training examples.
- * SRP and DRY check: Pass. This component has a single, clear responsibility: to provide controls for grid size selection. Its extraction from a larger component is a good example of improving code modularity and adhering to SRP.
+ * 🚫 DEPRECATED COMPONENT - DO NOT USE!
+ * 
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-22T18:26:14-04:00
+ * 
+ * ⚠️  DEPRECATION NOTICE ⚠️
+ * This component has been superseded by: client/src/components/ui/PuzzleSolverControls.tsx
+ * 
+ * REASON FOR DEPRECATION:
+ * - Part of HARC UI Phase 5 refactor to consolidate shadcn/ui components
+ * - This version uses hardcoded colors that violate theme system
+ * - New ui/ version supports automatic light/dark mode theming
+ * - This file violates architectural boundaries (officer/ folder is deprecated)
+ * 
+ * REPLACEMENT LOCATION: client/src/components/ui/PuzzleSolverControls.tsx
+ * MIGRATION: All imports updated in commit a92b94f8
+ * 
+ * Original PURPOSE: UI controls for adjusting the output grid size of a puzzle.
+ * SRP and DRY check: Pass. Single, clear responsibility: grid size selection controls.
+ * 
  */
+
+// THIS COMPONENT IS DEPRECATED - USE client/src/components/ui/PuzzleSolverControls.tsx INSTEAD
 
 import { Button } from '@/components/ui/button';
 

@@ -1,10 +1,27 @@
 /**
- * Author: Cascade using gpt-4-turbo
- * Date: 2025-09-17
- * PURPOSE: Provides a toolbar for users to switch between different puzzle grid display modes ('arc-colors', 'emoji', 'hybrid') and select an emoji theme. This component is crucial for the Officer and HARC tracks, allowing users to customize their puzzle-solving interface for clarity and accessibility.
- * It interacts with a parent component (like ResponsivePuzzleSolver) by taking the current displayMode and emojiSet as props and calling the onDisplayModeChange and onEmojiSetChange callbacks when the user makes a selection.
- * SRP and DRY check: Pass. This component has a single responsibility: managing the display settings for the puzzle grid. It is self-contained and does not duplicate logic from other components.
+ * 🚫 DEPRECATED COMPONENT - DO NOT USE!
+ * 
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-22T18:26:14-04:00
+ * 
+ * ⚠️  DEPRECATION NOTICE ⚠️
+ * This component has been superseded by: client/src/components/ui/DisplayModeToolbar.tsx
+ * 
+ * REASON FOR DEPRECATION:
+ * - Part of HARC UI Phase 5 refactor to consolidate shadcn/ui components
+ * - This version uses hardcoded colors that violate theme system
+ * - New ui/ version supports automatic light/dark mode theming
+ * - This file violates architectural boundaries (officer/ folder is deprecated)
+ * 
+ * REPLACEMENT LOCATION: client/src/components/ui/DisplayModeToolbar.tsx
+ * MIGRATION: All imports updated in commit a92b94f8
+ * 
+ * Original PURPOSE: Toolbar for switching between display modes ('arc-colors', 'emoji', 'hybrid').
+ * SRP and DRY check: Pass. Single responsibility: managing display settings for puzzle grid.
+ * 
  */
+
+// THIS COMPONENT IS DEPRECATED - USE client/src/components/ui/DisplayModeToolbar.tsx INSTEAD
 
 import type { DisplayMode } from '@/types/puzzleDisplayTypes';
 import type { EmojiSet } from '@/constants/spaceEmojis';

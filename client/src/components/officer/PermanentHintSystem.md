@@ -1,13 +1,28 @@
 /**
- * WEDGED IN THE WRONG FOLDER!!
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-12
- * PURPOSE: Clean hint system providing progressive 3-level hints for ARC puzzles. 
- * Integrates with PlayFab hint scoring system and arc-explainer API. 
- * Designed for HARC assessment but reusable across officer track.
+ * 🚫 DEPRECATED COMPONENT - DO NOT USE!
+ * 
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-22T18:26:14-04:00
+ * 
+ * ⚠️  DEPRECATION NOTICE ⚠️
+ * This component has been superseded by: client/src/components/ui/PermanentHintSystem.tsx
+ * 
+ * REASON FOR DEPRECATION:
+ * - Part of HARC UI Phase 5 refactor to consolidate shadcn/ui components
+ * - This version uses hardcoded colors that violate theme system
+ * - New ui/ version supports automatic light/dark mode theming
+ * - This file violates architectural boundaries (officer/ folder is deprecated)
+ * - Original author noted "WEDGED IN THE WRONG FOLDER!!"
+ * 
+ * REPLACEMENT LOCATION: client/src/components/ui/PermanentHintSystem.tsx
+ * MIGRATION: All imports updated in commit a92b94f8
+ * 
+ * Original PURPOSE: Clean hint system providing progressive 3-level hints for ARC puzzles.
  * SRP and DRY check: Pass - Single responsibility (hints only), reusable component
  * 
  */
+
+// THIS COMPONENT IS DEPRECATED - USE client/src/components/ui/PermanentHintSystem.tsx INSTEAD
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';

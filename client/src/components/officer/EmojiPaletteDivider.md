@@ -1,13 +1,27 @@
 /**
+ * 🚫 DEPRECATED COMPONENT - DO NOT USE!
  * 
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-12
- * PURPOSE: Enhanced emoji palette with glowing pulse effects to guide user interaction.
- * Compact 2x5 emoji palette that acts as a visual divider between TEST INPUT and YOUR SOLUTION.
- * Features pulsing glow effect until user first interacts, making controls more discoverable.
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-22T18:26:14-04:00
+ * 
+ * ⚠️  DEPRECATION NOTICE ⚠️
+ * This component has been superseded by: client/src/components/ui/EmojiPaletteDivider.tsx
+ * 
+ * REASON FOR DEPRECATION:
+ * - Part of HARC UI Phase 5 refactor to consolidate shadcn/ui components
+ * - This version uses hardcoded colors that violate theme system
+ * - New ui/ version supports automatic light/dark mode theming
+ * - This file violates architectural boundaries (officer/ folder is deprecated)
+ * 
+ * REPLACEMENT LOCATION: client/src/components/ui/EmojiPaletteDivider.tsx
+ * MIGRATION: All imports updated in commit a92b94f8
+ * 
+ * Original PURPOSE: Enhanced emoji palette with glowing pulse effects to guide user interaction.
  * SRP and DRY check: Pass - Single responsibility (value selection), enhanced with UX improvements
  * 
  */
+
+// THIS COMPONENT IS DEPRECATED - USE client/src/components/ui/EmojiPaletteDivider.tsx INSTEAD
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';

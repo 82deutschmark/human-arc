@@ -1,8 +1,27 @@
-/**Author: Claude
- * Date: 2025-09-17
- * PURPOSE: This component displays the training examples for an ARC puzzle in a responsive, horizontally scrolling section. Each example shows an input grid and its corresponding output grid, which is essential for the user to understand the puzzle's transformation rule. It also includes a slider to control the size of the grid cells for better visibility.
- * SRP and DRY check: Pass. This component has a single responsibility: to display the training examples for a puzzle. It is a presentational component that receives all its data via props, making it reusable and well-encapsulated.
+/**
+ * 🚫 DEPRECATED COMPONENT - DO NOT USE!
+ * 
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-22T18:26:14-04:00
+ * 
+ * ⚠️  DEPRECATION NOTICE ⚠️
+ * This component has been superseded by: client/src/components/ui/TrainingExamples.tsx
+ * 
+ * REASON FOR DEPRECATION:
+ * - Part of HARC UI Phase 5 refactor to consolidate shadcn/ui components
+ * - This version uses hardcoded colors that violate theme system  
+ * - New ui/ version supports automatic light/dark mode theming
+ * - This file violates architectural boundaries (officer/ folder is deprecated)
+ * 
+ * REPLACEMENT LOCATION: client/src/components/ui/TrainingExamples.tsx
+ * MIGRATION: All imports updated in commit a92b94f8
+ * 
+ * Original PURPOSE: Displays training examples for ARC puzzles with responsive design.
+ * SRP and DRY check: Pass. Single responsibility: display training examples for puzzles.
+ * 
  */
+
+// THIS COMPONENT IS DEPRECATED - USE client/src/components/ui/TrainingExamples.tsx INSTEAD
 
 import { useState, useEffect } from 'react';
 import { ResponsiveOfficerDisplayGrid } from '@/components/officer/ResponsiveOfficerGrid';
