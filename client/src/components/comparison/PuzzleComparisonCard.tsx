@@ -1,5 +1,5 @@
 /**
- * Author: Cascade using Gemini 2.5 Pro 
+ * Author: Cascade using Claude 4 Sonnet
  * Date: 2025-09-21T20:52:13-04:00
  * PURPOSE: Enhanced Puzzle Comparison Card Component with individual model breakdown functionality
  * ================================

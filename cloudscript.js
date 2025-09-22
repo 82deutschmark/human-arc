@@ -619,10 +619,20 @@ handlers.GenerateAnonymousName = function(args, context) {
     const number = Math.floor(Math.random() * 999) + 1;
     const generatedName = `${adjective}${noun}${number}`;
 
-    PlayFabService.writePlayerEvent(context.playerId, "AnonymousNameGenerated", {
-        generatedName,
-        timestamp: new Date().toISOString()
-    });
+    // Use currentPlayerId instead of playerId for consistency
+    const playerId = context.currentPlayerId;
+    if (playerId) {
+        try {
+            PlayFabService.writePlayerEvent(playerId, "AnonymousNameGenerated", {
+                generatedName,
+                timestamp: new Date().toISOString()
+            });
+        } catch (error) {
+            log.error("Failed to write AnonymousNameGenerated event: " + error.message);
+        }
+    } else {
+        log.warn("Player ID not available for AnonymousNameGenerated event");
+    }
 
     return { newName: generatedName };
 };

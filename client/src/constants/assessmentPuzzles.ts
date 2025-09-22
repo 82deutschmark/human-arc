@@ -17,7 +17,7 @@ export const ASSESSMENT_PUZZLE_IDS = [
   
 ];
 // '0d3d703e', //  3x3 where you need to learn replacements from examples
-// '22425bda',   // 16x16 -> 1x6  Think of them as strings, the bottom string has priority order in the output. This is particularly challenging because there are two possible solutions when using this logic and only one will be correct.  That is why two attempts are always required.
+// '22425bda',   // 16x16 -> 1x6  Shortest to longest? Think of them as strings, the bottom string has priority order in the output.  Or is it shortest to longest? This is particularly challenging because there are two possible solutions when using this logic and only one will be correct.  That is why two attempts are always required.
 // 'dc1df850',    //  Surround the specific cell
 // '27a28665',    // 7 Examples, 3 Tests!
 // '3bdb4ada',  //  Make a little dot in each

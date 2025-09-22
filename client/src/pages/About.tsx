@@ -19,8 +19,7 @@ export function About() {
             About the Project
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            A comprehensive research platform dedicated to advancing artificial intelligence through
-            rigorous testing, collaborative development, and innovative problem-solving.
+            A comprehensive research platform dedicated to helping humans dive into the world of ARC-AGI, machine learning, and AI.
           </p>
         </div>
 
@@ -28,30 +27,23 @@ export function About() {
           {/* Project Leadership Section */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-6">
-              <h2 className="text-3xl font-bold text-white">Project Leadership</h2>
+              <h2 className="text-3xl font-bold text-white">Project Team</h2>
             </div>
             <div className="p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                <div className="lg:col-span-1 flex flex-col gap-6">
-                  <img
-                    src="https://markbarney.net/pictures/Mark%20and%20Yorkies%202.jpg"
-                    alt="Mark Barney with his Yorkies"
-                    className="rounded-xl shadow-md border border-slate-200"
-                  />
-                  <img
-                    src="https://markbarney.net/pictures/yorkies%20Maine.jpg"
-                    alt="Pawel and Pawleen"
-                    className="rounded-xl shadow-md border border-slate-200"
-                  />
-                </div>
-                <div className="lg:col-span-2 bg-slate-50 p-8 rounded-xl border border-slate-200">
+              <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 flex flex-col lg:flex-row items-center gap-8">
+                <img
+                  src="https://markbarney.net/pictures/yorkies%20Maine.jpg"
+                  alt="Pawel and Pawleen - Mark's beloved Yorkies"
+                  className="w-48 h-48 object-cover rounded-xl shadow-md border border-slate-200 flex-shrink-0"
+                />
+                <div className="flex-1 text-center lg:text-left">
                   <h3 className="text-3xl font-bold text-slate-900 mb-4">Mark Barney</h3>
                   <p className="text-slate-700 text-lg leading-relaxed mb-6">
-                    Mark is an innovative researcher and developer from eastern Connecticut who created this application.
-                    He lives on his hobby farm with his two beloved Yorkies, Pawel and Pawleen, and maintains a lively
+                    Mark created this application to make it easier to onboard more humans to the world of ARC-AGI, machine learning, LLMs, and AI.
+                    He lives on his hobby farm in eastern Connecticut with his two beloved Yorkies, Pawel and Pawleen, and maintains a lively
                     flock of 30-40 chickens of various shapes and sizes.
                   </p>
-                  <div className="flex flex-wrap gap-4">
+                  <div className="flex flex-wrap justify-center lg:justify-start gap-4">
                     <a
                       href="https://github.com/82deutschmark"
                       target="_blank"
@@ -158,7 +150,7 @@ export function About() {
                   </div>
                   <h3 className="text-2xl font-semibold text-slate-900 mb-3">Claude Code (Sonnet 4)</h3>
                   <p className="text-slate-600">
-                    Advanced AI assistance for PlayFab architecture design and comprehensive documentation systems.
+                    Documents everything. Finds and builds lego blocks of code into a working application.
                   </p>
                 </div>
                 <div className="bg-slate-50 p-8 rounded-xl border border-slate-200 text-center">
@@ -169,7 +161,7 @@ export function About() {
                   </div>
                   <h3 className="text-2xl font-semibold text-slate-900 mb-3">Gemini 2.5 Pro</h3>
                   <p className="text-slate-600">
-                    Specialized AI for CloudScript refactoring, feature development, and research platform optimization.
+                    Acts as Claude's senior software engineer.
                   </p>
                 </div>
               </div>
@@ -178,11 +170,9 @@ export function About() {
 
           {/* Research Mission Statement */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl p-8 text-center">
-            <h2 className="text-3xl font-bold mb-4">Research Mission</h2>
+            <h2 className="text-3xl font-bold mb-4">Mission Statement</h2>
             <p className="text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
-              This platform represents a collaborative effort to advance the field of artificial intelligence through
-              rigorous testing, open-source development, and community-driven research. We believe in the power of
-              collective intelligence to solve complex problems and push the boundaries of what's possible in AI.
+              This platform is in very active development.  We are working hard to make it the best possible tool for humans to match wits with state of the art AI models.
             </p>
           </div>
         </div>

@@ -1,7 +1,7 @@
-/**
+/** WHERE IS THIS USED???  Needs audit for deletion!
  * Comparison Summary Component
  * ============================
- * Displays a high-level summary of the human vs. AI performance.
+ * Displays a high-level summary of the human vs. AI performance.  HOW IS ANY OF THIS BEING CALCULATED??!
  */
 
 interface ComparisonSummaryProps {
