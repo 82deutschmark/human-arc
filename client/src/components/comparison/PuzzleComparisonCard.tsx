@@ -1,12 +1,16 @@
 /**
- * Puzzle Comparison Card Component
+ * Author: Cascade using Gemini 2.5 Pro 
+ * Date: 2025-09-21T20:52:13-04:00
+ * PURPOSE: Enhanced Puzzle Comparison Card Component with individual model breakdown functionality
  * ================================
- * Displays a side-by-side comparison for a single puzzle.
+ * Displays a side-by-side comparison for a single puzzle, including detailed AI model performance breakdown.
+ * Enhanced with individual model performance section, "Struggled Most" highlighting, and expandable model lists.
+ * SRP and DRY check: Pass - Single responsibility (puzzle comparison display), reuses helper functions and patterns from PersonalPerformanceComparison
  */
 
 import { useState } from 'react';
 import { Link } from 'wouter';
-import type { AggregatedAIStats } from '@/services/core/arcExplainerClient';
+import type { AggregatedAIStats, ModelStats } from '@/services/core/arcExplainerClient';
 
 // Define the detailed structure for a human performance record
 interface HumanPerformanceRecord {
@@ -64,6 +68,29 @@ const getOrdinalSuffix = (num: number): string => {
   }
 };
 
+// Helper functions for AI model performance display (from PersonalPerformanceComparison)
+const formatAccuracy = (accuracy: number): string => {
+  if (typeof accuracy !== 'number' || isNaN(accuracy)) return '0';
+  if (accuracy > 1) {
+    return Math.min(accuracy, 100).toFixed(1);
+  }
+  return (accuracy * 100).toFixed(1);
+};
+
+const getPerformanceColor = (accuracy: number) => {
+  const accPercentage = parseFloat(formatAccuracy(accuracy));
+  if (accPercentage >= 70) return 'text-emerald-400';
+  if (accPercentage >= 40) return 'text-amber-400';
+  return 'text-rose-400';
+};
+
+const getPerformanceIcon = (accuracy: number) => {
+  const accPercentage = parseFloat(formatAccuracy(accuracy));
+  if (accPercentage >= 70) return '✅';
+  if (accPercentage >= 40) return '⚠️';
+  return '❌';
+};
+
 export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: PuzzleComparisonCardProps) {
   // Add debugging to see exact data structure
   console.log(`🧩 PuzzleComparisonCard for ${puzzleId}:`, aiResult);
@@ -98,7 +125,65 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
   const qualityTier = getExplanationQualityTier();
   const [showScoreBreakdown, setShowScoreBreakdown] = useState(false);
   const [showDebugData, setShowDebugData] = useState(false);
+  const [showModelBreakdown, setShowModelBreakdown] = useState(false);
+  const [showAllModels, setShowAllModels] = useState(false);
 
+  // Function to render individual model breakdown (adapted from PersonalPerformanceComparison)
+  const renderModelBreakdown = (models: ModelStats[]) => {
+    if (!models || models.length === 0) return null;
+
+    const sortedModels = [...models].sort((a, b) => a.accuracy - b.accuracy);
+    const displayModels = showAllModels ? sortedModels : sortedModels.slice(0, 3);
+
+    return (
+      <div className="mt-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-slate-400 text-sm font-medium">Individual Model Performance:</span>
+          {sortedModels.length > 3 && (
+            <button
+              onClick={() => setShowAllModels(!showAllModels)}
+              className="text-xs text-amber-400 hover:text-amber-300 transition-colors"
+            >
+              {showAllModels ? `Show Less` : `Show All ${sortedModels.length}`}
+            </button>
+          )}
+        </div>
+
+        {/* Highlight worst performer - "Struggled Most" */}
+        {sortedModels.length > 0 && (
+          <div className="p-3 border-l-4 border-rose-400 bg-gradient-to-r from-rose-900/30 to-rose-800/20 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-rose-400 text-lg">🤖💔</span>
+                <span className="text-white text-sm font-medium">Struggled Most: {sortedModels[0].modelName}</span>
+              </div>
+              <span className={`font-bold text-lg ${getPerformanceColor(sortedModels[0].accuracy)}`}>
+                {formatAccuracy(sortedModels[0].accuracy)}%
+              </span>
+            </div>
+            <div className="text-xs text-slate-400 mt-1">
+              {sortedModels[0].correct}/{sortedModels[0].attempts} attempts
+            </div>
+          </div>
+        )}
+
+        {/* Grid display for other models */}
+        <div className="grid grid-cols-2 gap-3">
+          {displayModels.slice(1).map((model) => (
+            <div key={model.modelName} className="flex items-center justify-between p-3 bg-gradient-to-r from-slate-700/50 to-slate-600/30 rounded-lg text-sm hover:from-slate-600/60 hover:to-slate-500/40 transition-all">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="text-sm">{getPerformanceIcon(model.accuracy)}</span>
+                <span className="text-slate-200 truncate font-medium">{model.modelName}</span>
+              </div>
+              <span className={`font-bold ${getPerformanceColor(model.accuracy)} ml-2 whitespace-nowrap`}>
+                {formatAccuracy(model.accuracy)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 transition-all hover:border-amber-400">
@@ -239,6 +324,26 @@ export function PuzzleComparisonCard({ puzzleId, humanResult, aiResult }: Puzzle
                   <p className="text-red-300 font-bold text-sm">🚨 Dangerous Overconfidence Detected</p>
                 </div>
               )}
+              
+              {/* Individual Model Performance Section - styled like debug data */}
+              <div className="mt-3 pt-2 border-t border-slate-600">
+                <button
+                  onClick={() => setShowModelBreakdown(!showModelBreakdown)}
+                  className="w-full text-left text-xs text-slate-400 hover:text-slate-300 transition-colors flex justify-between items-center"
+                  aria-label="Toggle individual model performance display"
+                >
+                  <span>Individual Model Performance ({aiResult.modelBreakdown.length} models)</span>
+                  <span className="ml-1">
+                    {showModelBreakdown ? '▲' : '▼'}
+                  </span>
+                </button>
+
+                {showModelBreakdown && (
+                  <div className="mt-2 p-2 bg-slate-900/50 rounded text-xs">
+                    {renderModelBreakdown(aiResult.modelBreakdown)}
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="text-slate-400 text-center">No AI data available</div>
