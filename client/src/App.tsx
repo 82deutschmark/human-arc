@@ -24,10 +24,10 @@ import MissionControl from "@/pages/MissionControl";
 import OfficerTrackSimple from "@/pages/OfficerTrackSimple";
 import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
-import { TutorialPage } from '@/pages/TutorialPage';
+
 import { AssessmentInterface } from "@/components/assessment/AssessmentInterface";
 import HARCDashboard from "@/pages/HARCDashboard";
-import { LLMComparisonPage } from "@/pages/LLMComparisonPage";
+
 import HARCPlatform from "@/pages/HARCPlatform";
 import Leaderboards from "@/pages/Leaderboards";
 import Profile from "@/pages/Profile";
@@ -52,8 +52,8 @@ function Router() {
       <Route path="/space-force" component={MissionControl} />
       <Route path="/space-force/officer-track" component={OfficerTrackSimple} />
       <Route path="/space-force/officer-track/solve/:puzzleId" component={PuzzleSolver} />
-      <Route path="/space-force/officer-track/ai-comparison" component={LLMComparisonPage} />
-      <Route path="/space-force/tutorial" component={TutorialPage} />
+     
+      
       <Route path="/assessment" component={AssessmentInterface} />
       <Route path="/officer-track/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/puzzles" component={HARCPuzzleBrowser} />
