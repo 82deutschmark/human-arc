@@ -59,12 +59,12 @@ export default function Profile() {
 
   if (isLoading || !player) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white">
+      <div className="min-h-screen bg-gray-50 text-gray-900">
         <Navbar title="User Profile" />
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
-            <div>Loading profile...</div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="text-gray-600">Loading profile...</div>
           </div>
         </div>
       </div>
@@ -72,34 +72,34 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <Navbar title="User Profile" />
 
       <div className="max-w-4xl mx-auto p-6">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-amber-400 mb-2">
+          <h1 className="text-4xl font-bold text-blue-700 mb-2">
             👤 Your Profile
           </h1>
-          <p className="text-slate-300 text-lg">
+          <p className="text-gray-600 text-lg">
             Manage your identity and personalize your experience
           </p>
         </div>
 
         {/* Player Identity Section */}
         <div className="mb-8">
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h2 className="text-lg font-semibold text-amber-400 mb-4">Account Information</h2>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-lg">
+            <h2 className="text-lg font-semibold text-blue-700 mb-4">Account Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <p className="text-slate-300 text-sm mb-1">Display Name:</p>
-                <p className="text-xl font-bold text-white">
+                <p className="text-gray-600 text-sm mb-1">Display Name:</p>
+                <p className="text-xl font-bold text-gray-900">
                   {playFabAuthManager.getDisplayName() || 'Loading...'}
                 </p>
               </div>
               <div>
-                <p className="text-slate-300 text-sm mb-1">PlayFab ID:</p>
+                <p className="text-gray-600 text-sm mb-1">PlayFab ID:</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-lg font-mono text-cyan-300 select-all">
+                  <p className="text-lg font-mono text-blue-600 select-all">
                     {playFabAuthManager.getPlayFabId() || 'Loading...'}
                   </p>
                   <button
@@ -109,7 +109,7 @@ export default function Profile() {
                         navigator.clipboard?.writeText(playFabId);
                       }
                     }}
-                    className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 bg-slate-700 rounded transition-colors"
+                    className="text-xs text-gray-600 hover:text-gray-800 px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded transition-colors"
                     title="Copy PlayFab ID"
                   >
                     📋 Copy
@@ -119,11 +119,11 @@ export default function Profile() {
             </div>
 
             {/* Reset PlayFab ID Tool */}
-            <div className="pt-4 border-t border-slate-700">
+            <div className="pt-4 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-slate-400 text-sm font-medium">Reset Account:</p>
-                  <p className="text-xs text-slate-500">Generate new anonymous player account</p>
+                  <p className="text-gray-700 text-sm font-medium">Reset Account:</p>
+                  <p className="text-xs text-gray-500">Generate new anonymous player account</p>
                 </div>
                 <button
                   onClick={() => {
