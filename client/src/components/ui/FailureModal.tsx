@@ -121,20 +121,18 @@ export function FailureModal({
         </p>
 
         {/* Attempt counter display */}
-        {!isLocked && attemptsRemaining >= 0 && (
+        {!isLocked && (
           <div className="my-6 text-center bg-muted p-4 rounded-lg border border-orange-400/30">
             <h3 className="text-xl font-bold text-orange-500 mb-2">Attempts Remaining</h3>
             <div className="flex items-center justify-center gap-3">
               <span className="text-3xl font-bold text-orange-500">
-                {attemptsRemaining}
+                1
               </span>
-              <span className="text-muted-foreground">of {totalAttempts}</span>
+              <span className="text-muted-foreground">of 2</span>
             </div>
-            {attemptsRemaining === 1 && (
-              <p className="text-orange-500 text-sm mt-2 font-semibold">
-                ⚠️ This is your final attempt!
-              </p>
-            )}
+            <p className="text-orange-500 text-sm mt-2 font-semibold">
+              ⚠️ This is your final attempt!
+            </p>
           </div>
         )}
 
@@ -155,21 +153,21 @@ export function FailureModal({
 
         {/* Action buttons */}
         <div className="mt-6 flex gap-3 justify-center">
-          {!isLocked && onRetry && (
-            <button
-              onClick={onRetry}
-              className="px-6 py-3 text-lg font-bold rounded-lg bg-orange-600 hover:bg-orange-700 text-white transition-all duration-200 hover:scale-105 shadow-lg"
-            >
-              Try Again
-            </button>
-          )}
-
           <button
             onClick={onClose}
             className="px-6 py-3 text-lg font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
           >
-            {isLocked ? 'Browse Other Puzzles' : 'Review Solution'}
+            {isLocked ? 'Try Different Puzzle' : 'Review Solution'}
           </button>
+
+          {!isLocked && (
+            <button
+              onClick={onClose}
+              className="px-6 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
+            >
+              Try Different Puzzle
+            </button>
+          )}
         </div>
 
         {/* Encouragement message for non-locked failures */}
