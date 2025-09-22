@@ -1,3 +1,45 @@
+## Version 0.3.6 - Enhanced Navigation with Colored Button Variants
+**Author**: Claude Code using Sonnet 4
+**Date**: 2025-09-22
+**Status**: 🟢 PRODUCTION READY - NAVIGATION ENHANCEMENT
+
+#### Summary
+Eliminated duplicate navigation from HARC landing page and enhanced the navbar with attractive color-coded button variants using proper shadcn component architecture.
+
+#### Key Improvements
+- **Removed Duplicate Navigation**: Eliminated redundant button section from HARCPlatform landing page (lines 83-112)
+- **Enhanced Navbar Styling**: Applied color-coded navigation buttons using proper shadcn Button variants
+- **Official ARC-AGI Messaging**: Strengthened content to emphasize puzzles come directly from ARC-AGI GitHub repository
+- **Proper shadcn Architecture**: Implemented custom Button variants instead of manual className styling
+
+#### Technical Implementation
+- **Custom Button Variants**: Added 5 new variants to shadcn Button component using `cva` (class-variance-authority)
+  - `assessment`: Green (`bg-green-600 hover:bg-green-700`)
+  - `dashboard`: Amber (`bg-amber-600 hover:bg-amber-700`)
+  - `leaderboard`: Blue (`bg-blue-600 hover:bg-blue-700`)
+  - `puzzles`: Purple (`bg-purple-600 hover:bg-purple-700`)
+  - `about`: Slate (`bg-slate-600 hover:bg-slate-700`)
+- **NavButton Component**: Created helper component using shadcn Button with proper TypeScript typing
+- **Content Enhancement**: Updated HARC messaging to stress official ARC-AGI evaluation context
+
+#### Files Changed
+- ✅ **Enhanced**: `client/src/components/ui/button.tsx` - added 5 custom navigation variants
+- ✅ **Enhanced**: `client/src/components/layout/Navbar.tsx` - colorful navigation buttons with NavButton component
+- ✅ **Simplified**: `client/src/pages/HARCPlatform.tsx` - removed duplicate navigation section
+- ✅ **Enhanced**: `client/src/pages/HARCPuzzleBrowser.tsx` - emphasized official ARC-AGI repository source
+
+#### User Experience Impact
+- 🎯 **Cleaner Landing Page**: Removed redundant navigation, focus on main call-to-action buttons
+- 🎯 **Colorful Navigation**: Easy-to-identify color-coded navbar buttons for each section
+- 🎯 **Consistent Branding**: Unified navigation experience across all HARC pages
+- 🎯 **Research Credibility**: Clear messaging about official ARC-AGI GitHub repository source
+
+#### Testing Instructions
+1. Visit `/` - landing page should have single set of large action buttons, no duplicate navbar
+2. Check navbar across all pages - should have colorful navigation buttons
+3. Verify color coding: green=assessment, amber=dashboard, blue=leaderboard, purple=puzzles, slate=about
+4. Confirm HARC pages emphasize official ARC-AGI repository and LLM evaluation context
+
 ## Version 0.3.5 - Search Bar UX Improvements and HARC Navbar Fix
 **Author**: Claude Code using Sonnet 4
 **Date**: 2025-09-22
