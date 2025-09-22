@@ -8,7 +8,6 @@
 
 import { useState, useEffect } from 'react';
 import { puzzleRepository, type EnhancedPuzzle } from '@/services/core/puzzleRepository';
-import type { OfficerPuzzle } from '@/services/officerArcAPI';
 import {
   LoadingStage,
   DetailedStatus,
@@ -51,8 +50,8 @@ export interface UseOfficerPuzzlesReturn {
   
   // Actions
   filterByDifficulty: (difficulty: 'impossible' | 'extremely_hard' | 'very_hard' | 'challenging' | null) => void;
-  searchById: (id: string) => Promise<OfficerPuzzle | null>;
-  addSearchResult: (puzzle: OfficerPuzzle) => void;
+  searchById: (id: string) => Promise<EnhancedPuzzle | null>;
+  addSearchResult: (puzzle: EnhancedPuzzle) => void;
   refresh: (limit?: number, sortBy?: SortStrategy) => Promise<void>;
   setLimit: (limit: number) => void;
   setSortStrategy: (strategy: SortStrategy) => void;
@@ -258,7 +257,7 @@ export function useOfficerPuzzles(
   };
 
   // Filter puzzles by difficulty
-  const filterByDifficulty = async (difficulty: 'practically_impossible' | 'most_llms_fail' | 'unreliable' | null) => {
+  const filterByDifficulty = async (difficulty: 'impossible' | 'extremely_hard' | 'very_hard' | 'challenging' | null) => {
     try {
       setCurrentFilter(difficulty);
       
@@ -279,11 +278,19 @@ export function useOfficerPuzzles(
     }
   };
 
-  // Search for specific puzzle
+  // Search for specific puzzle using puzzleRepository
   const searchById = async (id: string): Promise<EnhancedPuzzle | null> => {
     try {
-      // Simple search within loaded puzzles for now
-      return puzzles.find(p => p.id.includes(id)) || null;
+      console.log(`🔍 Searching for puzzle: ${id}`);
+      // Use puzzleRepository to search for puzzle with performance data
+      const found = await puzzleRepository.findById(id, true);
+      if (found) {
+        console.log(`✅ Found puzzle: ${found.id}`);
+        return found;
+      } else {
+        console.log(`❌ Puzzle not found: ${id}`);
+        return null;
+      }
     } catch (err) {
       console.error('❌ Search error:', err);
       return null;

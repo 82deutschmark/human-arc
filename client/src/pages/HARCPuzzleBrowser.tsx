@@ -29,7 +29,7 @@ import {
   playFabTasks,
   attemptTracker
 } from '@/services/playfab';
-import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { EnhancedPuzzle } from '@/services/core/puzzleRepository';
 import type { PlayFabPlayer } from '@/services/playfab';
 import type { PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
 
@@ -195,7 +195,7 @@ export default function HARCPuzzleBrowser() {
   };
 
   // Handle puzzle selection from grid - navigate to dedicated solver page
-  const handleSelectPuzzle = (puzzle: OfficerPuzzle) => {
+  const handleSelectPuzzle = (puzzle: EnhancedPuzzle) => {
     // Prevent navigation while PlayFab is still initializing
     if (playFabInitializing) {
       alert('Please wait for the system to initialize before loading puzzles...');
@@ -461,7 +461,7 @@ export default function HARCPuzzleBrowser() {
 
                 <div className="bg-slate-700/50 rounded-lg p-3 text-center border-l-4 border-red-500">
                   <div className="text-2xl font-bold text-red-400">
-                    {filteredPuzzles.filter(p => p.avgAccuracy === 0).length}
+                    {filteredPuzzles.filter(p => (p.aiPerformance?.avgAccuracy || 0) === 0).length}
                   </div>
                   <div className="text-sm text-slate-300">🚫 AI Failures</div>
                   <div className="text-xs text-slate-400">0% success rate</div>
@@ -471,7 +471,7 @@ export default function HARCPuzzleBrowser() {
                   <div className="text-2xl font-bold text-amber-400">
                     {(() => {
                       const overconfident = filteredPuzzles.filter(p =>
-                        p.avgAccuracy < 0.5 && (p.avgConfidence || 0) > 70
+                        (p.aiPerformance?.avgAccuracy || 0) < 0.5 && (p.aiPerformance?.avgConfidence || 0) > 70
                       ).length;
                       return `${Math.round((overconfident / filteredPuzzles.length) * 100)}%`;
                     })()}
@@ -482,7 +482,7 @@ export default function HARCPuzzleBrowser() {
 
                 <div className="bg-slate-700/50 rounded-lg p-3 text-center border-l-4 border-green-500">
                   <div className="text-2xl font-bold text-green-400">
-                    {filteredPuzzles.reduce((sum, p) => sum + p.totalExplanations, 0).toLocaleString()}
+                    {filteredPuzzles.reduce((sum, p) => sum + (p.aiPerformance?.totalExplanations || 0), 0).toLocaleString()}
                   </div>
                   <div className="text-sm text-slate-300">🔬 AI Attempts</div>
                   <div className="text-xs text-slate-400">Research data</div>
@@ -504,7 +504,7 @@ export default function HARCPuzzleBrowser() {
                     <div className="text-2xl font-bold text-cyan-300">
                       {(() => {
                         const avg = filteredPuzzles.length > 0
-                          ? Math.round(filteredPuzzles.reduce((sum, p) => sum + p.avgAccuracy, 0) / filteredPuzzles.length * 100)
+                          ? Math.round(filteredPuzzles.reduce((sum, p) => sum + (p.aiPerformance?.avgAccuracy || 0), 0) / filteredPuzzles.length * 100)
                           : 0;
                         return `${avg}%`;
                       })()}

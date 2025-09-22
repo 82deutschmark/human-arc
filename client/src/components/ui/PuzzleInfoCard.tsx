@@ -14,11 +14,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import { attemptTracker, type PuzzleAttemptStatus } from '@/services/playfab/attemptTracker';
-import type { OfficerPuzzle } from '@/types/arcTypes';
+import type { EnhancedPuzzle } from '@/services/core/puzzleRepository';
 
 interface PuzzleInfoCardProps {
-  puzzle: OfficerPuzzle;
-  onSelectPuzzle: (puzzle: OfficerPuzzle) => void;
+  puzzle: EnhancedPuzzle;
+  onSelectPuzzle: (puzzle: EnhancedPuzzle) => void;
   attemptStatus?: PuzzleAttemptStatus | null;
 }
 
@@ -42,8 +42,8 @@ const getDifficultyBadge = (difficulty: string) => {
   };
 };
 
-const getAnalysisQualityBadge = (puzzle: OfficerPuzzle) => {
-  const attempts = puzzle.totalExplanations;
+const getAnalysisQualityBadge = (puzzle: EnhancedPuzzle) => {
+  const attempts = puzzle.aiPerformance?.totalExplanations || 0;
   if (attempts <= 0) return { label: 'No Analysis', className: 'bg-slate-600 text-slate-100' };
   if (attempts >= 40) return { label: 'Extensive', className: 'bg-green-500 text-white' };
   if (attempts >= 20) return { label: 'Well-Analyzed', className: 'bg-cyan-500 text-white' };
@@ -99,7 +99,7 @@ export function PuzzleInfoCard({ puzzle, onSelectPuzzle, attemptStatus: propAtte
 
   // Use prop attempt status if available, otherwise use individual loading result
   const attemptStatus = propAttemptStatus !== undefined ? propAttemptStatus : individualAttemptStatus;
-  const difficultyBadge = getDifficultyBadge(puzzle.difficulty);
+  const difficultyBadge = getDifficultyBadge(puzzle.difficultyCategory || puzzle.difficulty);
   const analysisQualityBadge = getAnalysisQualityBadge(puzzle);
   const datasetBadge = getDatasetBadge(puzzle.dataset);
 
@@ -159,31 +159,31 @@ export function PuzzleInfoCard({ puzzle, onSelectPuzzle, attemptStatus: propAtte
             <div className="text-slate-400">Success</div>
             <div
               className={`font-bold ${
-                puzzle.avgAccuracy === 0
+                (puzzle.aiPerformance?.avgAccuracy || 0) === 0
                   ? 'text-red-400'
-                  : puzzle.avgAccuracy < 0.5
+                  : (puzzle.aiPerformance?.avgAccuracy || 0) < 0.5
                   ? 'text-amber-400'
                   : 'text-green-400'
               }`}
             >
-              {(puzzle.avgAccuracy * 100).toFixed(0)}%
+              {((puzzle.aiPerformance?.avgAccuracy || 0) * 100).toFixed(0)}%
             </div>
           </div>
           <div className="bg-slate-700/50 rounded p-1.5">
             <div className="text-slate-400">Attempts</div>
             <div className="font-bold text-sky-300">
-              {puzzle.totalExplanations.toLocaleString()}
+              {(puzzle.aiPerformance?.totalExplanations || 0).toLocaleString()}
             </div>
           </div>
           <div className="bg-slate-700/50 rounded p-1.5">
             <div className="text-slate-400">Confidence</div>
             <div className="font-bold text-sky-300">
-              {puzzle.avgConfidence ? `${Math.round(puzzle.avgConfidence)}%` : 'N/A'}
+              {puzzle.aiPerformance?.avgConfidence ? `${Math.round(puzzle.aiPerformance.avgConfidence)}%` : 'N/A'}
             </div>
           </div>
           <div className="bg-slate-700/50 rounded p-1.5">
             <div className="text-slate-400">Grid Size</div>
-            <div className="font-bold text-sky-300">{puzzle.gridSize || 'N/A'}</div>
+            <div className="font-bold text-sky-300">{puzzle.gridSize?.maxWidth ? `${puzzle.gridSize.maxWidth}x${puzzle.gridSize.maxHeight}` : 'N/A'}</div>
           </div>
         </div>
 
