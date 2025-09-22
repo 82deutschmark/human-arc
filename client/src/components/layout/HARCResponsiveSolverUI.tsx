@@ -19,14 +19,14 @@ import {
   usePuzzleSolutionManager
 } from '@/hooks/puzzle-solver';
 
-// Phase 3 Presentational Components
+// Phase 3 Presentational Components - shadcn/ui replacements
 import { PuzzleHeader } from '@/components/harc-solver/PuzzleHeader';
-import { TestCasesView } from '@/components/harc-solver/TestCasesView';
-import { SolutionWorkspace } from '@/components/harc-solver/SolutionWorkspace';
+import { MultiTestTabs } from '@/components/ui/MultiTestTabs';
+import { SolverWorkspace } from '@/components/ui/SolverWorkspace';
 import { ValidationStatus } from '@/components/harc-solver/ValidationStatus';
 
-// Shared/Existing Components
-import { TrainingExamplesSection } from '@/components/officer/TrainingExamplesSection';
+// Shared/Existing Components - shadcn/ui replacements
+import { TrainingExamples } from '@/components/ui/TrainingExamples';
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { AssessmentStepSuccessModal } from '@/components/assessment/AssessmentStepSuccessModal';
 
@@ -186,22 +186,21 @@ export function HARCResponsiveSolverUI({
       )}
 
       <main className="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <TrainingExamplesSection
+        <TrainingExamples
           examples={puzzle.train || []}
           emojiSet={displayState.emojiSet}
           displayMode={displayState.displayMode}
           title="Training Examples - Find the pattern... 🤔"
         />
 
-        <TestCasesView
+        <MultiTestTabs
           totalTests={puzzleState.totalTests}
           currentTestIndex={puzzleState.currentTestIndex}
           completedTests={puzzleState.completedTests}
           onTestSelect={puzzleState.handleTestSelect}
-          isAssessmentMode={isAssessmentMode}
         />
 
-        <SolutionWorkspace
+        <SolverWorkspace
           puzzle={puzzle}
           currentTestIndex={puzzleState.currentTestIndex}
           totalTests={puzzleState.totalTests}

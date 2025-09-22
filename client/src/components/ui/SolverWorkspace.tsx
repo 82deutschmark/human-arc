@@ -16,22 +16,11 @@ import { AlertTriangle, Clock, Lock, Target } from 'lucide-react';
 import type { ARCGrid, OfficerTrackPuzzle, ARCExample } from '@/types/arcTypes';
 import type { PuzzleDisplayState, DisplayMode } from '@/types/puzzleDisplayTypes';
 
-// Temporary placeholders for components that will be created in subsequent tasks
-const DisplayModeToolbar = ({ displayMode, onDisplayModeChange, emojiSet, onEmojiSetChange }: any) => (
-  <div className="text-sm text-muted-foreground">DisplayMode Controls (placeholder)</div>
-);
-
-const PuzzleSolverControls = ({ currentDimensions, onSizeChange, getSuggestedSizes }: any) => (
-  <div className="text-sm text-muted-foreground">Solver Controls (placeholder)</div>
-);
-
-const PuzzleTools = ({ displayMode, emojiSet, selectedValue, onValueSelect, onCopyInput, onResetSolution, usedValues, isAssessmentMode }: any) => (
-  <div className="text-sm text-muted-foreground">Puzzle Tools (placeholder)</div>
-);
-
-const PermanentHintSystem = ({ puzzle, currentTestOutput, onAutoResizeGrid, onHintUsed }: any) => (
-  <div className="text-sm text-muted-foreground">Hint System (placeholder)</div>
-);
+// shadcn/ui component imports
+import { DisplayModeToolbar } from '@/components/ui/DisplayModeToolbar';
+import { PuzzleSolverControls } from '@/components/ui/PuzzleSolverControls';
+import { PuzzleTools } from '@/components/ui/PuzzleTools';
+import { PermanentHintSystem } from '@/components/ui/PermanentHintSystem';
 
 export interface SolverWorkspaceProps {
   puzzle: OfficerTrackPuzzle;
@@ -247,7 +236,7 @@ export const SolverWorkspace = React.memo(({
                 )}
               </CardTitle>
 
-              {/* Display Mode Controls Placeholder */}
+              {/* Display Mode Controls */}
               <DisplayModeToolbar
                 displayMode={displayState.displayMode}
                 onDisplayModeChange={onDisplayModeChange}
@@ -310,14 +299,14 @@ export const SolverWorkspace = React.memo(({
             <CardTitle className="text-primary text-xl text-center">Controls</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Puzzle Solver Controls Placeholder */}
+            {/* Puzzle Solver Controls */}
             <PuzzleSolverControls
               currentDimensions={currentDimensions}
               onSizeChange={onSizeChange}
               getSuggestedSizes={getSuggestedSizes}
             />
 
-            {/* Puzzle Tools Placeholder */}
+            {/* Puzzle Tools */}
             <PuzzleTools
               displayMode={displayState.displayMode}
               emojiSet={displayState.emojiSet}
@@ -368,7 +357,7 @@ export const SolverWorkspace = React.memo(({
               onChange={updateCurrentSolution}
             />
 
-            {/* Permanent Hint System Placeholder */}
+            {/* Permanent Hint System */}
             <PermanentHintSystem
               puzzle={puzzle}
               currentTestOutput={expectedOutput}
