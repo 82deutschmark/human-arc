@@ -177,12 +177,12 @@ export default function HARCDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 text-gray-900">
+      <div className="min-h-screen bg-background text-foreground">
         <Navbar title="Human ARC Platform" />
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <div className="text-gray-600">Loading your performance data...</div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <div className="text-muted-foreground">Loading your performance data...</div>
           </div>
         </div>
       </div>
@@ -191,13 +191,13 @@ export default function HARCDashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 text-gray-900">
+      <div className="min-h-screen bg-background text-foreground">
         <Navbar title="Human ARC Platform" />
         <div className="flex items-center justify-center p-8">
           <div className="text-center">
-            <div className="text-red-600 text-4xl mb-4">⚠️</div>
-            <div className="text-red-600 font-semibold mb-2">Failed to Load Performance Data</div>
-            <div className="text-gray-600 mb-4">{error}</div>
+            <div className="text-destructive text-4xl mb-4">⚠️</div>
+            <div className="text-destructive font-semibold mb-2">Failed to Load Performance Data</div>
+            <div className="text-muted-foreground mb-4">{error}</div>
             <Button onClick={() => window.location.reload()} variant="outline">
               Try Again
             </Button>
@@ -208,16 +208,16 @@ export default function HARCDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar title="Human ARC Platform" />
 
       <div className="max-w-7xl mx-auto p-6">
         {comparisonData.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🧩</div>
-            <h2 className="text-xl text-gray-700 mb-2">No Performance Data</h2>
-            <p className="text-gray-600 mb-6">Complete some ARC puzzles to see how you compare against LLMs.</p>
-            <Button onClick={() => setLocation('/puzzles')} className="bg-blue-600 hover:bg-blue-700">
+            <h2 className="text-xl text-foreground mb-2">No Performance Data</h2>
+            <p className="text-muted-foreground mb-6">Complete some ARC puzzles to see how you compare against LLMs.</p>
+            <Button onClick={() => setLocation('/puzzles')}>
               Browse Puzzles
             </Button>
           </div>
@@ -225,16 +225,16 @@ export default function HARCDashboard() {
           <>
             {/* Page Header */}
             <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold text-blue-700 mb-2">Your Performance Dashboard</h1>
-              <p className="text-gray-600">Compare your reasoning abilities with state-of-the-art AI models</p>
+              <h1 className="text-3xl font-bold text-primary mb-2">Your Performance Dashboard</h1>
+              <p className="text-muted-foreground">Compare your reasoning abilities with state-of-the-art AI models</p>
             </div>
 
             {/* Compact Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <Card className="text-center">
                 <CardContent className="p-4">
-                  <div className="text-2xl font-bold text-blue-600">{comparisonData.length}</div>
-                  <div className="text-sm text-gray-600">Puzzles Solved</div>
+                  <div className="text-2xl font-bold text-primary">{comparisonData.length}</div>
+                  <div className="text-sm text-muted-foreground">Puzzles Solved</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
@@ -242,19 +242,19 @@ export default function HARCDashboard() {
                   <div className="text-2xl font-bold text-emerald-600">
                     {((correctCount / comparisonData.length) * 100).toFixed(1)}%
                   </div>
-                  <div className="text-sm text-gray-600">Success Rate</div>
+                  <div className="text-sm text-muted-foreground">Success Rate</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="p-4">
                   <div className="text-2xl font-bold text-amber-600">{totalScore.toLocaleString()}</div>
-                  <div className="text-sm text-gray-600">Total Points</div>
+                  <div className="text-sm text-muted-foreground">Total Points</div>
                 </CardContent>
               </Card>
               <Card className="text-center">
                 <CardContent className="p-4">
                   <div className="text-2xl font-bold text-purple-600">{averageTime}s</div>
-                  <div className="text-sm text-gray-600">Avg Time</div>
+                  <div className="text-sm text-muted-foreground">Avg Time</div>
                 </CardContent>
               </Card>
             </div>
@@ -340,10 +340,10 @@ export default function HARCDashboard() {
 
             {/* Results Info */}
             <div className="flex items-center justify-between mb-4">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 Showing {startIndex + 1}-{Math.min(startIndex + cardsPerPage, filteredData.length)} of {filteredData.length} puzzles
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 Page {currentPage} of {totalPages}
               </div>
             </div>
@@ -352,8 +352,8 @@ export default function HARCDashboard() {
             {filteredData.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-4xl mb-4">🔍</div>
-                <h3 className="text-lg text-gray-700 mb-2">No Results Found</h3>
-                <p className="text-gray-600">Try adjusting your search or filters.</p>
+                <h3 className="text-lg text-foreground mb-2">No Results Found</h3>
+                <p className="text-muted-foreground">Try adjusting your search or filters.</p>
               </div>
             ) : (
               <div className={viewMode === 'grid' 

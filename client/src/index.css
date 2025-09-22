@@ -70,12 +70,13 @@
     @apply border-border;
   }
 
+  /* HARC Platform light theme by default */
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
   
-  /* Space Force dark theme by default */
-  body {
+  /* Space Force dark theme - applied to specific pages */
+  .space-force-theme {
     @apply bg-slate-900 text-slate-50;
   }
 }
