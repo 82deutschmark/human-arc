@@ -44,6 +44,11 @@ export default function HARCPuzzleBrowser() {
     error,
     loadingProgress,
     loadingMessage,
+    loadingStages,
+    currentStage,
+    detailedStatus,
+    performanceMetrics,
+    enhancedError,
     filterByDifficulty,
     searchById,
     addSearchResult,
@@ -214,6 +219,10 @@ export default function HARCPuzzleBrowser() {
               ? "Processing puzzle metadata from arc-explainer API..."
               : "Initializing HARC Platform..."
           }
+          loadingStages={loadingStages}
+          detailedStatus={detailedStatus}
+          performanceMetrics={performanceMetrics}
+          enhancedError={enhancedError || undefined}
         />
         {/* Fallback for PlayFab initialization */}
         {!player && !loading && (

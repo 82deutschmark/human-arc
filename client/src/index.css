@@ -67,7 +67,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 
   /* HARC Platform light theme by default */

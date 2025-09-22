@@ -184,7 +184,7 @@ export const EnhancedGridCell = React.memo(({
             height: '8px',
             backgroundColor: 'hsl(var(--primary))',
             borderRadius: '50%',
-            border: '1px solid hsl(var(--border)),
+            border: '1px solid hsl(var(--border))',
             pointerEvents: 'none'
           }}
         />

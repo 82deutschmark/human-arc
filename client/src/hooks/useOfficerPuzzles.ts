@@ -7,14 +7,25 @@
  */
 
 import { useState, useEffect } from 'react';
-import { 
+import {
   getEvaluation2Puzzles,
-  getDifficultyStats, 
+  getDifficultyStats,
   getPuzzlesByDifficulty,
   searchPuzzleById,
-  type OfficerPuzzle, 
-  type DifficultyStats 
+  type OfficerPuzzle,
+  type DifficultyStats
 } from '@/services/officerArcAPI';
+import {
+  LoadingStage,
+  DetailedStatus,
+  PerformanceMetrics,
+  EnhancedError,
+  PUZZLE_LOADING_STAGES,
+  calculateProgress,
+  getCurrentStage,
+  updateStageStatus,
+  calculateMetrics
+} from '@/types/loadingTypes';
 
 export type SortStrategy = 'composite' | 'accuracy' | 'explanations' | 'difficulty' | 'recent';
 
@@ -25,14 +36,19 @@ export interface UseOfficerPuzzlesReturn {
   filteredPuzzles: OfficerPuzzle[];
   total: number; // Total puzzles in database
 
-  // State
+  // Enhanced loading state
   loading: boolean;
   error: string | null;
-  loadingProgress: number; // Progress percentage (0-100)
+  loadingProgress: number; // Real progress percentage (0-100)
   loadingMessage: string; // Current loading status message
+  loadingStages: LoadingStage[];
+  currentStage: string;
+  detailedStatus: DetailedStatus;
+  performanceMetrics: PerformanceMetrics;
+  enhancedError: EnhancedError | null;
   
   // Actions
-  filterByDifficulty: (difficulty: 'impossible' | 'extremely_hard' | 'very_hard' | 'challenging' | null) => void;
+  filterByDifficulty: (difficulty: 'practically_impossible' | 'most_llms_fail' | 'unreliable' | null) => void;
   searchById: (id: string) => Promise<OfficerPuzzle | null>;
   addSearchResult: (puzzle: OfficerPuzzle) => void;
   refresh: (limit?: number, sortBy?: SortStrategy) => Promise<void>;
@@ -51,10 +67,9 @@ export function useOfficerPuzzles(
 ): UseOfficerPuzzlesReturn {
   const [puzzles, setPuzzles] = useState<OfficerPuzzle[]>([]);
   const [stats, setStats] = useState<DifficultyStats>({
-    impossible: 0,
-    extremely_hard: 0,
-    very_hard: 0,
-    challenging: 0,
+    practically_impossible: 0,
+    most_llms_fail: 0,
+    unreliable: 0,
     total: 0
   });
   const [filteredPuzzles, setFilteredPuzzles] = useState<OfficerPuzzle[]>([]);
@@ -63,92 +78,173 @@ export function useOfficerPuzzles(
   const [error, setError] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState('Initializing...');
+  const [loadingStages, setLoadingStages] = useState<LoadingStage[]>([...PUZZLE_LOADING_STAGES]);
+  const [detailedStatus, setDetailedStatus] = useState<DetailedStatus>({
+    primaryMessage: 'Initializing puzzle loading system...'
+  });
+  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
+    totalPuzzles: 0,
+    processedPuzzles: 0
+  });
+  const [enhancedError, setEnhancedError] = useState<EnhancedError | null>(null);
+  const [loadStartTime, setLoadStartTime] = useState<number>(0);
   const [currentFilter, setCurrentFilter] = useState<string | null>(null);
   const [currentLimit, setCurrentLimit] = useState(initialLimit);
   const [currentSortStrategy, setCurrentSortStrategy] = useState<SortStrategy>(initialSort);
 
-  // Load evaluation2 puzzles with rich metadata from arc-explainer
+  // Helper function to update stages and progress
+  const updateStage = (stageId: string, status: LoadingStage['status'], details?: string) => {
+    setLoadingStages(prev => {
+      const updated = updateStageStatus(prev, stageId, status, details);
+      setLoadingProgress(calculateProgress(updated));
+
+      const current = getCurrentStage(updated);
+      if (current) {
+        setLoadingMessage(current.name);
+        setDetailedStatus({
+          primaryMessage: current.name,
+          secondaryMessage: details,
+          technicalDetails: current.details
+        });
+      }
+
+      return updated;
+    });
+  };
+
+  // Load evaluation2 puzzles with rich metadata and real progress tracking
   const loadData = async (limit: number = currentLimit, sortBy: SortStrategy = currentSortStrategy) => {
     try {
       setLoading(true);
       setError(null);
-      setLoadingProgress(0);
-      setLoadingMessage('Connecting to puzzle database...');
+      setEnhancedError(null);
+      setLoadStartTime(Date.now());
 
-      // Reduced console logging - progress now shown in UI
+      // Reset stages
+      setLoadingStages([...PUZZLE_LOADING_STAGES]);
+
+      // Stage 1: Initialize
+      updateStage('init', 'active', 'Setting up connection to arc-explainer API...');
       console.log(`🎖️ Loading evaluation2 puzzles from arc-explainer API`);
+      updateStage('init', 'complete', 'Connection initialized');
 
-      setLoadingProgress(10);
-      setLoadingMessage('Fetching puzzle metadata...');
-
-      // Load evaluation2 puzzles with rich metadata from arc-explainer
+      // Stage 2: API Call
+      updateStage('api-call', 'active', '🌐 Calling https://arc-explainer-production.up.railway.app/api/puzzle/worst-performing');
       const puzzleResponse = await getEvaluation2Puzzles();
+      updateStage('api-call', 'complete', `📊 Received ${puzzleResponse.puzzles.length} puzzle records from arc-explainer`);
 
-      setLoadingProgress(50);
-      setLoadingMessage('Processing difficulty analysis...');
-      
+      // Stage 3: Data Processing
+      updateStage('data-fetch', 'active', `Processing ${puzzleResponse.puzzles.length} puzzle metadata records...`);
+
+      // Update performance metrics
+      setPerformanceMetrics(prev => ({
+        ...prev,
+        totalPuzzles: puzzleResponse.total,
+        processedPuzzles: puzzleResponse.puzzles.length
+      }));
+
       // Calculate stats from loaded puzzles
       const statsData: DifficultyStats = {
-        impossible: 0,
-        extremely_hard: 0,
-        very_hard: 0,
-        challenging: 0,
+        practically_impossible: 0,
+        most_llms_fail: 0,
+        unreliable: 0,
         total: puzzleResponse.total
       };
-      
+
       puzzleResponse.puzzles.forEach(puzzle => {
         statsData[puzzle.difficulty]++;
       });
 
-      setLoadingProgress(70);
-      setLoadingMessage(`Sorting ${puzzleResponse.puzzles.length} puzzles by ${sortBy}...`);
+      updateStage('data-fetch', 'complete', `Analyzed difficulty distribution for ${puzzleResponse.puzzles.length} puzzles`);
 
-      // Apply sorting based on strategy
+      // Stage 4: Processing Difficulty Analysis
+      updateStage('processing', 'active', 'Calculating performance statistics...');
+
+      const avgAccuracy = puzzleResponse.puzzles.length > 0
+        ? puzzleResponse.puzzles.reduce((sum, p) => sum + p.avgAccuracy, 0) / puzzleResponse.puzzles.length
+        : 0;
+      const impossibleCount = puzzleResponse.puzzles.filter(p => p.difficulty === 'practically_impossible').length;
+
+      // Update performance metrics with calculated stats
+      setPerformanceMetrics(prev => ({
+        ...prev,
+        averageAccuracy: avgAccuracy,
+        impossibleCount,
+        ...calculateMetrics(loadStartTime, puzzleResponse.puzzles.length, puzzleResponse.total)
+      }));
+
+      const performanceStats = `📊 Average AI accuracy: ${(avgAccuracy * 100).toFixed(1)}%, ${impossibleCount} impossible puzzles`;
+      updateStage('processing', 'complete', performanceStats);
+      console.log(performanceStats);
+
+      // Stage 5: Sorting
+      updateStage('sorting', 'active', `Sorting ${puzzleResponse.puzzles.length} puzzles by ${sortBy}...`);
+
       let sortedPuzzles = [...puzzleResponse.puzzles];
-
       if (sortBy === 'accuracy') {
-        sortedPuzzles.sort((a, b) => a.avgAccuracy - b.avgAccuracy); // Lowest accuracy first (hardest)
+        sortedPuzzles.sort((a, b) => a.avgAccuracy - b.avgAccuracy);
       } else if (sortBy === 'explanations') {
-        sortedPuzzles.sort((a, b) => b.totalExplanations - a.totalExplanations); // Most explanations first (most analyzed)
+        sortedPuzzles.sort((a, b) => b.totalExplanations - a.totalExplanations);
       } else if (sortBy === 'composite') {
-        sortedPuzzles.sort((a, b) => a.compositeScore - b.compositeScore); // Worst composite score first
+        sortedPuzzles.sort((a, b) => a.compositeScore - b.compositeScore);
       }
-      // 'difficulty' keeps arc-explainer's default sorting (hardest first)
 
-      setLoadingProgress(85);
+      updateStage('sorting', 'complete', `Sorted ${sortedPuzzles.length} puzzles by ${sortBy}`);
 
       // Apply limit if specified
       if (limit && limit < sortedPuzzles.length) {
-        setLoadingMessage(`Applying limit: selecting top ${limit} puzzles...`);
+        const limitMessage = `Applying limit: selecting top ${limit} of ${sortedPuzzles.length} puzzles`;
+        setDetailedStatus(prev => ({ ...prev, secondaryMessage: limitMessage }));
         sortedPuzzles = sortedPuzzles.slice(0, limit);
-        // Applied limit logged to console for debugging
         console.log(`📊 Showing ${limit} of ${puzzleResponse.total} evaluation2 puzzles`);
       }
 
-      setLoadingProgress(95);
-      setLoadingMessage('Finalizing puzzle data...');
-      
+      // Stage 6: Finalize
+      updateStage('finalize', 'active', 'Finalizing puzzle data...');
+
       setPuzzles(sortedPuzzles);
       setTotal(puzzleResponse.total);
       setStats(statsData);
       setFilteredPuzzles(sortedPuzzles);
 
-      setLoadingProgress(100);
-      setLoadingMessage('Puzzle library ready!');
+      updateStage('finalize', 'complete', `✅ Loaded ${sortedPuzzles.length} puzzles with enhanced metadata`);
 
-      // Summary logging - detailed stats now shown in UI
+      // Update final status
+      setDetailedStatus({
+        primaryMessage: 'Puzzle library ready!',
+        secondaryMessage: `${sortedPuzzles.length} puzzles loaded successfully`,
+        performanceStats: `Average AI accuracy: ${(avgAccuracy * 100).toFixed(1)}%, ${impossibleCount} impossible puzzles`,
+        technicalDetails: `Data source: arc-explainer API | Sort: ${sortBy} | Limit: ${limit}`
+      });
+
       console.log(`✅ Loaded ${sortedPuzzles.length} evaluation2 puzzles with metadata`);
 
-      if (sortedPuzzles.length > 0) {
-        const avgAccuracy = sortedPuzzles.reduce((sum, p) => sum + p.avgAccuracy, 0) / sortedPuzzles.length;
-        const impossibleCount = sortedPuzzles.filter(p => p.difficulty === 'impossible').length;
-        console.log(`📊 Average AI accuracy: ${(avgAccuracy * 100).toFixed(1)}%, ${impossibleCount} impossible puzzles`);
-      }
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load evaluation2 puzzles from arc-explainer';
       setError(errorMessage);
-      setLoadingMessage('Failed to load puzzle data');
+
+      // Enhanced error with context
+      const enhancedErr: EnhancedError = {
+        title: 'Puzzle Loading Failed',
+        message: 'Unable to load puzzle data from the arc-explainer API',
+        context: 'The puzzle database service may be temporarily unavailable or experiencing high load',
+        suggestions: [
+          'Check your internet connection',
+          'Wait a few moments and try refreshing the page',
+          'Try reducing the number of puzzles to load',
+          'Contact support if the problem persists'
+        ],
+        technicalDetails: err instanceof Error ? err.message : 'Unknown error'
+      };
+
+      setEnhancedError(enhancedErr);
+
+      // Update current stage to error
+      const currentStage = getCurrentStage(loadingStages);
+      if (currentStage) {
+        updateStage(currentStage.id, 'error', `Failed: ${errorMessage}`);
+      }
+
       console.error('❌ Failed to load evaluation2 puzzles from arc-explainer:', err);
     } finally {
       setLoading(false);
@@ -156,7 +252,7 @@ export function useOfficerPuzzles(
   };
 
   // Filter puzzles by difficulty
-  const filterByDifficulty = async (difficulty: 'impossible' | 'extremely_hard' | 'very_hard' | 'challenging' | null) => {
+  const filterByDifficulty = async (difficulty: 'practically_impossible' | 'most_llms_fail' | 'unreliable' | null) => {
     try {
       setCurrentFilter(difficulty);
       
@@ -241,11 +337,16 @@ export function useOfficerPuzzles(
     filteredPuzzles,
     total,
 
-    // State
+    // Enhanced loading state
     loading,
     error,
     loadingProgress,
     loadingMessage,
+    loadingStages,
+    currentStage: getCurrentStage(loadingStages)?.name || '',
+    detailedStatus,
+    performanceMetrics,
+    enhancedError,
 
     // Actions
     filterByDifficulty,
