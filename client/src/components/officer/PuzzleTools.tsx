@@ -28,14 +28,14 @@ interface PuzzleToolsProps {
   onCopyInput: () => void;
   onResetSolution: () => void;
   onReplayTutorial?: () => void;
-  onValidate: () => void;
+  onValidate?: () => void;
 
-  // Validation state
-  isValidating: boolean;
-  allTestsCompleted: boolean;
+  // Validation state (optional since Submit button moved to header)
+  isValidating?: boolean;
+  allTestsCompleted?: boolean;
   isAssessmentMode?: boolean;
 
-  // Attempt tracking state
+  // Attempt tracking state (optional since Submit button moved to header)
   isLocked?: boolean;
   attemptsRemaining?: number;
 
@@ -52,8 +52,8 @@ export function PuzzleTools({
   onResetSolution,
   onReplayTutorial,
   onValidate,
-  isValidating,
-  allTestsCompleted,
+  isValidating = false,
+  allTestsCompleted = false,
   isAssessmentMode = false,
   isLocked = false,
   attemptsRemaining = 2,
@@ -109,44 +109,7 @@ export function PuzzleTools({
         </div>
       </div>
 
-      {/* Validation Button - Separated with margin */}
-      <div className="mt-4">
-        <Button
-          size="lg"
-          className={`w-full px-4 py-4 h-16 text-xl ${
-            isLocked
-              ? 'bg-red-600 hover:bg-red-700 cursor-not-allowed'
-              : attemptsRemaining === 1
-                ? 'bg-yellow-600 hover:bg-yellow-700'
-                : 'bg-amber-600 hover:bg-amber-700'
-          } text-white`}
-          disabled={isLocked || isValidating}
-          onClick={isLocked ? undefined : onValidate}
-        >
-          {isLocked ? (
-            '🔒 Puzzle Locked - Max Attempts Exceeded'
-          ) : isValidating ? (
-            '🔄 Submitting to PlayFab...'
-          ) : attemptsRemaining === 1 ? (
-            '⚠️ Final Attempt - Submit Solution'
-          ) : (
-            '🎯 Submit for Official Validation'
-          )}
-        </Button>
-
-        {/* Helper text */}
-        <div className="text-base text-slate-400 mt-3 text-center">
-          {isLocked ? (
-            'This puzzle is locked due to exceeding the maximum number of attempts (2).'
-          ) : attemptsRemaining === 1 ? (
-            'This is your final attempt - double-check your solution!'
-          ) : isAssessmentMode ? (
-            'Submit your attempt for official assessment validation.'
-          ) : (
-            'Submit your solution for official PlayFab validation.'
-          )}
-        </div>
-      </div>
+      {/* Submit button moved to header next to theme controls */}
     </>
   );
 }

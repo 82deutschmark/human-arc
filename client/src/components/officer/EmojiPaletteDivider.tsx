@@ -56,7 +56,7 @@ export const EmojiPaletteDivider: React.FC<EmojiPaletteDividerProps> = ({
 
     // Determine what to display based on mode
     let displayContent: string;
-    if (displayMode === 'arc-colors') {
+    if (displayMode === 'arc-colors' || displayMode === 'numbers') {
       displayContent = value.toString();
     } else if (displayMode === 'hybrid') {
       displayContent = `${value}${emoji}`;
@@ -64,24 +64,24 @@ export const EmojiPaletteDivider: React.FC<EmojiPaletteDividerProps> = ({
       displayContent = emoji;
     }
 
-    // Get ARC color background for arc-colors and hybrid modes
+    // Get background color based on display mode
     const getBackgroundColor = () => {
       if (displayMode === 'arc-colors' || displayMode === 'hybrid') {
         return getARCColorCSS(value);
       }
-      // For emoji mode, use existing logic
+      // For numbers and emoji mode, use standard selection logic
       if (isSelected) return 'rgb(251, 191, 36)'; // amber-400
       return 'transparent';
     };
 
-    // Get text color with proper contrast for ARC colors
+    // Get text color with proper contrast
     const getTextColor = () => {
       if (displayMode === 'arc-colors' || displayMode === 'hybrid') {
         // Calculate contrast based on ARC color - same logic as EnhancedGridCell
         const isDarkBackground = value === 0 || value === 5 || value === 9; // Black, Grey, Maroon
         return isDarkBackground ? 'white' : 'black';
       }
-      // For emoji mode, use existing logic
+      // For numbers and emoji mode, use standard selection logic
       if (isSelected) return 'rgb(51, 65, 85)'; // slate-700
       return 'rgb(203, 213, 225)'; // slate-300
     };
@@ -90,9 +90,6 @@ export const EmojiPaletteDivider: React.FC<EmojiPaletteDividerProps> = ({
     const getBorderColor = () => {
       if (isSelected) return 'rgb(251, 191, 36)'; // amber-400
       if (isUsed) return 'rgb(34, 211, 238)'; // cyan-400
-      if (displayMode === 'arc-colors' || displayMode === 'hybrid') {
-        return 'rgb(100, 116, 139)'; // slate-500
-      }
       return 'rgb(100, 116, 139)'; // slate-500
     };
 

@@ -619,10 +619,20 @@ handlers.GenerateAnonymousName = function(args, context) {
     const number = Math.floor(Math.random() * 999) + 1;
     const generatedName = `${adjective}${noun}${number}`;
 
-    PlayFabService.writePlayerEvent(context.playerId, "AnonymousNameGenerated", {
-        generatedName,
-        timestamp: new Date().toISOString()
-    });
+    // Use currentPlayerId instead of playerId for consistency
+    const playerId = context.currentPlayerId;
+    if (playerId) {
+        try {
+            PlayFabService.writePlayerEvent(playerId, "AnonymousNameGenerated", {
+                generatedName,
+                timestamp: new Date().toISOString()
+            });
+        } catch (error) {
+            log.error("Failed to write AnonymousNameGenerated event: " + error.message);
+        }
+    } else {
+        log.warn("Player ID not available for AnonymousNameGenerated event");
+    }
 
     return { newName: generatedName };
 };
@@ -762,6 +772,42 @@ handlers.UpdateHARCTotalScore = function(args, context) {
     } catch (error) {
         log.error("UpdateHARCTotalScore error", { error: error.message, stack: error.stack, args });
         return { success: false, error: "Failed to update HARC total score" };
+    }
+};
+
+// =============================================================================
+// ATTEMPT STATUS HANDLERS
+// =============================================================================
+
+handlers.GetSinglePuzzleAttemptStatus = function(args, context) {
+    /**
+     * @purpose: Get the attempt status for a single puzzle.
+     * @author: Cascade (GPT-4)
+     * @date: 2025-09-21
+     * @param {object} args - The arguments passed to the function.
+     * @param {string} args.puzzleId - The ID of the puzzle to check.
+     * @param {object} context - The PlayFab context object.
+     * @returns {object} - The status of the puzzle attempt.
+     * @throws {Error} - If the player ID is missing.
+     */
+    try {
+        Utils.assertArgs(args, ['puzzleId']);
+        const { puzzleId } = args;
+        const playerId = context.currentPlayerId;
+        Utils.assert(playerId, 'Player ID is required for GetSinglePuzzleAttemptStatus.');
+
+        const attemptsData = AttemptTrackingService.getPlayerAttemptsData(playerId);
+        const status = AttemptTrackingService.getPuzzleStatus(attemptsData, puzzleId, playerId);
+
+        return {
+            success: true,
+            puzzleId: puzzleId,
+            ...status
+        };
+
+    } catch (error) {
+        log.error("GetSinglePuzzleAttemptStatus error", { error: error.message, stack: error.stack, args });
+        return { success: false, error: `Failed to get puzzle attempt status: ${error.message}` };
     }
 };
 

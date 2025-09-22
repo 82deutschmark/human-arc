@@ -267,10 +267,7 @@ export class PlayFabValidation {
       await playFabEvents.logEvent('puzzle_attempt_status_check', {
         puzzleId: args.puzzleId,
         sessionId: args.sessionId,
-        status: attemptStatus.status,
-        attemptsRemaining: attemptStatus.attemptsRemaining,
-        totalAttempts: attemptStatus.totalAttempts,
-        canAttempt: attemptStatus.canAttempt,
+        ...attemptStatus, // Spread the properties of attemptStatus
         timestamp: new Date().toISOString()
       });
 
@@ -423,7 +420,14 @@ export class PlayFabValidation {
     const isCorrect = validationResult.allCorrect;
 
     // Prepare attempt data for tracking
-    const attemptData = {
+    const attemptData: {
+      solutions: number[][][];
+      timeElapsed: number;
+      stepCount: number;
+      attemptNumber: number;
+      sessionId: string;
+      scoreData?: any;
+    } = {
       solutions: args.solutions,
       timeElapsed: args.timeElapsed,
       stepCount: args.stepCount,
@@ -492,7 +496,7 @@ export class PlayFabValidation {
     // First time correct - award points and update player data (same as CloudScript)
     await this.updatePlayFabDataDirectly(args.puzzleId, scoreData, args);
 
-    console.log(`[PlayFabValidation] Fallback: Puzzle ${args.puzzleId} completed successfully, awarded ${scoreData.finalScore} points`);
+    console.log(`[PlayFabValidation] Fallback: Puzzle ${args.puzzleId} completed successfully, awarded ${scoreData?.finalScore} points`);
 
     return {
       success: true,
@@ -500,7 +504,7 @@ export class PlayFabValidation {
       ...scoreData,
       attemptsRemaining: trackingResult.attemptsRemaining,
       totalAttempts: trackingResult.totalAttempts,
-      message: `Puzzle solved! +${scoreData.finalScore} points (Client-side validation)`,
+      message: `Puzzle solved! +${scoreData?.finalScore} points (Client-side validation)`,
       fallback: true
     };
   }

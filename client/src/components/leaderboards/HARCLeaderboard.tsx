@@ -186,6 +186,12 @@ export function HARCLeaderboard() {
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
+                onClick={() => setLocation('/')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                🏠 Home
+              </Button>
+              <Button
                 onClick={() => setLocation('/assessment')}
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold"
               >
@@ -223,6 +229,12 @@ export function HARCLeaderboard() {
           title="HARC Leaderboard"
           rightContent={
             <div className="flex items-center space-x-3">
+              <Button
+                onClick={() => setLocation('/')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              >
+                🏠 Home
+              </Button>
               <Button
                 onClick={() => setLocation('/assessment')}
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold"

@@ -1,4 +1,4 @@
-/**
+/**OLD FILE!  Probably no longer relevant! Do not use!!
  * Leaderboards Page
  * Author: Cascade
  * Date: 2025-09-07
@@ -38,14 +38,20 @@ import type { PlayFabPlayer } from "@/services/playfab";
 
 export default function Leaderboards() {
   const [match, params] = useRoute('/leaderboards/:type');
+
+  // Check if this is the HARC leaderboard route FIRST - before any state initialization
+  const isHARCLeaderboard = params?.type === 'harc_leaderboard';
+
+  // If this is the HARC leaderboard route, render the dedicated component immediately
+  if (isHARCLeaderboard) {
+    return <HARCLeaderboard />;
+  }
+
   const [selectedType, setSelectedType] = useState<LeaderboardType>(LeaderboardType.OFFICER_TRACK);
   const [availableLeaderboards, setAvailableLeaderboards] = useState<LeaderboardConfig[]>([]);
   const [player, setPlayer] = useState<PlayFabPlayer | null>(null);
   const [totalTasks, setTotalTasks] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Check if this is the HARC leaderboard route
-  const isHARCLeaderboard = params?.type === 'harc_leaderboard';
 
     useEffect(() => {
     const loadPageData = async () => {
@@ -103,11 +109,6 @@ export default function Leaderboards() {
   const handleTabChange = (type: LeaderboardType) => {
     setSelectedType(type);
   };
-
-  // If this is the HARC leaderboard route, render the dedicated component
-  if (isHARCLeaderboard) {
-    return <HARCLeaderboard />;
-  }
 
   if (isLoading || !player) {
     return (

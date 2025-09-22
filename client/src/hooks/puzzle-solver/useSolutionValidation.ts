@@ -9,8 +9,9 @@
 
 import { useState, useCallback } from 'react';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
-import { puzzleSolverService, type ValidationRequest } from '@/services/puzzleSolver/PuzzleSolverService';
+import { playFabValidation } from '@/services/playfab/validation';
 import { idConverter } from '@/services/idConverter';
+import { attemptTracker } from '@/services/playfab/attemptTracker';
 
 export interface ValidationState {
   isValidating: boolean;
@@ -102,52 +103,27 @@ export function useSolutionValidation(options: UseSolutionValidationOptions): So
     setValidationError(null);
 
     try {
-      // CHECK ATTEMPT STATUS BEFORE VALIDATION using User Data (bypasses CloudScript auth issues)
-      const attemptStatus = await attemptTracker.getPuzzleAttemptStatusFromUserData(puzzle.id);
-      console.log(`[useSolutionValidation] User Data attempt status for ${puzzle.id}:`, attemptStatus);
+      // REMOVE PRE-VALIDATION ATTEMPT CHECKING - Let PlayFab handle this like the working component does
 
-      // Block validation if puzzle is locked
-      if (attemptStatus.status === 'locked') {
-        console.warn(`[useSolutionValidation] Blocked validation - puzzle ${puzzle.id} is locked`);
+      // Create validation arguments exactly like the working ResponsivePuzzleSolver component
+      const validationStartTime = Date.now();
+      const timeElapsedInSeconds = Math.floor((validationStartTime - sessionStartTime) / 1000);
 
-        const lockedResult = {
-          success: false,
-          correct: false,
-          locked: true,
-          error: "Puzzle locked: Maximum 2 attempts exceeded",
-          attemptsRemaining: 0,
-          totalAttempts: attemptStatus.totalAttempts,
-          message: "This puzzle is locked due to exceeding the maximum number of attempts (2)."
-        };
+      console.log(`[useSolutionValidation] Validation for ${puzzle.id}:\n  Start Time: ${sessionStartTime}\n  End Time:   ${validationStartTime}\n  Elapsed (s): ${timeElapsedInSeconds}`);
 
-        setValidationResult(lockedResult);
-        setShowFailureModal(true);
-        return;
-      }
-
-      // Show warning for last attempt
-      if (attemptStatus.attemptsRemaining === 1) {
-        console.warn(`[useSolutionValidation] Warning: Last attempt for puzzle ${puzzle.id}`);
-      }
-
-      // Create validation request using the same structure as Phase 1 PuzzleSolverService
-      const validationRequest: ValidationRequest = {
-        puzzle,
-        solutions,
-        sessionId,
-        sessionStartTime,
-        stepIndex,
-        attemptNumber,
-        playFabPuzzleId,
-        totalTests,
-        isAssessmentMode
+      const validationArgs = {
+        puzzleId: playFabPuzzleId,
+        solutions: solutions,
+        timeElapsed: timeElapsedInSeconds,
+        attemptNumber: attemptNumber,
+        stepCount: Math.max(stepIndex, 1), // Ensure stepCount is at least 1
+        sessionId: sessionId
       };
 
-      // Use PuzzleSolverService from Phase 1
-      const result = await puzzleSolverService.validatePuzzleWithPlayFab(
-        validationRequest,
-        logPlayerAction
-      );
+      console.log('🚀 [useSolutionValidation] Sending to CloudScript:', JSON.stringify(validationArgs, null, 2));
+
+      // Call PlayFab validation directly like the working component does
+      const result = await playFabValidation.validateARCPuzzle(validationArgs);
 
       // Increment attempt number for the next try
       incrementAttemptNumber();

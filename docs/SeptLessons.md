@@ -12,7 +12,7 @@
 |------|-------------------|-------------|-------------------|
 | 2025-09-13 | **Minimal Working Prototype (v0.1.0)** – Unified PlayFab + arc-explainer APIs | • Ground truth data flow established.<br>• Early, small prototype > speculative big design.<br>• Strict field-name consistency (`correct`, not `isCorrect`). | • API mismatches silently break UI – validate all client↔server contracts. |
 | 2025-09-13 | **Service Architecture Refactor** – Core service layer & cache | • Centralised services (`arcExplainerClient`, `puzzleRepository`) eliminate 3 000+ duplicate LOC.<br>• DRY & SRP boost maintainability and testability. | • Never mix caching, ID conversion, and HTTP logic in UI components again. |
-| 2025-09-13 | **Hotfixes & Data Loading Fixes** (AI comparison, assessment loading, ID mismatches) | • ID conversion is a **first-class concern** – build one bullet-proof `idConverter` and reuse it everywhere.<br>• Comprehensive runtime logging accelerates debugging dramatically. | • Copy-pasting ID handling logic fragments leads to endless edge-case bugs. |
+| 2025-09-13 | **Hotfixes & Data Loading Fixes** (AI comparison, assessment loading, ID mismatches) | • ID conversion is a **first-class concern** – built one bullet-proof `idConverter` and reuse it everywhere.<br>• Comprehensive runtime logging accelerates debugging dramatically. | • Copy-pasting ID handling logic fragments leads to endless edge-case bugs. |
 | 2025-09-14 | **CloudScript Refactor & Fallback Validation** | • 60 % server code reduction possible with focused helpers.<br>• Automatic client-side fallback kept users unblocked during server outage. | • Fallback is a *temporary hack* – schedule permanent server fix; remove UI “fallback” indicator once done. |
 | 2025-09-14 | **App Re-Theming to HARC** | • A coherent brand journey matters more than old “Space Force” gimmicks.<br>• Route redesign (`/puzzles`, `/dashboard`) removed dead-ends in user flow. | • Large route pivots require exhaustive QA—broken deep links lurk everywhere. |
 | 2025-09-14 | **Validation Message & SuccessModal Overhauls** | • Context-aware messaging (single vs multi-test) prevents user confusion.<br>• Keep UI logic decoupled from puzzle data shape. | • Hard-coding strings == easy future localisation debt. |
@@ -23,16 +23,16 @@
 | 2025-09-17 | **ARC-AGI Prize Two-Attempt Limit** | • Business rules (2 attempts) belong in CloudScript, not client.<br>• Migration scripts are part of the feature – ship them together. | • Forgetting data migration = instant player lockouts; always test legacy accounts. |
 | 2025-09-10 | **Dataset Detection & Validation Flow Clarity** | • Automatically compute dataset prefix (`ARC-E2-`, `ARC-TR-`, …) rather than trusting PlayFab.<br>• UI now differentiates “Frontend check” vs “Official validation” – transparency reduces support tickets. | • Duplicate puzzle IDs across datasets cause silent validation mismatches. Detect & log! |
 | 2025-09-10 | **Dynamic Emoji Dropdown** | • Treat `spaceEmojis.ts` as single source of truth; generate UI from data.<br>• Future emoji sets require **zero** component edits. | • UI lists that diverge from constants rot quickly. |
-| 2025-09-09 | **Puzzle Solver UI Redesign** | • Centralising controls cuts mouse travel and aids accessibility.<br>• Hybrid display (`1⚡`) proved clearer than pure emoji for first-time users. | • Ergonomics matter—small CSS tweaks can halve user frustration. |
+| 2025-09-09 | **Puzzle Solver UI Redesign** |Hybrid display (`1⚡`) 
 
 ## Cross-Cutting Wisdom
 
 1. **Start Simple, Iterate Quickly** – The winning LLM leaderboard solution shipped in a day by scrapping the over-ambitious multi-phase plan.
 2. **One Source of Truth** – Whether for emoji sets, ID formats, or API clients, duplication invites desynchronisation.
 3. **Comprehensive Logging Saves Days** – Harden every new service with debug logs & error context.
-4. **Defensive Coding Around External APIs** – Always plan for arc-explainer or PlayFab outage; graceful degradation keeps the product usable.
-5. **Migrations Are Features** – Attempt limits, new statistics, or refactors all need scripts and rollback plans baked in.
-6. **Performance Budgets** – Memoization & container/presentational separation yielded measurable gains; profile before and after every major change.
+4. **Defensive Coding Around External APIs** – NOT NEEDED!  They are reliable and always available.
+5. **Migrations Are Features** – Attempt limits, new statistics, or refactors all need plans.
+6. **Performance Budgets** – Memoization & container/presentational separation yielded measurable gains; profile before and after every major change.  NOT A PRIORITY!
 7. **Guardrails Beat Hotfixes** – Error boundaries and robust validators prevent emergency late-night patches.
 
 ---
@@ -44,4 +44,4 @@
 4. Execute remaining **Phase 2-4** tasks for LLM player data sync (see `15SeptLLMplayers.md`).
 5. Audit routes & deep links post-HARC re-theme; add 301 redirects where needed.
 
-Stay DRY, stay SRP, and ship small, valuable slices. 🤘
+Stay DRY, stay SRP, and ship small, valuable slices.

@@ -149,8 +149,8 @@ export function AssessmentInterface() {
       console.log('🚀 [Assessment] isComplete is true! Starting 3-second countdown to redirect...');
       // Navigate after a short delay to allow user to see the completion message
       const timer = setTimeout(() => {
-        console.log('🚀 [Assessment] Redirecting to /assessment/comparison now!');
-        navigate('/assessment/comparison');
+        console.log('🚀 [Assessment] Redirecting to /dashboard now!');
+        navigate('/dashboard');
       }, 3000); // 3-second delay
 
       return () => {

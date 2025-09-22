@@ -17,6 +17,7 @@ import { playFabRequestManager } from '@/services/playfab/requestManager';
 import { playFabUserData } from '@/services/playfab/userData';
 import { arcExplainerClient, type AggregatedAIStats, type ModelStats } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
+import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
 
 // Reuse data structures from existing components
 interface HumanPerformanceRecord {
@@ -447,96 +448,15 @@ export function PersonalPerformanceComparison() {
               </div>
             </div>
 
-            {/* Performance Comparisons */}
-            <div className="space-y-8">
+            {/* Performance Comparisons - Using PuzzleComparisonCard for DRY compliance */}
+            <div className="space-y-6">
               {comparisonData.map(data => (
-                <div key={data.human.puzzleId} className="bg-gradient-to-br from-slate-800/90 to-slate-700/50 p-6 rounded-2xl border border-slate-600/50 shadow-xl backdrop-blur-sm">
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">🧠</span>
-                      <h3 className="font-bold text-xl text-amber-300">{data.human.puzzleId}</h3>
-                    </div>
-                    <Link
-                      href={`/officer-track/solve/${data.human.puzzleId}`}
-                      className="flex items-center gap-2 px-4 py-2 bg-sky-600/20 border border-sky-500/30 rounded-lg text-sky-300 hover:bg-sky-600/30 hover:text-sky-200 transition-all"
-                    >
-                      <span>Review Puzzle</span>
-                      <span>→</span>
-                    </Link>
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Human Performance */}
-                    <div className={`p-5 rounded-xl border ${data.human.correct
-                      ? 'bg-gradient-to-br from-emerald-900/40 to-emerald-800/20 border-emerald-500/30'
-                      : 'bg-gradient-to-br from-rose-900/40 to-rose-800/20 border-rose-500/30'
-                    }`}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="text-xl">👤</span>
-                        <p className="font-bold text-white text-lg">Your Performance</p>
-                      </div>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-300">Result:</span>
-                          <span className={`font-bold text-xl flex items-center gap-2 ${data.human.correct ? 'text-emerald-400' : 'text-rose-400'}`}>
-                            {data.human.correct ? '✅ Solved' : '❌ Unsolved'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-300">Score:</span>
-                          <span className="font-bold text-xl text-amber-300">
-                            {data.human.finalScore?.toLocaleString() || 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-300">Time:</span>
-                          <span className="font-bold text-lg text-slate-100">
-                            {data.human.timeElapsed ? formatTime(data.human.timeElapsed) : 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-300">Completed:</span>
-                          <span className="font-medium text-sm text-slate-300">
-                            {formatTimestamp(data.human.timestamp)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* LLM Performance */}
-                    <div className="p-5 rounded-xl bg-gradient-to-br from-slate-700/60 to-slate-600/30 border border-slate-500/30">
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="text-xl">🤖</span>
-                        <p className="font-bold text-white text-lg">LLM Performance</p>
-                      </div>
-                      {data.llmStats && data.llmStats.hasData ? (
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-slate-300">Overall Success:</span>
-                            <span className={`font-bold text-xl ${parseFloat(formatAccuracy(data.llmStats.accuracy)) > 50 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                              {formatAccuracy(data.llmStats.accuracy)}%
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-slate-300">Models Tested:</span>
-                            <span className="font-bold text-xl text-amber-300">
-                              {data.llmStats.modelBreakdown?.length || 0}
-                            </span>
-                          </div>
-
-                          {data.llmStats.modelBreakdown && data.llmStats.modelBreakdown.length > 0 &&
-                            renderModelBreakdown(data.llmStats.modelBreakdown, data.human.puzzleId)
-                          }
-                        </div>
-                      ) : (
-                        <div className="text-slate-400 text-center py-4">
-                          <span className="text-lg">🚫</span>
-                          <p>No LLM data available</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <PuzzleComparisonCard
+                  key={data.human.puzzleId}
+                  puzzleId={data.human.puzzleId}
+                  humanResult={data.human}
+                  aiResult={data.llmStats}
+                />
               ))}
             </div>
           </>

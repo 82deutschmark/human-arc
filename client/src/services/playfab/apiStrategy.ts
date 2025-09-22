@@ -50,9 +50,10 @@ export interface PlayFabApiStrategy {
   readonly name: string;
   canHandle(context: ApiRequestContext): boolean;
   createRequest<T>(
-    operation: ApiOperationType, 
-    requestData?: T, 
-    titleId?: string
+    operation: ApiOperationType,
+    requestData?: T,
+    titleId?: string,
+    sessionToken?: string, // Token is now passed per-request
   ): ApiRequest<T>;
 }
 
@@ -73,7 +74,8 @@ export class AdminApiStrategy implements PlayFabApiStrategy {
   createRequest<T>(
     operation: ApiOperationType, 
     requestData?: T, 
-    titleId?: string
+    titleId?: string,
+    sessionToken?: string
   ): ApiRequest<T> {
     const endpointMap: Record<ApiOperationType, string> = {
       getTitleData: '/Admin/GetTitleData',
@@ -114,8 +116,8 @@ export class AdminApiStrategy implements PlayFabApiStrategy {
  */
 export class ClientApiStrategy implements PlayFabApiStrategy {
   readonly name = 'ClientAPI';
-  
-  constructor(private sessionToken?: string) {}
+
+  constructor() {} // The strategy is now stateless regarding the session token.
   
   canHandle(context: ApiRequestContext): boolean {
     const clientOperations: ApiOperationType[] = [
@@ -130,7 +132,8 @@ export class ClientApiStrategy implements PlayFabApiStrategy {
   createRequest<T>(
     operation: ApiOperationType, 
     requestData?: T, 
-    titleId?: string
+    titleId?: string,
+    sessionToken?: string
   ): ApiRequest<T> {
     const endpointMap: Record<ApiOperationType, string> = {
       getUserData: '/Client/GetUserData',
@@ -159,8 +162,10 @@ export class ClientApiStrategy implements PlayFabApiStrategy {
     
     // Add session token for authenticated requests
     const requiresAuth = !['loginWithCustomId'].includes(operation);
-    if (requiresAuth && this.sessionToken) {
-      headers['X-Authorization'] = this.sessionToken;
+    if (requiresAuth && sessionToken) {
+      headers['X-Authorization'] = sessionToken;
+    } else if (requiresAuth && !sessionToken) {
+      console.warn(`[ClientApiStrategy] Auth required for ${operation} but no session token was provided.`);
     }
     
     // Only add TitleId for operations that specifically require it in the request body
@@ -177,12 +182,6 @@ export class ClientApiStrategy implements PlayFabApiStrategy {
     };
   }
   
-  /**
-   * Update session token for authenticated requests
-   */
-  updateSessionToken(sessionToken: string): void {
-    this.sessionToken = sessionToken;
-  }
 }
 
 /**
@@ -205,19 +204,10 @@ export class PlayFabApiStrategyManager {
       this.strategies.push(new AdminApiStrategy(config.secretKey));
     }
     
-    // Client API strategy will be updated with session token when available
+    // Client API strategy is now stateless and doesn't need a token on construction
     this.strategies.push(new ClientApiStrategy());
   }
   
-  /**
-   * Update session token for Client API operations
-   */
-  setSessionToken(sessionToken: string): void {
-    const clientStrategy = this.strategies.find(s => s instanceof ClientApiStrategy) as ClientApiStrategy;
-    if (clientStrategy) {
-      clientStrategy.updateSessionToken(sessionToken);
-    }
-  }
   
   /**
    * Select appropriate strategy and create API request
@@ -245,7 +235,8 @@ export class PlayFabApiStrategyManager {
     }
     
     console.log(`🎯 Selected ${strategy.name} strategy for ${operation}`);
-    return strategy.createRequest(operation, requestData, this.titleId);
+    // Pass the session token down to the selected strategy
+    return strategy.createRequest(operation, requestData, this.titleId, sessionToken);
   }
   
   /**

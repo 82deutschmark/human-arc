@@ -16,7 +16,7 @@
  * - UI provider setup (tooltips, toasts)
  */
 import { useState } from 'react';
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useDocumentMeta } from "@/utils/useDocumentMeta";
@@ -59,8 +59,7 @@ function Router() {
       <Route path="/puzzles/solve/:puzzleId" component={PuzzleSolver} />
       <Route path="/dashboard" component={PersonalPerformanceComparison} />
       <Route path="/comparison" component={PersonalPerformanceComparison} />
-      <Route path="/leaderboards" component={LeaderboardLanding} />
-      <Route path="/leaderboards/:type" component={Leaderboards} />
+      <Route path="/leaderboards/harc_leaderboard" component={Leaderboards} />
       <Route path="/leaderboards/explanation-arena" component={ExplanationArena} />
       <Route path="/profile" component={Profile} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
