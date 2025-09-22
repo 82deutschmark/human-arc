@@ -24,6 +24,7 @@ interface Props {
   isLocked?: boolean;
   onRetry?: () => void;
   showDesignerNotes?: boolean;
+  onNavigateToNewPuzzle?: () => void;
 }
 
 /**
@@ -55,7 +56,8 @@ export function FailureModal({
   totalAttempts = 2,
   isLocked = false,
   onRetry,
-  showDesignerNotes = true
+  showDesignerNotes = true,
+  onNavigateToNewPuzzle
 }: Props) {
   const [failureEmojis, setFailureEmojis] = useState<string[]>([]);
   const [isVisible, setIsVisible] = useState(false);
@@ -126,13 +128,20 @@ export function FailureModal({
             <h3 className="text-xl font-bold text-orange-500 mb-2">Attempts Remaining</h3>
             <div className="flex items-center justify-center gap-3">
               <span className="text-3xl font-bold text-orange-500">
-                1
+                {attemptsRemaining}
               </span>
               <span className="text-muted-foreground">of 2</span>
             </div>
-            <p className="text-orange-500 text-sm mt-2 font-semibold">
-              ⚠️ This is your final attempt!
-            </p>
+            {attemptsRemaining === 1 && (
+              <p className="text-orange-500 text-sm mt-2 font-semibold">
+                ⚠️ This is your final attempt!
+              </p>
+            )}
+            {attemptsRemaining === 0 && (
+              <p className="text-destructive text-sm mt-2 font-semibold">
+                🔒 No attempts remaining - puzzle will be locked
+              </p>
+            )}
           </div>
         )}
 
@@ -153,20 +162,46 @@ export function FailureModal({
 
         {/* Action buttons */}
         <div className="mt-6 flex gap-3 justify-center">
-          <button
-            onClick={onClose}
-            className="px-6 py-3 text-lg font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
-          >
-            {isLocked ? 'Try Different Puzzle' : 'Review Solution'}
-          </button>
-
-          {!isLocked && (
+          {isLocked ? (
+            // For locked puzzles, redirect to puzzle browser
             <button
-              onClick={onClose}
+              onClick={() => {
+                onClose();
+                if (onNavigateToNewPuzzle) {
+                  onNavigateToNewPuzzle();
+                } else {
+                  // Fallback navigation - go to puzzle browser
+                  window.location.href = '/puzzles';
+                }
+              }}
               className="px-6 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
             >
-              Try Different Puzzle
+              🎯 Try Different Puzzle
             </button>
+          ) : (
+            // For non-locked puzzles, show both options
+            <>
+              <button
+                onClick={onClose}
+                className="px-6 py-3 text-lg font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
+              >
+                🔍 Review Solution
+              </button>
+              <button
+                onClick={() => {
+                  onClose();
+                  if (onNavigateToNewPuzzle) {
+                    onNavigateToNewPuzzle();
+                  } else {
+                    // Fallback navigation - go to puzzle browser
+                    window.location.href = '/puzzles';
+                  }
+                }}
+                className="px-6 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
+              >
+                🎯 Try Different Puzzle
+              </button>
+            </>
           )}
         </div>
 

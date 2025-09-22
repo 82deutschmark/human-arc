@@ -8,6 +8,7 @@
  */
 
 import React, { useMemo } from 'react';
+import { useLocation } from 'wouter';
 import { PuzzleNotification } from '@/components/ui/PuzzleNotification';
 import { FailureModal } from '@/components/ui/FailureModal';
 import { AttemptCounter } from '@/components/ui/AttemptCounter';
@@ -45,6 +46,12 @@ export const ValidationStatus = React.memo(({
   onNextPuzzle,
   setShowFailureModal,
 }: ValidationStatusProps) => {
+  const [, setLocation] = useLocation();
+
+  const handleNavigateToNewPuzzle = () => {
+    // Navigate to puzzle browser so user can choose a new puzzle
+    setLocation('/puzzles');
+  };
 
   // Memoize validation feedback to prevent unnecessary re-computation
   const validationFeedback = useMemo(() => {
@@ -95,6 +102,7 @@ export const ValidationStatus = React.memo(({
           setShowFailureModal(false);
           onRetry();
         }}
+        onNavigateToNewPuzzle={handleNavigateToNewPuzzle}
       />
 
       {/* The main action button logic will be part of PuzzleTools,
