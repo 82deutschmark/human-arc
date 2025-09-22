@@ -169,13 +169,13 @@ export function HARCResponsiveSolverUI({
   }, []);
 
   if (!puzzle || !currentTest) {
-    return <div className="min-h-screen bg-slate-900 text-amber-50 flex items-center justify-center">Loading puzzle...</div>;
+    return <div className="min-h-screen bg-background text-foreground flex items-center justify-center">Loading puzzle...</div>;
   }
 
   // --- RENDER ---
 
   return (
-    <div className="min-h-screen bg-slate-900 text-amber-50">
+    <div className="min-h-screen bg-background text-foreground">
       {!hideHeader && (
         <PuzzleHeader
           puzzle={puzzle}
