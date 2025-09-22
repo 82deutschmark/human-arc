@@ -1,6 +1,6 @@
 # UI Refactoring Plan for Puzzle Solver: 22 Sept 2025
 
-**Authored by:** Cascade using gpt-4-turbo
+**Authored by:** Cascade using Gemini 2.5 Pro
 **Date:** 2025-09-22T00:28:00-04:00
 
 ## 1. Overview
