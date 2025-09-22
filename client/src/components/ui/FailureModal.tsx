@@ -130,7 +130,7 @@ export function FailureModal({
               <span className="text-3xl font-bold text-orange-500">
                 {attemptsRemaining}
               </span>
-              <span className="text-muted-foreground">of 2</span>
+              <span className="text-muted-foreground">attempt{attemptsRemaining !== 1 ? 's' : ''} left</span>
             </div>
             {attemptsRemaining === 1 && (
               <p className="text-orange-500 text-sm mt-2 font-semibold">
@@ -139,7 +139,7 @@ export function FailureModal({
             )}
             {attemptsRemaining === 0 && (
               <p className="text-destructive text-sm mt-2 font-semibold">
-                🔒 No attempts remaining - puzzle will be locked
+                🔒 No attempts remaining - this shouldn't show!
               </p>
             )}
           </div>
