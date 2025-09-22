@@ -13,9 +13,9 @@
 
 ## 1. Overview
 
-The current implementation of the `HARCResponsiveSolverUI` suffers from significant responsiveness issues, leading to poor layout scaling and wasted screen real estate, particularly on larger displays. This is primarily due to a widespread violation of the project's core architectural principle: "Use shadcn/ui for EVERYTHING." Instead of leveraging the standard, theme-aware `shadcn/ui` component library, the UI has been built with a complex hierarchy of custom components that rely on a flawed, JavaScript-driven, pixel-based layout system.
+The current implementation of the `HARCResponsiveSolverUI` suffers from significant responsiveness issues, leading to poor layout scaling and wasted screen real estate, particularly on larger displays. This is primarily due to a widespread violation of the project's core architectural principle: "Use shadcn/ui for EVERYTHING." Instead of leveraging the standard, theme-aware `shadcn/ui` component library, the UI has been built BY CLAUDE with a complex hierarchy of custom components that rely on a flawed, JavaScript-driven, pixel-based layout system.  This is wrong and represents a huge breach of project standards and best practices.  Claude threw files into seemingly random folders and used poor naming conventions.  
 
-This document outlines a high-level strategic plan to refactor the UI, bringing it in line with project standards and implementing a modern, responsive design.
+This document outlines a high-level strategic plan to FIX the UI, bringing it in line with project standards and implementing a modern, responsive design.  It is clear that Claude 4 Sonnet is not capable of maintaining sight of the big picture or following even the most basic of instructions and has lost the trust of the project leadership.  
 
 ## 2. The Core Problem: Custom Components and Flawed Responsiveness
 
@@ -102,31 +102,27 @@ TASK LIST:
 ### Phase 1: Foundational Component Refactoring
 
 **Task 1.1: Standardize the Navbar**
--   **Action:** Create a new file `client/src/components/layout/AppNavbar.tsx`.
--   **Instruction:**
-    1.  **CRITICAL:** Read the **entire** content of the existing `client/src/components/layout/Navbar.tsx` to fully understand its functionality, including props and conditional rendering. Do not summarize or skim.
-    2.  In the new `AppNavbar.tsx`, recreate the Navbar functionality. **You must** replace the custom `NavButton` and `NavLink` components with the standard `shadcn/ui` `Button` component, using appropriate variants for styling.
-    3.  Ensure all styles are derived from the theme and Tailwind CSS. Do not use hardcoded colors or styles.
+-   **Action:** Fix the existing `client/src/components/layout/Navbar.tsx` to fully use `shadcn/ui` components and theme variables exclusively. Replace the custom `NavButton` and `NavLink` with standard `Button` components and appropriate variants.
+    1.  Ensure all styles are derived from the theme and Tailwind CSS. Do not use hardcoded colors or styles.
 
-**Task 1.2: Replace the Custom Slider**
--   **Action:** Create a new file `client/src/components/ui/GridSizeSlider.tsx`.
--   **Instruction:**
-    1.  **CRITICAL:** Read the **entire** content of the old `client/src/components/ui/SizeSlider.tsx` to understand its props and purpose.
-    2.  In the new `GridSizeSlider.tsx`, implement the slider using the standard `shadcn/ui` `Slider` component. It must accept the same props (`value`, `onChange`, `min`, `max`, `label`).
+**Task 1.2: Refactor the Custom Slider**  
+-   
+    1.  **CRITICAL:** Read the **entire** content of the  `client/src/components/ui/SizeSlider.tsx` to understand its props and purpose.
+    2.  correctly implement the slider using the standard `shadcn/ui` `Slider` component. It must accept the same props (`value`, `onChange`, `min`, `max`, `label`).
     3.  **DO NOT** write custom HTML/CSS for this. Use the `shadcn/ui` component as intended.
 
 **Task 1.3: Replace the Test Case Navigation**
--   **Action:** Create a new file `client/src/components/ui/PuzzleTabs.tsx`.
+-   **Action:** Create a new file `client/src/components/ui/MultiTestTabs.tsx`.
 -   **Instruction:**
-    1.  **CRITICAL:** Read the **entire** content of `client/src/components/officer/TestCaseNavigation.tsx` to understand its logic for displaying test cases and their completion status.
-    2.  In the new `PuzzleTabs.tsx`, use the `shadcn/ui` `Tabs` component (`Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`) to replace the custom button grid.
+    1.  **CRITICAL:** Read the **entire** content of `client/src/components/officer/TestCaseNavigation.tsx` to understand its logic for displaying multiple test cases and their completion status.
+    2.  In the new `MultiTestTabs.tsx`, use the `shadcn/ui` `Tabs` component (`Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`) to replace the custom button grid.
     3.  The `TabsTrigger` for each tab should visually indicate its status (active, completed, pending) using `lucide-react` icons and `shadcn/ui` variants.
 
 ### Phase 2: De-Risking the Grid System
 
 **Task 2.1: Deprecate the Responsive Sizing Hook**
--   **Action:** Delete the file `client/src/hooks/useResponsiveGridSize.ts`.
--   **Instruction:** This file is the root cause of the layout issues. It must be removed. All responsive logic will be handled by Tailwind CSS in the new grid component.
+-   **Action:** Deprecate the file `client/src/hooks/useResponsiveGridSize.ts` and rename it to `client/src/hooks/useResponsiveGridSize.md`.
+-   **Instruction:** This file is the root cause of the layout issues. It must be removed. All responsive logic will be handled by Tailwind CSS in the new grid component.  Add this note to its header so we know!!!
 
 **Task 2.2: Create a New, Truly Responsive Grid Component**
 -   **Action:** Create a new file `client/src/components/ui/ResponsiveGrid.tsx`.
@@ -150,5 +146,33 @@ TASK LIST:
 **Task 4.1: Assemble the New Solver UI**
 -   **Action:** Refactor the primary container file, `client/src/components/layout/HARCResponsiveSolverUI.tsx`.
 -   **Instruction:**
-    1.  This is the final step. Update this file to remove all references to the old, deprecated components from the `officer` and `harc-solver` folders.
-    2.  Compose the new, fully responsive UI by importing and arranging the new components created in the previous phases (`AppNavbar`, `TrainingExamples`, `SolverWorkspace`, etc.).
+    1.  This is the final step. Update this file to remove all references to the old, deprecated components from the `officer` folder.
+    2.  Compose the new, fully responsive UI by importing and arranging the new components created in the previous phases (`TrainingExamples`, `SolverWorkspace`, etc.).
+
+### Phase 5: Component Cleanup and Finalization
+
+**Task 5.1: Refactor UI Violation Components**
+-   **Action:** Refactor the remaining custom `ui` components to use `shadcn/ui` equivalents.
+-   **Instruction:**
+    1.  **`client/src/components/ui/SuccessModal.tsx` & `FailureModal.tsx`**: Read their contents and replace them with a single, reusable modal component built from `shadcn/ui`'s `AlertDialog` or `Dialog`.
+    2.  **`client/src/components/ui/PuzzleNotification.tsx`**: Read its content to understand its purpose. Replace its functionality using `shadcn/ui`'s `Toast` component.
+    3.  **`client/src/components/ui/AttemptCounter.tsx`**: Read its content. Refactor it to use standard `shadcn/ui` components and Tailwind CSS for styling, removing any custom logic where possible.
+
+**Task 5.2: Create Replacements for `harc-solver` Components**
+-   **Action:** Create new, standardized replacements for the custom `harc-solver` components in the `client/src/components/ui/` directory.
+-   **Instruction:**
+    1.  **`client/src/components/harc-solver/PuzzleHeader.tsx`**: Read its content. Create a new `client/src/components/ui/PuzzleHeader.tsx` that replicates the necessary functionality using `shadcn/ui` components.
+    2.  **`client/src/components/harc-solver/ValidationStatus.tsx`**: Read its content. Create a new `client/src/components/ui/ValidationStatus.tsx` using `shadcn/ui` `Alert` or other appropriate components to display validation feedback.
+
+**Task 5.3: Create Replacements for Remaining `officer` Components**
+-   **Action:** Create new, standardized replacements for the remaining high-impact `officer` components in the `client/src/components/ui/` directory.
+-   **Instruction:**
+    1.  **CRITICAL:** For each of the files below, read the original file in the `officer` directory to fully understand its props and functionality before creating its replacement in the `ui` directory.
+    2.  **`PuzzleSolverControls.tsx`**: Create a new `client/src/components/ui/PuzzleSolverControls.tsx`. Re-implement the controls using `shadcn/ui` `Button` components with appropriate variants.
+    3.  **`PuzzleTools.tsx`**: Create a new `client/src/components/ui/PuzzleTools.tsx`. Rebuild the tool selection functionality using `shadcn/ui` `ToggleGroup` or `RadioGroup` for a better user experience.
+    4.  **`PermanentHintSystem.tsx`**: Create a new `client/src/components/ui/PermanentHintSystem.tsx`. Use `shadcn/ui` `Card` and `Alert` components to display hints.
+    5.  **`DisplayModeToolbar.tsx`**: Create a new `client/src/components/ui/DisplayModeToolbar.tsx`. Use `shadcn/ui` `ToggleGroup` to manage display states.
+
+**Task 5.4: Deprecate Old Components**
+-   **Action:** Once all replacement components have been created and integrated in Task 4.1, rename the old, now-unused component files in the `harc-solver` and `officer` directories to have a `.md` extension (e.g., `ResponsiveOfficerGrid.tsx` -> `ResponsiveOfficerGrid.md`).
+-   **Instruction:** Add a note to the top of each deprecated file explaining that it has been replaced by a new component in the `client/src/components/ui/` directory and should not be used.
