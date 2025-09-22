@@ -1,3 +1,35 @@
+## Version 0.3.3 - CRITICAL FIX: Remove Global Dark Theme Override
+**Author**: Cascade using Claude 4 Sonnet  
+**Date**: 2025-09-21  
+**Status**: 🟢 PRODUCTION READY - CRITICAL THEME FIX
+
+#### Major Discovery
+Found root cause of persistent dark theme: `index.html` contained `<body class="dark">` which was globally forcing dark theme across entire application, overriding all CSS custom properties and design system tokens.
+
+#### Root Cause Analysis
+- **Problem**: `client/index.html` line 65 had `<body class="dark">`
+- **Impact**: Applied `.dark` CSS class globally, changing all CSS custom properties to dark values
+- **Override Chain**: HTML class → `.dark` CSS selector → CSS custom properties → shadcn/ui components
+- **Scope**: Affected ALL pages, not just Space Force theme
+
+#### Technical Fix
+- **Removed**: `class="dark"` from `<body>` element in `index.html`
+- **Result**: Now uses `:root` light theme CSS custom properties by default
+- **CSS Structure**: Light theme default, dark theme opt-in via classes
+
+#### Files Changed
+- ✅ **Fixed**: `client/index.html` - removed `class="dark"` from body element
+- ✅ **Updated**: `client/src/index.css` - proper light/dark theme architecture  
+- ✅ **Updated**: `client/src/pages/HARCDashboard.tsx` - uses design system tokens
+
+#### Impact
+- 🎯 **HARC Platform**: Now displays proper light theme (white cards, dark text)
+- 🎯 **DashboardComparisonCard**: shadcn/ui components use correct light theme tokens
+- 🎯 **Design System**: CSS custom properties work as intended
+- 🎯 **Space Force**: Can opt into dark theme with specific classes when needed
+
+---
+
 ## Version 0.3.2 - HARCDashboard: Scalable Performance Comparison
 **Author**: Cascade using Claude 4 Sonnet  
 **Date**: 2025-09-21  

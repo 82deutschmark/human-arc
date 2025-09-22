@@ -4,7 +4,7 @@
  * PURPOSE: Enhanced Puzzle Comparison Card Component with individual model breakdown functionality
  * ================================
  * Displays a side-by-side comparison for a single puzzle, including detailed AI model performance breakdown.
- * Enhanced with individual model performance section, "Struggled Most" highlighting, and expandable model lists.
+ * Enhanced with individual model performance section, "Struggled Most" highlighting (THIS IS IRRELEVANT!!  Should be reworked to how many models who failed?), and expandable model lists.
  * SRP and DRY check: Pass - Single responsibility (puzzle comparison display), reuses helper functions and patterns from PersonalPerformanceComparison
  */
 

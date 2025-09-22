@@ -36,7 +36,7 @@ This is the consolidated guide to writing code for this project. It merges all p
 
 ### C. Data Handling - Be More Lenient than Strict!!  
 
-1.  **CloudScript is the Source of Truth**: The client's role is to collect user input and display the server's response. All validation, scoring, and data mutation **must** be handled by server-side CloudScript (`cloudscript.js`) to ensure data integrity.  As a fallback, we allow the client to collect data and validate and then send this data to PlayFab for storage.  Security is light, it is a hobby research project with few bad actors.
+1.  **CloudScript is the Source of Truth**: The client's role is to collect user input and display the server's response. All validation, scoring, and data mutation **must** be handled by server-side CloudScript (`cloudscript.js`) to ensure data integrity.  As a fallback, we allow the client to collect data and validate and then send this data to PlayFab for storage.  Security is light, it is a hobby project.
 2.  **Safely Parse JSON**: Data from PlayFab can sometimes be a literal string `"undefined"`. Always check for this before calling `JSON.parse()` to prevent crashes.
 3.  **Use the ID Converter**: The `arc-explainer` API and PlayFab use different ID formats for the same puzzle (`007bbfb7` vs. e.g., `ARC-TR-007bbfb7`). You **must** use the service in `client/src/services/idConverter.ts` to translate between them.
 
@@ -44,11 +44,20 @@ This is the consolidated guide to writing code for this project. It merges all p
 
 1.  **Solve the Stale Prop Problem**: When a child component receives a prop and stores it in local `useState`, it will not update if the parent sends a new prop. To fix this, you **must** use a `useEffect` hook that depends on the prop (`useEffect(() => { /* reset state */ }, [props.puzzle])`) to synchronize the component's internal state with the new prop.
 
+2.  **Use Tailwind CSS**: The project uses Tailwind CSS for styling. You **must** use Tailwind classes to style components, not inline styles or CSS. This ensures consistency and maintainability.
+
+3.  **Use shadcn/ui for EVERYTHING**: The project uses shadcn/ui for UI components. You **must** use shadcn/ui components instead of custom components. This ensures consistency and maintainability.  NEVER CODE CUSTOM STUFF WHEN THERE IS A shadcn/ui COMPONENT THAT DOES THE SAME THING!
+
+
+
+
+
 ### E. Workflow & Process
 
 -   **Plan First**: For any non-trivial request, create a plan in the `/docs` folder with the format DDMMYYYY-<RequestName>.md. The plan should contain your research, reasoning about the nature of the request in the context of the project, and a task list, not code. Get user approval before executing.
 -   **Debug Systematically**: Check the browser console for infinite loops. Log the entire raw API response from PlayFab, not just a `success` message. Use the scripts in the `/scripts` directory for data verification.
 -   **Commit Cleanly**: Every file you create or modify must be committed with a message that includes what the file does, how it works, how the project uses it, and your model name as the author.
+-   **Cascade, the Windsurf assistant**: Cascade is the Windsurf assistant. It may have http://127.0.0.1:54984 available for you to use. If it does, use it, it will show you the site.
 
 ---
 
