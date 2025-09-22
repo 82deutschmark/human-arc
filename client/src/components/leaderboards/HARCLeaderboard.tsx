@@ -183,34 +183,6 @@ export function HARCLeaderboard() {
       <div className="min-h-screen bg-gray-50">
         <Navbar
           title="HARC Leaderboard"
-          rightContent={
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={() => setLocation('/')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-              >
-                🏠 Home
-              </Button>
-              <Button
-                onClick={() => setLocation('/assessment')}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-              >
-                📋 Take Assessment
-              </Button>
-              <Button
-                onClick={() => setLocation('/dashboard')}
-                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-              >
-                📊 View Dashboard
-              </Button>
-              <Button
-                onClick={() => setLocation('/puzzles')}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
-              >
-                🧩 Puzzle Library
-              </Button>
-            </div>
-          }
         />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center">
@@ -227,34 +199,6 @@ export function HARCLeaderboard() {
       <div className="min-h-screen bg-gray-50">
         <Navbar
           title="HARC Leaderboard"
-          rightContent={
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={() => setLocation('/')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-              >
-                🏠 Home
-              </Button>
-              <Button
-                onClick={() => setLocation('/assessment')}
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold"
-              >
-                📋 Take Assessment
-              </Button>
-              <Button
-                onClick={() => setLocation('/dashboard')}
-                className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-              >
-                📊 View Dashboard
-              </Button>
-              <Button
-                onClick={() => setLocation('/puzzles')}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
-              >
-                🧩 Puzzle Library
-              </Button>
-            </div>
-          }
         />
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
