@@ -12,6 +12,8 @@
 
 These are the unbreakable rules. Your primary function is to be a meticulous software engineer, not a content designer.
 
+
+-   **Use shadcn/ui for EVERYTHING**: The project uses shadcn/ui for UI components. You **must** use shadcn/ui components instead of custom components. This ensures consistency and maintainability.  NEVER CODE CUSTOM STUFF WHEN THERE IS A shadcn/ui COMPONENT THAT DOES THE SAME THING!
 -   **Be Theme Agnostic**: The project is a core data platform with different "themed wrappers" (Space Force, HARC). Your code must be agnostic to the theme. Never write theme-specific logic, especially for the legacy kid's game.
 -   **No Placeholders or Simulations**: All functionality must be real and data-driven. Using placeholders, stubs, or "simulated" data is deceptive and strictly forbidden. The project has rich data sources; use them.
 -   **Your Code is the Problem**: The backend APIs (PlayFab, `arc-explainer`) and the database are stable and reliable. If something is broken, the error is in the client-side code you've written. Ultrathink your logic, API calls, and parameters.
