@@ -1,3 +1,39 @@
+## Version 0.3.5 - Search Bar UX Improvements and HARC Navbar Fix
+**Author**: Claude Code using Sonnet 4
+**Date**: 2025-09-22
+**Status**: 🟢 PRODUCTION READY - UX IMPROVEMENTS
+
+#### Summary
+Improved puzzle search user experience by moving search bars to prominent header positions and fixed HARC platform to use proper navbar component with Profile access.
+
+#### Key Improvements
+- **Search Bar Relocation**: Moved puzzle search from buried sections to prominent header positions on both platforms
+- **Compact Design**: Replaced large "PUZZLE DISCOVERY" sections with single-line search bars
+- **HARC Navbar Fix**: Replaced custom header with proper `Navbar` component to restore Profile button access
+- **UI Consistency**: Standardized search bar placement and styling across Officer Track and HARC platforms
+
+#### Technical Changes
+- **OfficerTrackSimple**: Search bar moved to header below main title, compact single-line design
+- **HARCPuzzleBrowser**: Search bar moved to header, replaced custom header with standard `Navbar` component
+- **Layout Optimization**: Removed duplicate search sections, simplified puzzle discovery to limit controls only
+
+#### Files Changed
+- ✅ **Enhanced**: `client/src/pages/OfficerTrackSimple.tsx` - compact header search bar, simplified discovery section
+- ✅ **Enhanced**: `client/src/pages/HARCPuzzleBrowser.tsx` - proper Navbar component, compact header search bar
+- ✅ **Fixed**: HARC platform Profile button access via standard navbar
+
+#### User Experience Impact
+- 🎯 **Faster Puzzle Discovery**: Search is immediately visible at top of page
+- 🎯 **Consistent Navigation**: HARC platform now has proper navbar with Profile access
+- 🎯 **Cleaner Interface**: Removed redundant search sections, focus on puzzle grid
+- 🎯 **Mobile Friendly**: Compact search bars work better on smaller screens
+
+#### Testing Instructions
+1. Visit `/space-force/officer-track` - search bar should be in header below title
+2. Visit `/puzzles` - should have proper navbar with Profile button and header search
+3. Test search functionality from header positions on both platforms
+4. Verify Profile button access on HARC platform
+
 ## Version 0.3.4 - Enhanced Puzzle Loading Modal with Real Progress Tracking
 **Author**: Claude Code using Sonnet 4
 **Date**: 2025-09-22

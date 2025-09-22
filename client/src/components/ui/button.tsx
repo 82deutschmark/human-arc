@@ -18,6 +18,11 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        assessment: "bg-green-600 text-white hover:bg-green-700 font-semibold",
+        dashboard: "bg-amber-600 text-white hover:bg-amber-700 font-semibold",
+        leaderboard: "bg-blue-600 text-white hover:bg-blue-700 font-semibold",
+        puzzles: "bg-purple-600 text-white hover:bg-purple-700 font-semibold",
+        about: "bg-slate-600 text-white hover:bg-slate-700 font-semibold",
       },
       size: {
         default: "h-10 px-4 py-2",

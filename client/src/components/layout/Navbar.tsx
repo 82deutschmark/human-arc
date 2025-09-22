@@ -60,12 +60,12 @@ export function Navbar({
           {/* Right side - Navigation and auth */}
           <div className="flex items-center space-x-4">
             {rightContent || (
-              <div className="hidden md:flex items-center space-x-6">
-                <NavLink href="/assessment">Assessment</NavLink>
-                <NavLink href="/dashboard">Dashboard</NavLink>
-                <NavLink href="/leaderboards/harc_leaderboard">Leaderboard</NavLink>
-                <NavLink href="/puzzles">Puzzles</NavLink>
-                <NavLink href="/about">About</NavLink>
+              <div className="hidden md:flex items-center space-x-3">
+                <NavButton href="/assessment" variant="assessment">📋 Assessment</NavButton>
+                <NavButton href="/dashboard" variant="dashboard">📊 Dashboard</NavButton>
+                <NavButton href="/leaderboards/harc_leaderboard" variant="leaderboard">🏆 Leaderboard</NavButton>
+                <NavButton href="/puzzles" variant="puzzles">🧩 Puzzles</NavButton>
+                <NavButton href="/about" variant="about">ℹ️ About</NavButton>
 
                 {isLoading ? (
                   <Skeleton className="h-9 w-24 rounded-md" />
@@ -90,6 +90,23 @@ export function Navbar({
         </div>
       </div>
     </nav>
+  );
+}
+
+// Helper component for navigation button links
+function NavButton({ href, children, variant = "default" }: {
+  href: string;
+  children: React.ReactNode;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "assessment" | "dashboard" | "leaderboard" | "puzzles" | "about";
+}) {
+  return (
+    <Button
+      asChild
+      variant={variant}
+      size="sm"
+    >
+      <Link href={href}>{children}</Link>
+    </Button>
   );
 }
 

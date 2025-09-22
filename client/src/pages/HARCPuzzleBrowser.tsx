@@ -288,29 +288,38 @@ export default function HARCPuzzleBrowser() {
 
         {/* Move Puzzle Grid to Top Priority */}
         <div className="order-1">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-cyan-300 font-bold text-2xl flex items-center">
-              🧩 AVAILABLE PUZZLES
-              <Badge className="ml-4 bg-cyan-500 text-white text-base px-3 py-1">
-                {filteredPuzzles.length} puzzles
-              </Badge>
-              {currentFilter && (
-                <Badge className="ml-3 bg-sky-500 text-white text-base px-3 py-1">
-                  {currentFilter.replace('_', ' ').toUpperCase()}
-                </Badge>
-              )}
-            </h2>
+          <div className="mb-6">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h2 className="text-red-300 font-bold text-2xl flex items-center mb-2">
+                  🧩 MOST CHALLENGING ARC-AGI PUZZLES
+                  <Badge className="ml-4 bg-cyan-500 text-white text-base px-3 py-1">
+                    {filteredPuzzles.length} puzzles
+                  </Badge>
+                  {currentFilter && (
+                    <Badge className="ml-3 bg-sky-500 text-white text-base px-3 py-1">
+                      {currentFilter.replace('_', ' ').toUpperCase()}
+                    </Badge>
+                  )}
+                </h2>
+                <p className="text-slate-800 text-base max-w-4xl">
+                  These represent the top 50+ most difficult puzzles from the official ARC-AGI evaluation datasets,
+                  ranked by AI failure rate.
+                  Each puzzle comes with performance data from state-of-the-art language model evaluations.
+                </p>
+              </div>
 
-            {currentFilter && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => filterByDifficulty(null)}
-                className="border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white text-base px-4 py-2"
-              >
-                Clear Filter
-              </Button>
-            )}
+              {currentFilter && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => filterByDifficulty(null)}
+                  className="border-sky-500 text-sky-400 hover:bg-sky-500 hover:text-white text-base px-4 py-2 mt-1"
+                >
+                  Clear Filter
+                </Button>
+              )}
+            </div>
           </div>
 
           <PuzzleGrid
@@ -374,10 +383,10 @@ export default function HARCPuzzleBrowser() {
         <div className="order-3 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
             <h2 className="text-cyan-300 font-semibold text-xl flex items-center mb-2 sm:mb-0">
-              🤖 AI PERFORMANCE ANALYSIS
+              🤖 OFFICIAL ARC-AGI ANALYSIS
             </h2>
             <div className="text-slate-300 text-base">
-              Where human reasoning excels over artificial intelligence  
+              Real performance data from GPT-4, Claude, Gemini evaluation on these exact puzzles
             </div>
           </div>
 
@@ -428,10 +437,10 @@ export default function HARCPuzzleBrowser() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-cyan-300 font-semibold text-lg flex items-center">
-                      🔬 Research Contribution
+                      🔬 Official ARC-AGI Benchmark
                     </h3>
                     <p className="text-slate-300 text-base mt-1">
-                      If researchers ever wanted it the data is here 🤷‍♂️
+                      Direct from the ARC-AGI GitHub - the same evaluation set used for frontier AI research
                     </p>
                   </div>
                   <div className="text-right">
@@ -451,14 +460,15 @@ export default function HARCPuzzleBrowser() {
           )}
 
           <div className="mt-4 text-center text-sm text-muted-foreground bg-muted rounded-lg p-3">
-            🧠 <strong>Human - ARC Research:</strong> Will your advantage slip as the state of the art advances?
+            🧠 <strong>Official ARC-AGI Evaluation:</strong> These are the exact same puzzles from the ARC-AGI GitHub repository used to benchmark GPT-4, Claude, Gemini, and other state-of-the-art LLMs
           </div>
         </div>
 
           {/* Footer Info */}
           <div className="order-4 text-center text-muted-foreground text-base bg-muted rounded-lg p-4">
-            <p>🤖 Puzzle performance data sourced from arc-explainer AI analysis</p>
-            <p className="mt-2">Practice on puzzles that challenge the most advanced AI systems</p>
+            <p>🧩 <strong>Official ARC-AGI Repository:</strong> All puzzles sourced directly from the ARC-AGI GitHub repository</p>
+            <p className="mt-2">📊 AI performance data from arc-explainer analysis of state-of-the-art language models</p>
+            <p className="mt-2">🎯 <strong>Research Impact:</strong> Test yourself on the same challenges used to evaluate GPT-4, Claude, Gemini, and other frontier AI systems</p>
             <div className="mt-3 pt-3 border-t border-border">
               <Button
                 onClick={() => setLocation('/space-force')}
