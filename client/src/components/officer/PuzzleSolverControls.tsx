@@ -19,23 +19,23 @@ export function PuzzleSolverControls({
   getSuggestedSizes 
 }: PuzzleSolverControlsProps) {
   return (
-    <div className="bg-slate-800 border border-slate-600 rounded-lg p-5 w-full">
-      <h4 className="text-amber-300 text-2xl font-bold mb-4 text-center">OUTPUT SIZE</h4>
+    <div className="bg-card border border-border rounded-lg p-5 w-full">
+      <h4 className="text-primary text-2xl font-bold mb-4 text-center">OUTPUT SIZE</h4>
       <div className="flex flex-wrap items-center justify-center gap-3 text-xl">
         <select
           value={currentDimensions.height}
           onChange={(e) => onSizeChange(parseInt(e.target.value), currentDimensions.width)}
-          className="bg-slate-700 border border-slate-500 rounded px-4 py-3 text-amber-100 text-xl h-16 min-w-[110px] flex-shrink-0"
+          className="bg-background border border-border rounded px-4 py-3 text-foreground text-xl h-16 min-w-[110px] flex-shrink-0"
         >
           {Array.from({ length: 30 }, (_, i) => i + 1).map(size => (
             <option key={size} value={size}>H: {size}</option>
           ))}
         </select>
-        <span className="text-slate-400 text-2xl font-bold flex-shrink-0">×</span>
+        <span className="text-muted-foreground text-2xl font-bold flex-shrink-0">×</span>
         <select
           value={currentDimensions.width}
           onChange={(e) => onSizeChange(currentDimensions.height, parseInt(e.target.value))}
-          className="bg-slate-700 border border-slate-500 rounded px-4 py-3 text-amber-100 text-xl h-16 min-w-[110px] flex-shrink-0"
+          className="bg-background border border-border rounded px-4 py-3 text-foreground text-xl h-16 min-w-[110px] flex-shrink-0"
         >
           {Array.from({ length: 30 }, (_, i) => i + 1).map(size => (
             <option key={size} value={size}>W: {size}</option>
@@ -47,13 +47,13 @@ export function PuzzleSolverControls({
       {getSuggestedSizes().length > 0 && (
         <div className="flex flex-wrap justify-center gap-2 mt-4">
           {getSuggestedSizes().slice(0, 3).map((size, index) => (
-            <button
+            <Button
               key={index}
               onClick={() => onSizeChange(size.height, size.width)}
-              className="bg-amber-700 hover:bg-amber-600 text-white text-xl font-bold px-4 py-3 h-16 rounded min-w-[90px]"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground text-xl font-bold px-4 py-3 h-16 rounded min-w-[90px]"
             >
               {size.height}×{size.width}
-            </button>
+            </Button>
           ))}
         </div>
       )}

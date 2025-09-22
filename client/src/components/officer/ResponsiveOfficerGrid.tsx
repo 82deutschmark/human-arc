@@ -343,7 +343,7 @@ export function ResponsiveOfficerGrid({
   if (gridHeight === 0 || gridWidth === 0) {
     return (
       <div className={`text-center p-4 ${className}`}>
-        <div className="text-amber-400 text-sm">No grid data</div>
+        <div className="text-primary text-sm">No grid data</div>
       </div>
     );
   }
@@ -352,7 +352,7 @@ export function ResponsiveOfficerGrid({
     <div className={`text-center ${className}`}>
       {/* Title */}
       {title && (
-        <div className="text-xs text-amber-300 mb-2 font-semibold uppercase tracking-wide">
+        <div className="text-xs text-primary mb-2 font-semibold uppercase tracking-wide">
           {title}
         </div>
       )}
@@ -361,7 +361,7 @@ export function ResponsiveOfficerGrid({
       <div 
         className={`
           inline-grid gap-1 p-3 rounded border-2 mx-auto
-          ${interactive ? 'bg-slate-800 border-amber-400' : 'bg-slate-700 border-amber-600'}
+          ${interactive ? 'bg-card border-border' : 'bg-muted border-border'}
           ${disabled ? 'opacity-50' : ''}
         `}
         style={fixedCellSize ? {
@@ -405,8 +405,8 @@ export function ResponsiveOfficerGrid({
                   flex items-center justify-center rounded font-bold
                   border transition-all duration-200
                   ${interactive && !disabled
-                    ? 'cursor-pointer bg-slate-700 border-amber-700 hover:bg-slate-600 hover:border-amber-500 hover:scale-105 active:scale-95'
-                    : 'bg-slate-600 border-amber-800'
+                    ? 'cursor-pointer bg-muted border-border hover:bg-muted/80 hover:border-primary hover:scale-105 active:scale-95'
+                    : 'bg-muted/50 border-border'
                   }
                   ${disabled ? 'cursor-not-allowed' : ''}
                 `}
@@ -429,7 +429,7 @@ export function ResponsiveOfficerGrid({
 
       {/* Interactive instructions */}
       {interactive && !disabled && (
-        <div className="text-xs text-amber-600 mt-2">
+        <div className="text-xs text-muted-foreground mt-2">
           {useEnhancedDisplay ? (
             enableDragToPaint ? 
               'Click or drag to paint with selected value • Right-click to clear' :

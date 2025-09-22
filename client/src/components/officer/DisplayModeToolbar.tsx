@@ -20,36 +20,36 @@ interface DisplayModeToolbarProps {
 export function DisplayModeToolbar({ displayMode, emojiSet, onDisplayModeChange, onEmojiSetChange }: DisplayModeToolbarProps) {
   return (
     <div className="flex-grow flex justify-center">
-      <div className="flex flex-row items-center gap-4 bg-slate-800 border border-slate-700 rounded-lg p-2">
+      <div className="flex flex-row items-center gap-4 bg-card border border-border rounded-lg p-2">
         <div className="flex flex-row items-center gap-2">
           <button
             onClick={() => onDisplayModeChange('arc-colors')}
-            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'arc-colors' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
+            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'arc-colors' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
             🎨 Colors
           </button>
           <button
             onClick={() => onDisplayModeChange('numbers')}
-            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'numbers' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
+            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'numbers' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
             🔢 Numbers
           </button>
           <button
             onClick={() => onDisplayModeChange('emoji')}
-            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'emoji' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
+            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'emoji' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
             🎭 Emojis
           </button>
           <button
             onClick={() => onDisplayModeChange('hybrid')}
-            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'hybrid' ? 'bg-amber-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}>
+            className={`px-6 py-3 text-xl font-bold rounded-lg transition-all duration-300 ${displayMode === 'hybrid' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}>
             🔀 Hybrid
           </button>
         </div>
         {(displayMode === 'emoji' || displayMode === 'hybrid') && (
           <div className="flex items-center gap-3">
-            <label className="text-slate-300 text-xl font-semibold whitespace-nowrap">Emoji Theme:</label>
+            <label className="text-foreground text-xl font-semibold whitespace-nowrap">Emoji Theme:</label>
             <select
               value={emojiSet}
               onChange={(e) => onEmojiSetChange(e.target.value as EmojiSet)}
-              className="bg-slate-700 border border-slate-500 rounded-lg px-4 py-3 text-amber-100 text-xl h-14 min-w-[200px]"
+              className="bg-background border border-border rounded-lg px-4 py-3 text-foreground text-xl h-14 min-w-[200px]"
             >
               {getEmojiSetOptions().map((option) => (
                 <option key={option.value} value={option.value}>
