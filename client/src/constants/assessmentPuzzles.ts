@@ -18,7 +18,8 @@ export const ASSESSMENT_PUZZLE_IDS = [
 ];
 
 /*
-'b15fca0b', //  5x5 draw a line to connect them! 
+'b15fca0b', //  5x5 draw a line to connect them!
+'1e32b0e9', //  17x17 You are shown the shape to draw in the upper left, draw it using the color/emoji of the grid lines in each 3x3 box and do not remove any existing elements there 
 '239be575', //  8x6 -> 1x1 where you need to learn carefully from examples 
 '0d3d703e', //  3x3 where you need to learn replacements from examples
 '22425bda',   // 16x16 -> 1x6  Shortest to longest? Think of them as strings, the bottom string has priority order in the output.  Or is it shortest to longest? This is particularly challenging because there are two possible solutions when using this logic and only one will be correct.  That is why two attempts are always required.

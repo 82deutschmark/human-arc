@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle, ArrowLeft, Search, Loader2 } from 'lucide-react';
+import { Navbar } from '@/components/layout/Navbar';
 import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';
 import { PuzzleGrid } from '@/components/officer/PuzzleGrid';
 import { PuzzleLoadingModal } from '@/components/ui/PuzzleLoadingModal';
@@ -250,53 +251,36 @@ export default function HARCPuzzleBrowser() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="bg-card/50 border-b border-border shadow-lg">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => setLocation('/')}
-                variant="ghost"
-                className="text-primary hover:text-primary-foreground hover:bg-primary/10 p-2"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to HARC
-              </Button>
-              <h1 className="text-2xl font-bold text-cyan-400">
-                🧠 PUZZLE LIBRARY
-              </h1>
-              <Badge className="bg-cyan-500 text-white font-bold">
-                HARC PLATFORM
-              </Badge>
-            </div>
+      <Navbar
+        title="🧠 HARC Puzzle Library"
+        showBackButton={true}
+        onBack={() => setLocation('/')}
+      />
 
-            <div className="flex space-x-3">
-              <Button
-                onClick={() => setLocation('/assessment')}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                📋 Take Assessment
-              </Button>
-              <Button
-                onClick={() => setLocation('/dashboard')}
-                className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
-                disabled={playFabInitializing}
-              >
-                📊 View Dashboard
-              </Button>
-              <Button
-                onClick={() => setLocation('/leaderboards/harc_leaderboard')}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold"
-                disabled={playFabInitializing}
-              >
-                🏆 Leaderboard
-              </Button>
-            </div>
+      {/* Compact Search Bar */}
+      <div className="bg-slate-100 border-b border-slate-200 shadow-sm">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-3">
+          <div className="flex items-center gap-3">
+            <label className="text-slate-700 text-sm font-medium whitespace-nowrap">🔍 Find Puzzle:</label>
+            <Input
+              type="text"
+              placeholder="Enter puzzle ID (e.g., 494ef9d7)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              className="bg-white border-slate-300 text-slate-900 h-9 text-sm px-3 flex-1 max-w-xs"
+              disabled={playFabInitializing}
+            />
+            <Button
+              onClick={handleSearch}
+              disabled={playFabInitializing || searching || !searchQuery.trim()}
+              className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-800 disabled:opacity-50 h-9 px-4 font-semibold text-sm"
+            >
+              {playFabInitializing ? 'Init...' : searching ? 'Searching...' : 'Find'}
+            </Button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-8">
         {/* CSS Grid Layout - Puzzle-First Priority */}
@@ -358,57 +342,13 @@ export default function HARCPuzzleBrowser() {
           </div>
         )}
 
-          {/* Puzzle Search & Controls - Compact Layout */}
+          {/* Puzzle Limit Controls */}
           <div className="order-2 bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-            <h2 className="text-cyan-300 font-semibold text-xl mb-4 flex items-center">
-              🔍 PUZZLE DISCOVERY
-            </h2>
-
-          {/* System Status Indicator */}
-          {playFabInitializing && (
-              <div className="bg-sky-900/50 border border-sky-700 rounded p-3 mb-3">
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-sky-400 mr-4"></div>
-                  <span className="text-sky-300 text-base">Initializing PlayFab connection for puzzle data access...</span>
-                </div>
-              </div>
-          )}
-
-          {!playFabInitializing && !playFabReady && (
-              <div className="bg-amber-900/50 border border-amber-700 rounded p-3 mb-3">
-                <div className="text-amber-300 text-base">
-                  ⚠️ PlayFab connection failed - puzzle loading may be limited to arc-explainer data only
-                </div>
-              </div>
-          )}
-
-            {/* Search Row - Enhanced Layout */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <Input
-              type="text"
-              placeholder="Enter puzzle ID (e.g., 494ef9d7)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="bg-slate-700 border-slate-600 text-white flex-1 h-12 text-base px-4"
-              disabled={playFabInitializing}
-            />
-            <Button
-              onClick={handleSearch}
-              disabled={playFabInitializing || searching || !searchQuery.trim()}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white disabled:bg-cyan-800 disabled:opacity-50 h-12 px-6 font-semibold text-base"
-            >
-              {playFabInitializing ? 'Initializing...' : searching ? 'Searching...' : 'Find Puzzle'}
-            </Button>
-          </div>
-
-            {/* Limit Controls - Enhanced Layout */}
-            <div className="border-t border-slate-600 pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                  <label htmlFor="limit-select" className="text-base font-medium text-sky-300">
-                    Show hardest:
-                  </label>
+                <label htmlFor="limit-select" className="text-base font-medium text-sky-300">
+                  Show hardest:
+                </label>
                 <select
                   id="limit-select"
                   value={currentLimit}
@@ -424,16 +364,10 @@ export default function HARCPuzzleBrowser() {
                 </select>
               </div>
 
-                <div className="text-slate-300 text-base">
-                  Showing {filteredPuzzles.length} of {total} total analyzed puzzles
-                </div>
+              <div className="text-slate-300 text-base">
+                Showing {filteredPuzzles.length} of {total} total analyzed puzzles
               </div>
             </div>
-
-            <p className="text-slate-400 text-sm mt-3">
-              Search for specific puzzles by their ID or adjust the number of hardest puzzles to display
-            </p>
-
           </div>
 
         {/* AI Analysis Overview - HARC Research Theme */}  

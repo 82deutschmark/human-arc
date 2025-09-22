@@ -226,7 +226,7 @@ export default function OfficerTrackSimple() {
       
       <div className="bg-slate-800 border-b-2 border-amber-400 shadow-lg">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-4">
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-amber-400">
                 🎖️ OFFICER ACADEMY
@@ -235,7 +235,7 @@ export default function OfficerTrackSimple() {
                 ARC-AGI CHALLENGES
               </Badge>
             </div>
-            
+
             <div className="flex space-x-3">
               <Button
                 onClick={() => setLocation('/space-force/officer-track/ai-comparison')}
@@ -252,6 +252,27 @@ export default function OfficerTrackSimple() {
                 🎖️ Start Officer Training
               </Button>
             </div>
+          </div>
+
+          {/* Compact Search Bar */}
+          <div className="flex items-center gap-3">
+            <label className="text-amber-300 text-sm font-medium whitespace-nowrap">🔍 Find Puzzle:</label>
+            <Input
+              type="text"
+              placeholder="Enter puzzle ID (e.g., 494ef9d7)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              className="bg-slate-700 border-slate-600 text-amber-100 h-9 text-sm px-3 flex-1 max-w-xs"
+              disabled={playFabInitializing}
+            />
+            <Button
+              onClick={handleSearch}
+              disabled={playFabInitializing || searching || !searchQuery.trim()}
+              className="bg-amber-600 hover:bg-amber-700 text-slate-900 disabled:bg-amber-800 disabled:opacity-50 h-9 px-4 font-semibold text-sm"
+            >
+              {playFabInitializing ? 'Init...' : searching ? 'Searching...' : 'Find'}
+            </Button>
           </div>
         </div>
       </div>
@@ -316,57 +337,13 @@ export default function OfficerTrackSimple() {
           </div>
         )}
 
-          {/* Puzzle Search & Controls - Compact Layout */}
+          {/* Puzzle Limit Controls */}
           <div className="order-2 bg-slate-800 border border-slate-600 rounded-lg p-4">
-            <h2 className="text-amber-400 font-semibold text-xl mb-4 flex items-center">
-              🔍 PUZZLE DISCOVERY
-            </h2>
-          
-          {/* System Status Indicator */}
-          {playFabInitializing && (
-              <div className="bg-blue-900 border border-blue-600 rounded p-3 mb-3">
-                <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-400 mr-4"></div>
-                  <span className="text-blue-300 text-base">Initializing PlayFab connection for puzzle data access...</span>
-                </div>
-              </div>
-          )}
-          
-          {!playFabInitializing && !playFabReady && (
-              <div className="bg-orange-900 border border-orange-600 rounded p-3 mb-3">
-                <div className="text-orange-300 text-base">
-                  ⚠️ PlayFab connection failed - puzzle loading may be limited to arc-explainer data only
-                </div>
-              </div>
-          )}
-
-            {/* Search Row - Enhanced Layout */}
-            <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <Input
-              type="text"
-              placeholder="Enter puzzle ID (e.g., 494ef9d7)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="bg-slate-700 border-slate-600 text-amber-100 flex-1 h-12 text-base px-4"
-              disabled={playFabInitializing}
-            />
-            <Button 
-              onClick={handleSearch}
-              disabled={playFabInitializing || searching || !searchQuery.trim()}
-              className="bg-amber-600 hover:bg-amber-700 text-slate-900 disabled:bg-amber-800 disabled:opacity-50 h-12 px-6 font-semibold text-base"
-            >
-              {playFabInitializing ? 'Initializing...' : searching ? 'Searching...' : 'Find Puzzle'}
-            </Button>
-          </div>
-
-            {/* Limit Controls - Enhanced Layout */}
-            <div className="border-t border-slate-600 pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                  <label htmlFor="limit-select" className="text-base font-medium text-amber-300">
-                    Show hardest:
-                  </label>
+                <label htmlFor="limit-select" className="text-base font-medium text-amber-300">
+                  Show hardest:
+                </label>
                 <select
                   id="limit-select"
                   value={currentLimit}
@@ -381,17 +358,11 @@ export default function OfficerTrackSimple() {
                   <option value={200}>200 puzzles</option>
                 </select>
               </div>
-              
-                <div className="text-slate-300 text-base">
-                  Showing {filteredPuzzles.length} of {total} total analyzed puzzles
-                </div>
+
+              <div className="text-slate-300 text-base">
+                Showing {filteredPuzzles.length} of {total} total analyzed puzzles
               </div>
             </div>
-
-            <p className="text-slate-400 text-sm mt-3">
-              Search for specific puzzles by their ID or adjust the number of hardest puzzles to display
-            </p>
-
           </div>
 
         {/* AI Failure Analysis Overview - Compact */}
