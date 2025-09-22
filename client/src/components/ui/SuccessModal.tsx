@@ -421,55 +421,51 @@ export function SuccessModal({
                   Process AI model scores and update PlayFab leaderboards for this puzzle
                 </p>
 
-            {analysisError && (
-              <div className="mb-3 p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-sm text-center">
-                {analysisError}
-              </div>
-            )}
-
-            {analysisComplete && (
-              <div className="mb-3 p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm text-center flex items-center justify-center gap-2">
-                <span>✅</span> AI leaderboards updated successfully!
-              </div>
-            )}
-
-            {!analysisComplete && (
-              <button
-                onClick={handleAnalyzeAI}
-                disabled={isAnalyzingAI}
-                className="
-                  px-4 py-2 text-sm font-semibold rounded
-                  bg-cyan-600/80 hover:bg-cyan-600 text-white
-                  transition-all duration-200 border border-cyan-400
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                  flex items-center justify-center gap-2 mx-auto
-                "
-              >
-                {isAnalyzingAI ? (
-                  <>
-                    <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                    Updating Leaderboards...
-                  </>
-                ) : (
-                  <>
-                    <span>🏆</span>
-                    Update AI Leaderboards
-                  </>
+                {analysisError && (
+                  <div className="mb-3 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-sm text-center dark:bg-red-900/20 dark:border-red-500/50 dark:text-red-400">
+                    {analysisError}
+                  </div>
                 )}
-              </button>
+
+                {analysisComplete && (
+                  <div className="mb-3 p-2 bg-green-100 border border-green-300 rounded text-green-700 text-sm text-center flex items-center justify-center gap-2 dark:bg-green-900/20 dark:border-green-500/50 dark:text-green-400">
+                    <span>✅</span> AI leaderboards updated successfully!
+                  </div>
+                )}
+
+                {!analysisComplete && (
+                  <button
+                    onClick={handleAnalyzeAI}
+                    disabled={isAnalyzingAI}
+                    className="px-4 py-2 text-sm font-semibold rounded bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mx-auto"
+                  >
+                    {isAnalyzingAI ? (
+                      <>
+                        <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full"></div>
+                        Updating Leaderboards...
+                      </>
+                    ) : (
+                      <>
+                        <span>🏆</span>
+                        Update AI Leaderboards
+                      </>
+                    )}
+                  </button>
+                )}
+              </>
             )}
           </div>
         )}
 
         {/* Strategy Submission Section */}
         {enableStrategySubmission && (
-          <div className="my-6 text-left bg-slate-700/30 p-4 rounded-lg border border-amber-400/30">
+          <div className="my-6 text-left bg-muted p-4 rounded-lg border">
             <div className="flex items-center gap-2 mb-3 justify-center">
               <span className="text-2xl">💭</span>
-              <h3 className="text-lg font-bold text-amber-300">Share Your Strategy</h3>
-              <span className="text-xs text-slate-500 ml-2">(Optional)</span>
+              <h3 className="text-lg font-bold text-primary">Share Your Strategy</h3>
+              <span className="text-xs text-muted-foreground ml-2">(Optional)</span>
             </div>
-            <p className="text-slate-400 text-sm mb-3 text-center">
+            <p className="text-muted-foreground text-sm mb-3 text-center">
               Help others by sharing how you solved this puzzle
             </p>
 
@@ -477,24 +473,24 @@ export function SuccessModal({
               placeholder="Describe your approach, patterns you noticed, or steps you took..."
               value={strategyText}
               onChange={(e) => setStrategyText(e.target.value)}
-              className="mb-3 bg-slate-800/50 border-slate-600 text-slate-200 placeholder-slate-500"
+              className="mb-3"
               rows={3}
               maxLength={1000}
             />
 
             {strategyError && (
-              <div className="mb-3 p-2 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-sm text-center">
+              <div className="mb-3 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-sm text-center dark:bg-red-900/20 dark:border-red-500/50 dark:text-red-400">
                 {strategyError}
               </div>
             )}
 
             {strategySubmitted && (
               <div className="mb-3 space-y-2">
-                <div className="p-2 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-sm text-center flex items-center justify-center gap-2">
+                <div className="p-2 bg-green-100 border border-green-300 rounded text-green-700 text-sm text-center flex items-center justify-center gap-2 dark:bg-green-900/20 dark:border-green-500/50 dark:text-green-400">
                   <span>✅</span> Strategy submitted! Thanks for contributing.
                 </div>
                 {bonusAwarded && bonusPoints && (
-                  <div className="p-2 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-sm text-center flex items-center justify-center gap-2">
+                  <div className="p-2 bg-amber-100 border border-amber-300 rounded text-amber-700 text-sm text-center flex items-center justify-center gap-2 dark:bg-amber-900/20 dark:border-amber-500/50 dark:text-amber-400">
                     <span>🎉</span> Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
                   </div>
                 )}
@@ -506,24 +502,14 @@ export function SuccessModal({
                 <button
                   onClick={handleSubmitStrategy}
                   disabled={isSubmittingStrategy}
-                  className="
-                    px-4 py-2 text-sm font-semibold rounded
-                    bg-amber-600/80 hover:bg-amber-600 text-white
-                    transition-all duration-200 border border-amber-400
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                  "
+                  className="px-4 py-2 text-sm font-semibold rounded bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmittingStrategy ? 'Submitting...' : 'Submit Strategy'}
                 </button>
                 <button
                   onClick={() => setStrategyText('')}
                   disabled={isSubmittingStrategy}
-                  className="
-                    px-4 py-2 text-sm rounded
-                    bg-slate-600 hover:bg-slate-500 text-slate-300
-                    transition-all duration-200 border border-slate-500
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                  "
+                  className="px-4 py-2 text-sm rounded bg-secondary hover:bg-secondary/80 text-secondary-foreground transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Clear
                 </button>
@@ -537,13 +523,7 @@ export function SuccessModal({
           <button
             onClick={handleClose}
             disabled={isSubmittingStrategy}
-            className="
-              px-8 py-3 text-lg font-bold rounded-lg
-              bg-amber-600 hover:bg-amber-700 text-white
-              transition-all duration-200 hover:scale-105
-              border-2 border-amber-400 shadow-lg
-              disabled:opacity-50 disabled:cursor-not-allowed
-            "
+            className="px-8 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmittingStrategy
               ? 'Submitting...'
@@ -555,7 +535,7 @@ export function SuccessModal({
 
         {/* Designer notes placeholder */}
         {showDesignerNotes && (
-          <p className="text-slate-500 text-sm italic border-t border-slate-700 pt-4 mt-4">
+          <p className="text-muted-foreground text-sm italic border-t border-border pt-4 mt-4">
             DESIGNER NOTES HERE TO BE FILLED IN
           </p>
         )}

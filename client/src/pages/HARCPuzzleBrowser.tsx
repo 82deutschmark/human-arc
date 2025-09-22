@@ -240,16 +240,16 @@ export default function HARCPuzzleBrowser() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="bg-slate-800/50 border-b border-slate-700 shadow-lg">
+      <header className="bg-card/50 border-b border-border shadow-lg">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <Button
                 onClick={() => setLocation('/')}
                 variant="ghost"
-                className="text-sky-400 hover:text-white hover:bg-slate-700 p-2"
+                className="text-primary hover:text-primary-foreground hover:bg-primary/10 p-2"
               >
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to HARC
@@ -507,16 +507,16 @@ export default function HARCPuzzleBrowser() {
             </div>
           )}
 
-          <div className="mt-4 text-center text-sm text-slate-400 bg-slate-900/50 rounded-lg p-3">
+          <div className="mt-4 text-center text-sm text-muted-foreground bg-muted rounded-lg p-3">
             🧠 <strong>Human - ARC Research:</strong> Will your advantage slip as the state of the art advances?
           </div>
         </div>
 
-          {/* Footer Info */} 
-          <div className="order-4 text-center text-slate-400 text-base bg-slate-800/50 rounded-lg p-4">
+          {/* Footer Info */}
+          <div className="order-4 text-center text-muted-foreground text-base bg-muted rounded-lg p-4">
             <p>🤖 Puzzle performance data sourced from arc-explainer AI analysis</p>
             <p className="mt-2">Practice on puzzles that challenge the most advanced AI systems</p>
-            <div className="mt-3 pt-3 border-t border-slate-700">
+            <div className="mt-3 pt-3 border-t border-border">
               <Button
                 onClick={() => setLocation('/space-force')}
                 variant="ghost"
