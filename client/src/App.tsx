@@ -40,6 +40,7 @@ import { LoadingSplash } from "@/components/game/LoadingSplash";
 import { OnboardingModal } from "@/components/game/OnboardingModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import DynamicFavicon from '@/components/util/DynamicFavicon';
+import { AttemptTrackingDebug } from '@/pages/AttemptTrackingDebug';
 
 function Router() {
   // Apply dynamic document metadata based on current route
@@ -64,6 +65,7 @@ function Router() {
       <Route path="/profile" component={Profile} />
       <Route path="/assessment/comparison" component={HumanVsAiComparison} />
       <Route path="/about" component={About} />
+      <Route path="/debug/attempt-tracking" component={AttemptTrackingDebug} />
       <Route component={NotFound} />
     </Switch>
   );

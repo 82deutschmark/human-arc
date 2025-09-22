@@ -398,14 +398,18 @@ export class AttemptTracker {
    */
   private async savePlayerAttemptsDataToUserData(attemptsData: Record<string, any>): Promise<void> {
     try {
+      console.log(`💾 [AttemptTracker] Preparing to save attempts data for ${Object.keys(attemptsData).length} puzzles...`);
+      console.log(`💾 [AttemptTracker] Attempts data size: ${JSON.stringify(attemptsData).length} characters`);
+
       await playFabRequestManager.makeRequest('updateUserData', {
         Data: {
           puzzleAttempts: JSON.stringify(attemptsData)
         }
       });
-      console.log('[AttemptTracker] Successfully saved attempts data to User Data');
+
+      console.log(`✅ [AttemptTracker] Successfully saved attempts data to PlayFab User Data`);
     } catch (error) {
-      console.error('[AttemptTracker] Failed to save attempts data to User Data:', error);
+      console.error(`❌ [AttemptTracker] FAILED to save attempts data to PlayFab User Data:`, error);
       throw error;
     }
   }
@@ -486,9 +490,21 @@ export class AttemptTracker {
     isCorrect: boolean
   ): Promise<{ success: boolean; error?: string; attemptsRemaining: number; totalAttempts: number; locked: boolean }> {
 
+    console.log(`📝 [AttemptTracker] === STARTING ATTEMPT TRACKING ===`);
+    console.log(`📝 [AttemptTracker] Input data:`, {
+      puzzleId,
+      isCorrect,
+      attemptNumber: attemptData.attemptNumber,
+      timeElapsed: attemptData.timeElapsed,
+      stepCount: attemptData.stepCount,
+      sessionId: attemptData.sessionId,
+      hasScoreData: !!attemptData.scoreData
+    });
+
     // Normalize puzzle ID to ARC format
     const normalizedId = idConverter.normalizeToArcId(puzzleId);
     if (!normalizedId) {
+      console.error(`❌ [AttemptTracker] Invalid puzzle ID format: ${puzzleId}`);
       return {
         success: false,
         error: 'Invalid puzzle ID format',
@@ -498,13 +514,16 @@ export class AttemptTracker {
       };
     }
 
-    console.log(`[AttemptTracker] Tracking attempt for ${puzzleId} (${normalizedId}), result: ${isCorrect ? 'correct' : 'incorrect'}`);
+    console.log(`📝 [AttemptTracker] Tracking attempt for ${puzzleId} (normalized: ${normalizedId}), result: ${isCorrect ? 'CORRECT' : 'INCORRECT'}`);
 
     try {
+      console.log(`📊 [AttemptTracker] Fetching current attempts data from PlayFab User Data...`);
       const attemptsData = await this.getPlayerAttemptsDataFromUserData();
+      console.log(`📊 [AttemptTracker] Current attempts data structure has ${Object.keys(attemptsData).length} puzzles`);
 
       // Initialize puzzle entry if doesn't exist
       if (!attemptsData[normalizedId]) {
+        console.log(`🔄 [AttemptTracker] Initializing new puzzle entry for ${normalizedId}`);
         attemptsData[normalizedId] = {
           attempts: [],
           status: 'available',
@@ -514,10 +533,16 @@ export class AttemptTracker {
       }
 
       const puzzleState = attemptsData[normalizedId];
+      console.log(`📊 [AttemptTracker] Current puzzle state for ${normalizedId}:`, {
+        status: puzzleState.status,
+        attemptsRemaining: puzzleState.attemptsRemaining,
+        totalAttempts: puzzleState.attempts?.length || 0,
+        lockedAt: puzzleState.lockedAt
+      });
 
       // Check if puzzle is locked
       if (puzzleState.status === 'locked') {
-        console.warn(`[AttemptTracker] Attempt on locked puzzle ${puzzleId}`);
+        console.warn(`🚫 [AttemptTracker] REJECTED: Attempt on locked puzzle ${puzzleId}`);
         return {
           success: false,
           error: 'Puzzle locked: Maximum attempts exceeded',
@@ -540,6 +565,7 @@ export class AttemptTracker {
       }
 
       // Add attempt record
+      console.log(`📝 [AttemptTracker] Creating attempt record for ${normalizedId}...`);
       const attemptRecord = {
         timestamp: new Date().toISOString(),
         result: isCorrect ? 'correct' : 'incorrect',
@@ -552,35 +578,53 @@ export class AttemptTracker {
 
       if (isCorrect && attemptData.scoreData) {
         attemptRecord.scoreData = attemptData.scoreData;
+        console.log(`🎆 [AttemptTracker] Added score data to correct attempt:`, attemptData.scoreData);
       }
 
+      console.log(`📝 [AttemptTracker] Adding attempt record to puzzle state:`, {
+        result: attemptRecord.result,
+        timestamp: attemptRecord.timestamp,
+        attemptNumber: attemptRecord.attemptNumber,
+        timeElapsed: attemptRecord.timeElapsed,
+        stepCount: attemptRecord.stepCount
+      });
       puzzleState.attempts.push(attemptRecord);
 
       // Update status based on result
       if (isCorrect) {
         puzzleState.status = 'completed';
-        console.log(`[AttemptTracker] Puzzle ${puzzleId} completed successfully`);
+        console.log(`✅ [AttemptTracker] Puzzle ${puzzleId} marked as COMPLETED`);
       } else {
+        const previousAttempts = puzzleState.attemptsRemaining;
         puzzleState.attemptsRemaining--;
+        console.log(`❌ [AttemptTracker] Incorrect attempt - decremented attempts from ${previousAttempts} to ${puzzleState.attemptsRemaining}`);
+
         if (puzzleState.attemptsRemaining <= 0) {
           puzzleState.status = 'locked';
           puzzleState.lockedAt = new Date().toISOString();
-          console.log(`[AttemptTracker] Puzzle ${puzzleId} locked after 2 failed attempts`);
+          console.log(`🔒 [AttemptTracker] Puzzle ${puzzleId} LOCKED after 2 failed attempts at ${puzzleState.lockedAt}`);
         }
       }
 
       // Save updated attempts data
+      console.log(`💾 [AttemptTracker] Saving updated attempts data to PlayFab User Data...`);
       await this.savePlayerAttemptsDataToUserData(attemptsData);
+      console.log(`✅ [AttemptTracker] Successfully saved attempts data to PlayFab`);
 
       // Clear cache to force refresh
       this.clearPuzzleCache(puzzleId);
 
-      return {
+      const result = {
         success: true,
         attemptsRemaining: puzzleState.attemptsRemaining,
         totalAttempts: puzzleState.attempts.length,
         locked: puzzleState.status === 'locked'
       };
+
+      console.log(`🎉 [AttemptTracker] === ATTEMPT TRACKING COMPLETED ===`);
+      console.log(`📊 [AttemptTracker] Final result:`, result);
+
+      return result;
 
     } catch (error) {
       console.error(`[AttemptTracker] Failed to track attempt for ${puzzleId}:`, error);
