@@ -20,7 +20,7 @@ import { playFabRequestManager } from '@/services/playfab/requestManager';
 import { playFabUserData } from '@/services/playfab/userData';
 import { arcExplainerClient, type AggregatedAIStats } from '@/services/core/arcExplainerClient';
 import { idConverter } from '@/services/idConverter';
-import { PuzzleComparisonCard } from '@/components/comparison/PuzzleComparisonCard';
+import { DashboardComparisonCard } from '@/components/comparison/DashboardComparisonCard';
 import { Grid, List, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Reuse data structures from existing components
@@ -361,7 +361,7 @@ export default function HARCDashboard() {
                 : "space-y-4"
               }>
                 {paginatedData.map(data => (
-                  <PuzzleComparisonCard
+                  <DashboardComparisonCard
                     key={data.human.puzzleId}
                     puzzleId={data.human.puzzleId}
                     humanResult={data.human}
