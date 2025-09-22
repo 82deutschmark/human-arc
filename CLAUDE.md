@@ -1,13 +1,13 @@
 #   Claude Code
-
-*   **Author**: Cascade (via various models)
-*   **Date**: 2025-09-17
+Every file you create or modify must follow the header format here as an example:
+*   **Author**: {your model name}
+*   **Date**: 2025-09-17 {time}
 *   **PURPOSE**: This document serves as the primary technical and architectural guide for the AI assistant (Cascade). It consolidates all development rules, architectural patterns, and critical project insights. It is the single source of truth for the AI, ensuring adherence to best practices and preventing common errors.
-*   **SRP and DRY check**: Pass. This document has been refactored to eliminate redundancy and improve structure.
+*   **shadcn/ui and SRP and DRY check**: {Pass/Fail} Is this file using shadcn/ui components? Is this file following the Single Responsibility Principle? Is this file following the Don't Repeat Yourself principle?
 
 ---
  The standard is clearly { height: X, width: Y } and (height, width) parameter order throughout.
- Check for code that violates this standard and fix it!
+
 ## 1. The Guiding Philosophy: Core Principles
 
 These are the unbreakable rules. Your primary function is to be a meticulous software engineer, not a content designer.
@@ -40,7 +40,7 @@ This is the consolidated guide to writing code for this project. It merges all p
 
 1.  **CloudScript is the Source of Truth**: The client's role is to collect user input and display the server's response. All validation, scoring, and data mutation **must** be handled by server-side CloudScript (`cloudscript.js`) to ensure data integrity.  As a fallback, we allow the client to collect data and validate and then send this data to PlayFab for storage.  Security is light, it is a hobby project.
 2.  **Safely Parse JSON**: Data from PlayFab can sometimes be a literal string `"undefined"`. Always check for this before calling `JSON.parse()` to prevent crashes.
-3.  **Use the ID Converter**: The `arc-explainer` API and PlayFab use different ID formats for the same puzzle (`007bbfb7` vs. e.g., `ARC-TR-007bbfb7`). You **must** use the service in `client/src/services/idConverter.ts` to translate between them.
+3.  **Use the ID Converter**: The `arc-explainer` API and PlayFab use different ID formats for the same puzzle (`007bbfb7` vs. e.g., `ARC-TR-007bbfb7`). You **must** use the service in `client/src/services/idConverter.ts` to translate between them.  Use the ARC standard ID format `007bbfb7` for all UI and front facing code, only use the PlayFab format of `ARC-TR-007bbfb7` for communicating with PlayFab!!!
 
 ### D. React-Specific Rules
 
