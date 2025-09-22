@@ -10,13 +10,13 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import type { ARCGrid, OfficerTrackPuzzle, ARCExample } from '@/types/arcTypes';
 import type { PuzzleDisplayState, DisplayMode } from '@/types/puzzleDisplayTypes';
-import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
+import { DisplayModeToolbar } from '@/components/ui/DisplayModeToolbar';
 import { SizeSlider } from '@/components/ui/SizeSlider';
 import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
 import { ResponsiveOfficerDisplayGrid, ResponsiveOfficerGrid } from '@/components/officer/ResponsiveOfficerGrid';
-import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
-import { PuzzleTools } from '@/components/officer/PuzzleTools';
-import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
+import { PuzzleSolverControls } from '@/components/ui/PuzzleSolverControls';
+import { PuzzleTools } from '@/components/ui/PuzzleTools';
+import { PermanentHintSystem } from '@/components/ui/PermanentHintSystem';
 import { Button } from '@/components/ui/button';
 
 export interface SolutionWorkspaceProps {

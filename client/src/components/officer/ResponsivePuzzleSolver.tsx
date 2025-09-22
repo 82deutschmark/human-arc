@@ -13,12 +13,12 @@ import { arcExplainerClient, type PerformanceData } from '@/services/core/arcExp
 import { SuccessModal } from '@/components/ui/SuccessModal';
 import { AssessmentStepSuccessModal } from '@/components/assessment/AssessmentStepSuccessModal';
 import { ResponsiveOfficerGrid, ResponsiveOfficerDisplayGrid } from '@/components/officer/ResponsiveOfficerGrid';
-import { TrainingExamplesSection } from '@/components/officer/TrainingExamplesSection';
+import { TrainingExamples } from '@/components/ui/TrainingExamples';
 import { TestCaseNavigation } from '@/components/officer/TestCaseNavigation';
-import { PuzzleSolverControls } from '@/components/officer/PuzzleSolverControls';
-import { PuzzleTools } from '@/components/officer/PuzzleTools';
-import { DisplayModeToolbar } from '@/components/officer/DisplayModeToolbar';
-import { PermanentHintSystem } from '@/components/officer/PermanentHintSystem';
+import { PuzzleSolverControls } from '@/components/ui/PuzzleSolverControls';
+import { PuzzleTools } from '@/components/ui/PuzzleTools';
+import { DisplayModeToolbar } from '@/components/ui/DisplayModeToolbar';
+import { PermanentHintSystem } from '@/components/ui/PermanentHintSystem';
 import { GridWithDimensions } from '@/components/officer/GridWithDimensions';
 import { AttemptCounter } from '@/components/ui/AttemptCounter';
 import type { OfficerTrackPuzzle, ARCGrid } from '@/types/arcTypes';
@@ -750,11 +750,10 @@ export function ResponsivePuzzleSolver({ puzzle, onBack, tutorialMode = false, i
 
         {/* Training Examples Section */}
         {trainingExamples.length > 0 && (
-          <TrainingExamplesSection
+          <TrainingExamples
             examples={trainingExamples}
             emojiSet={displayState.emojiSet}
             displayMode={displayState.displayMode}
-            title="Training Examples - What rule gets applied to the input grid to produce that output grid? 🤔"
           />
         )}
 
