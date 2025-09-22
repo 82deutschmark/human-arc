@@ -72,8 +72,7 @@ export function Navbar({
                 ) : isAuthenticated ? (
                   <Button
                     asChild
-                    variant="outline"
-                    className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                    className="border border-blue-500 bg-white text-blue-600 hover:bg-blue-50"
                   >
                     <Link href="/profile">My Profile</Link>
                   </Button>
