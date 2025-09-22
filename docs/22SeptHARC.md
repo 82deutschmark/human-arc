@@ -141,6 +141,15 @@ TASK LIST:
     2.  Rebuild these components from scratch in their new files. Use `shadcn/ui` `Card` components for the main containers and use CSS Flexbox/Grid for layout.
     3.  These new components will now import and use the new, corrected components you created in Phase 1 & 2 (e.g., `GridSizeSlider`, `ResponsiveGrid`).
 
+    **Task 3.2: Create Replacements for Remaining `officer` Components**
+-   **Action:** Create new, standardized replacements for the remaining high-impact `officer` components in the `client/src/components/ui/` directory.
+-   **Instruction:**
+    1.  **CRITICAL:** For each of the files below, read the original file in the `officer` directory to fully understand its props and functionality before creating its replacement in the `ui` directory.
+    2.  **`PuzzleSolverControls.tsx`**: Create a new `client/src/components/ui/PuzzleSolverControls.tsx`. Re-implement the controls using `shadcn/ui` `Button` components with appropriate variants.
+    3.  **`PuzzleTools.tsx`**: Create a new `client/src/components/ui/PuzzleTools.tsx`. Rebuild the tool selection functionality using `shadcn/ui` `ToggleGroup` or `RadioGroup` for a better user experience.
+    4.  **`PermanentHintSystem.tsx`**: Create a new `client/src/components/ui/PermanentHintSystem.tsx`. Use `shadcn/ui` `Card` and `Alert` components to display hints.
+    5.  **`DisplayModeToolbar.tsx`**: Create a new `client/src/components/ui/DisplayModeToolbar.tsx`. Use `shadcn/ui` `ToggleGroup` to manage display states.
+
 ### Phase 4: Final Integration
 
 **Task 4.1: Assemble the New Solver UI**
