@@ -160,7 +160,7 @@ export function UserProfile({ className, onProfileUpdate }: UserProfileProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="current-name">Current Display Name</Label>
-            <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-md font-mono">
+            <div className="p-3 bg-gray-100 rounded-md font-mono">
               {displayName}
             </div>
           </div>
@@ -227,11 +227,11 @@ export function UserProfile({ className, onProfileUpdate }: UserProfileProps) {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-600">PlayFab ID:</span>
+            <span className="text-gray-600">PlayFab ID:</span>
             <span className="font-mono">{playFabAuthManager.getPlayFabId() || 'Not loaded'}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-600">Authenticated:</span>
+            <span className="text-gray-600">Authenticated:</span>
             <span>{playFabAuthManager.isAuthenticated() ? 'Yes' : 'No'}</span>
           </div>
         </CardContent>
