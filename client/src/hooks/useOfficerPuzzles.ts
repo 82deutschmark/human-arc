@@ -7,14 +7,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import {
-  getEvaluation2Puzzles,
-  getDifficultyStats,
-  getPuzzlesByDifficulty,
-  searchPuzzleById,
-  type OfficerPuzzle,
-  type DifficultyStats
-} from '@/services/officerArcAPI';
+import { puzzleRepository, type EnhancedPuzzle } from '@/services/core/puzzleRepository';
+import type { OfficerPuzzle } from '@/services/officerArcAPI';
 import {
   LoadingStage,
   DetailedStatus,
@@ -29,11 +23,19 @@ import {
 
 export type SortStrategy = 'composite' | 'accuracy' | 'explanations' | 'difficulty' | 'recent';
 
+interface DifficultyStats {
+  impossible: number;
+  extremely_hard: number;
+  very_hard: number;
+  challenging: number;
+  total: number;
+}
+
 export interface UseOfficerPuzzlesReturn {
   // Data
-  puzzles: OfficerPuzzle[];
+  puzzles: EnhancedPuzzle[];
   stats: DifficultyStats;
-  filteredPuzzles: OfficerPuzzle[];
+  filteredPuzzles: EnhancedPuzzle[];
   total: number; // Total puzzles in database
 
   // Enhanced loading state
@@ -48,7 +50,7 @@ export interface UseOfficerPuzzlesReturn {
   enhancedError: EnhancedError | null;
   
   // Actions
-  filterByDifficulty: (difficulty: 'practically_impossible' | 'most_llms_fail' | 'unreliable' | null) => void;
+  filterByDifficulty: (difficulty: 'impossible' | 'extremely_hard' | 'very_hard' | 'challenging' | null) => void;
   searchById: (id: string) => Promise<OfficerPuzzle | null>;
   addSearchResult: (puzzle: OfficerPuzzle) => void;
   refresh: (limit?: number, sortBy?: SortStrategy) => Promise<void>;
@@ -65,14 +67,15 @@ export function useOfficerPuzzles(
   initialLimit: number = 120, // Default to all evaluation2 puzzles (120 total)
   initialSort: SortStrategy = 'difficulty' // Default to difficulty sorting (hardest first)
 ): UseOfficerPuzzlesReturn {
-  const [puzzles, setPuzzles] = useState<OfficerPuzzle[]>([]);
+  const [puzzles, setPuzzles] = useState<EnhancedPuzzle[]>([]);
   const [stats, setStats] = useState<DifficultyStats>({
-    practically_impossible: 0,
-    most_llms_fail: 0,
-    unreliable: 0,
+    impossible: 0,
+    extremely_hard: 0,
+    very_hard: 0,
+    challenging: 0,
     total: 0
   });
-  const [filteredPuzzles, setFilteredPuzzles] = useState<OfficerPuzzle[]>([]);
+  const [filteredPuzzles, setFilteredPuzzles] = useState<EnhancedPuzzle[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -129,48 +132,51 @@ export function useOfficerPuzzles(
       updateStage('init', 'complete', 'Connection initialized');
 
       // Stage 2: API Call
-      updateStage('api-call', 'active', '🌐 Calling https://arc-explainer-production.up.railway.app/api/puzzle/worst-performing');
-      const puzzleResponse = await getEvaluation2Puzzles();
-      updateStage('api-call', 'complete', `📊 Received ${puzzleResponse.puzzles.length} puzzle records from arc-explainer`);
+      updateStage('api-call', 'active', '🌐 Calling arc-explainer API for worst performing puzzles');
+      const puzzles = await puzzleRepository.getWorstPerforming(limit);
+      updateStage('api-call', 'complete', `📊 Received ${puzzles.length} puzzle records from arc-explainer`);
 
       // Stage 3: Data Processing
-      updateStage('data-fetch', 'active', `Processing ${puzzleResponse.puzzles.length} puzzle metadata records...`);
+      updateStage('data-fetch', 'active', `Processing ${puzzles.length} puzzle metadata records...`);
 
       // Update performance metrics
       setPerformanceMetrics(prev => ({
         ...prev,
-        totalPuzzles: puzzleResponse.total,
-        processedPuzzles: puzzleResponse.puzzles.length
+        totalPuzzles: puzzles.length,
+        processedPuzzles: puzzles.length
       }));
 
       // Calculate stats from loaded puzzles
       const statsData: DifficultyStats = {
-        practically_impossible: 0,
-        most_llms_fail: 0,
-        unreliable: 0,
-        total: puzzleResponse.total
+        impossible: 0,
+        extremely_hard: 0,
+        very_hard: 0,
+        challenging: 0,
+        total: puzzles.length
       };
 
-      puzzleResponse.puzzles.forEach(puzzle => {
-        statsData[puzzle.difficulty]++;
+      puzzles.forEach(puzzle => {
+        if (puzzle.difficultyCategory) {
+          statsData[puzzle.difficultyCategory]++;
+        }
       });
 
-      updateStage('data-fetch', 'complete', `Analyzed difficulty distribution for ${puzzleResponse.puzzles.length} puzzles`);
+      updateStage('data-fetch', 'complete', `Analyzed difficulty distribution for ${puzzles.length} puzzles`);
 
       // Stage 4: Processing Difficulty Analysis
       updateStage('processing', 'active', 'Calculating performance statistics...');
 
-      const avgAccuracy = puzzleResponse.puzzles.length > 0
-        ? puzzleResponse.puzzles.reduce((sum, p) => sum + p.avgAccuracy, 0) / puzzleResponse.puzzles.length
+      const avgAccuracy = puzzles.length > 0
+        ? puzzles.reduce((sum, p) => sum + (p.aiPerformance?.avgAccuracy || 0), 0) / puzzles.length
         : 0;
-      const impossibleCount = puzzleResponse.puzzles.filter(p => p.difficulty === 'practically_impossible').length;
+      const impossibleCount = puzzles.filter(p => p.difficultyCategory === 'impossible').length;
 
       // Update performance metrics with calculated stats
       setPerformanceMetrics(prev => ({
         ...prev,
         averageAccuracy: avgAccuracy,
         impossibleCount,
-        ...calculateMetrics(loadStartTime, puzzleResponse.puzzles.length, puzzleResponse.total)
+        ...calculateMetrics(loadStartTime, puzzles.length, puzzles.length)
       }));
 
       const performanceStats = `📊 Average AI accuracy: ${(avgAccuracy * 100).toFixed(1)}%, ${impossibleCount} impossible puzzles`;
@@ -178,15 +184,15 @@ export function useOfficerPuzzles(
       console.log(performanceStats);
 
       // Stage 5: Sorting
-      updateStage('sorting', 'active', `Sorting ${puzzleResponse.puzzles.length} puzzles by ${sortBy}...`);
+      updateStage('sorting', 'active', `Sorting ${puzzles.length} puzzles by ${sortBy}...`);
 
-      let sortedPuzzles = [...puzzleResponse.puzzles];
+      let sortedPuzzles = [...puzzles];
       if (sortBy === 'accuracy') {
-        sortedPuzzles.sort((a, b) => a.avgAccuracy - b.avgAccuracy);
+        sortedPuzzles.sort((a, b) => (a.aiPerformance?.avgAccuracy || 0) - (b.aiPerformance?.avgAccuracy || 0));
       } else if (sortBy === 'explanations') {
-        sortedPuzzles.sort((a, b) => b.totalExplanations - a.totalExplanations);
+        sortedPuzzles.sort((a, b) => (b.aiPerformance?.totalExplanations || 0) - (a.aiPerformance?.totalExplanations || 0));
       } else if (sortBy === 'composite') {
-        sortedPuzzles.sort((a, b) => a.compositeScore - b.compositeScore);
+        sortedPuzzles.sort((a, b) => (a.aiPerformance?.compositeScore || 0) - (b.aiPerformance?.compositeScore || 0));
       }
 
       updateStage('sorting', 'complete', `Sorted ${sortedPuzzles.length} puzzles by ${sortBy}`);
@@ -196,14 +202,14 @@ export function useOfficerPuzzles(
         const limitMessage = `Applying limit: selecting top ${limit} of ${sortedPuzzles.length} puzzles`;
         setDetailedStatus(prev => ({ ...prev, secondaryMessage: limitMessage }));
         sortedPuzzles = sortedPuzzles.slice(0, limit);
-        console.log(`📊 Showing ${limit} of ${puzzleResponse.total} evaluation2 puzzles`);
+        console.log(`📊 Showing ${limit} of ${puzzles.length} puzzles`);
       }
 
       // Stage 6: Finalize
       updateStage('finalize', 'active', 'Finalizing puzzle data...');
 
       setPuzzles(sortedPuzzles);
-      setTotal(puzzleResponse.total);
+      setTotal(puzzles.length);
       setStats(statsData);
       setFilteredPuzzles(sortedPuzzles);
 
@@ -263,9 +269,9 @@ export function useOfficerPuzzles(
       }
       
       // Filter to specific difficulty
-      const filtered = puzzles.filter(p => p.difficulty === difficulty);
+      const filtered = puzzles.filter(p => p.difficultyCategory === difficulty);
       setFilteredPuzzles(filtered);
-      
+
       console.log(`🔧 Filtered to ${difficulty}: ${filtered.length} puzzles`);
       
     } catch (err) {
@@ -274,9 +280,10 @@ export function useOfficerPuzzles(
   };
 
   // Search for specific puzzle
-  const searchById = async (id: string): Promise<OfficerPuzzle | null> => {
+  const searchById = async (id: string): Promise<EnhancedPuzzle | null> => {
     try {
-      return await searchPuzzleById(id);
+      // Simple search within loaded puzzles for now
+      return puzzles.find(p => p.id.includes(id)) || null;
     } catch (err) {
       console.error('❌ Search error:', err);
       return null;
@@ -284,7 +291,7 @@ export function useOfficerPuzzles(
   };
 
   // Add search result to the displayed puzzles
-  const addSearchResult = (puzzle: OfficerPuzzle) => {
+  const addSearchResult = (puzzle: EnhancedPuzzle) => {
     // Check if puzzle already exists in current filtered display
     const isAlreadyDisplayed = filteredPuzzles.some(p => p.id === puzzle.id);
     if (!isAlreadyDisplayed) {
