@@ -1,12 +1,10 @@
 /**
- * NOT SURE how or if this is used!!  Ideally it should be an advanced helper function that compares
- * player solution to the correct solution and displays mismatches on the grid.  This should work
- * with the FailureModal which is in components\FailureModal.tsx 
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-17
+ * Author: Cascade using Claude 3.5 Sonnet
+ * Date: 2025-09-22T18:03:26-04:00
  * PURPOSE: Reusable notification component for displaying various types of puzzle-related messages.
  * Replaces specific components like IncorrectPuzzleWarning with a flexible, themeable notification system.
  * Supports multiple notification types with consistent styling and improved accessibility.
+ * Uses shadcn/ui theme variables for proper light/dark mode support.
  * SRP and DRY check: Pass - Single responsibility for displaying notifications, highly reusable
  *
  */
@@ -72,42 +70,42 @@ export function PuzzleNotification({
     switch (notificationType) {
       case 'success':
         return {
-          containerClass: 'bg-green-50 border-green-200',
-          iconColor: 'text-green-600',
-          titleColor: 'text-green-800',
-          messageColor: 'text-green-700',
+          containerClass: 'bg-success/10 border-success/20',
+          iconColor: 'text-success',
+          titleColor: 'text-success',
+          messageColor: 'text-success/80',
           defaultIcon: <CheckCircle className="w-5 h-5" />
         };
       case 'error':
         return {
-          containerClass: 'bg-red-50 border-red-200',
-          iconColor: 'text-red-600',
-          titleColor: 'text-red-800',
-          messageColor: 'text-red-700',
+          containerClass: 'bg-destructive/10 border-destructive/20',
+          iconColor: 'text-destructive',
+          titleColor: 'text-destructive',
+          messageColor: 'text-destructive/80',
           defaultIcon: <XCircle className="w-5 h-5" />
         };
       case 'warning':
         return {
-          containerClass: 'bg-amber-50 border-amber-200',
-          iconColor: 'text-amber-600',
-          titleColor: 'text-amber-800',
-          messageColor: 'text-amber-700',
+          containerClass: 'bg-warning/10 border-warning/20',
+          iconColor: 'text-warning',
+          titleColor: 'text-warning',
+          messageColor: 'text-warning/80',
           defaultIcon: <AlertTriangle className="w-5 h-5" />
         };
       case 'tip':
         return {
-          containerClass: 'bg-blue-50 border-blue-200',
-          iconColor: 'text-blue-600',
-          titleColor: 'text-blue-800',
-          messageColor: 'text-blue-700',
+          containerClass: 'bg-primary/10 border-primary/20',
+          iconColor: 'text-primary',
+          titleColor: 'text-primary',
+          messageColor: 'text-primary/80',
           defaultIcon: <Lightbulb className="w-5 h-5" />
         };
       default: // 'info'
         return {
-          containerClass: 'bg-gray-50 border-gray-200',
-          iconColor: 'text-gray-600',
-          titleColor: 'text-gray-800',
-          messageColor: 'text-gray-700',
+          containerClass: 'bg-muted border-border',
+          iconColor: 'text-muted-foreground',
+          titleColor: 'text-foreground',
+          messageColor: 'text-muted-foreground',
           defaultIcon: <Info className="w-5 h-5" />
         };
     }

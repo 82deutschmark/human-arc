@@ -10,7 +10,7 @@ import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import type { OfficerTrackPuzzle } from '@/types/arcTypes';
 import { HARCResponsiveSolverUI } from '@/components/layout/HARCResponsiveSolverUI';
-import { PuzzleHeader } from '@/components/harc-solver/PuzzleHeader';
+import { PuzzleHeader } from '@/components/ui/PuzzleHeader';
 import { AssessmentModal } from '@/components/assessment/AssessmentModal';
 import { puzzleRepository } from '@/services/core/puzzleRepository';
 import { ASSESSMENT_PUZZLE_IDS } from '@/constants/assessmentPuzzles';

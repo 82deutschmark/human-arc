@@ -20,7 +20,7 @@ import {
 } from '@/hooks/puzzle-solver';
 
 // Phase 3 Presentational Components - shadcn/ui replacements
-import { PuzzleHeader } from '@/components/harc-solver/PuzzleHeader';
+import { PuzzleHeader } from '@/components/ui/PuzzleHeader';
 import { MultiTestTabs } from '@/components/ui/MultiTestTabs';
 import { SolverWorkspace } from '@/components/ui/SolverWorkspace';
 import { ValidationStatus } from '@/components/harc-solver/ValidationStatus';
