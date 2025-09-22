@@ -39,12 +39,12 @@ export const TestCasesView = React.memo(({
   }
 
   return (
-    <div className="bg-gradient-to-r from-slate-200 via-gray-100 to-slate-200 border-2 border-slate-400 rounded-lg p-4 shadow-lg">
+    <div className="bg-muted border-2 border-border rounded-lg p-4 shadow-lg">
       <div className="mb-3">
-        <h3 className="text-slate-800 text-lg font-bold flex items-center gap-2 mb-1">
+        <h3 className="text-foreground text-lg font-bold flex items-center gap-2 mb-1">
           Multi-Test Puzzle - All {totalTests} Tests Required
         </h3>
-        <p className="text-slate-700 text-base">
+        <p className="text-muted-foreground text-base">
           {isAssessmentMode
             ? `Complete each test step-by-step. Switch between tests using the buttons below.`
             : `You must solve ALL ${totalTests} test cases to complete this puzzle. Switch between tests using the buttons below.`
