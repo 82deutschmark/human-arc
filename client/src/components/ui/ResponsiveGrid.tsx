@@ -7,8 +7,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { SPACE_EMOJIS, getARCColorCSS } from '@/constants/spaceEmojis';
-import type { ARCGrid, DisplayMode, EmojiSet } from '@/types/arcTypes';
+import { SPACE_EMOJIS, getARCColorCSS, type EmojiSet } from '@/constants/spaceEmojis';
+import type { ARCGrid } from '@/types/arcTypes';
+import type { DisplayMode } from '@/types/puzzleDisplayTypes';
 
 interface ResponsiveGridProps {
   /** Grid data (2D array of integers 0-9) */
@@ -75,13 +76,22 @@ const GridCell = React.memo(({
   };
 
   const getCellStyles = () => {
+    const baseStyle: React.CSSProperties = {};
+    
     if (displayMode === 'arc-colors' || displayMode === 'hybrid') {
-      return {
-        backgroundColor: getARCColorCSS(value),
-        color: value === 0 || value === 5 || value === 9 ? 'white' : 'black'
-      };
+      baseStyle.backgroundColor = getARCColorCSS(value);
+      baseStyle.color = value === 0 || value === 5 || value === 9 ? 'white' : 'black';
     }
-    return {};
+    
+    // Dynamic emoji sizing based on container
+    // We'll use CSS clamp() to ensure emojis are readable at any grid size
+    if (displayMode === 'emoji' || displayMode === 'hybrid') {
+      // Calculate dynamic font size that scales with the cell
+      // min: 0.6rem (10px), preferred: 3vw per cell, max: 1.2rem (19px)
+      baseStyle.fontSize = 'clamp(0.6rem, 3vw, 1.2rem)';
+    }
+    
+    return baseStyle;
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -121,7 +131,7 @@ const GridCell = React.memo(({
     <div
       className={cn(
         // Base styles
-        "aspect-square flex items-center justify-center font-bold text-sm border transition-all duration-200 user-select-none relative",
+        "aspect-square flex items-center justify-center font-bold border transition-all duration-200 user-select-none relative",
 
         // Size and layout - responsive with CSS Grid fr units
         "min-w-4 min-h-4",
@@ -342,8 +352,9 @@ export function ResponsiveGrid({
         style={{
           gridTemplateColumns: `repeat(${gridWidth}, 1fr)`,
           gridTemplateRows: `repeat(${gridHeight}, 1fr)`,
-          // Responsive sizing using CSS clamp for fluid scaling
-          width: `clamp(200px, ${Math.min(80, gridWidth * 8)}vw, 600px)`,
+          // Responsive sizing with container constraint - prevents overflow
+          width: `clamp(200px, ${Math.min(40, gridWidth * 4)}vw, min(100%, 500px))`,
+          maxWidth: '100%',
           aspectRatio: `${gridWidth} / ${gridHeight}`
         }}
         onContextMenu={(e) => e.preventDefault()}
