@@ -32,6 +32,8 @@ interface ResponsiveGridProps {
   className?: string;
   /** Whether the grid is disabled */
   disabled?: boolean;
+  /** Scale factor for grid size (10-50px) */
+  scale?: number;
 }
 
 interface GridCellProps {
@@ -130,11 +132,11 @@ const GridCell = React.memo(({
   return (
     <div
       className={cn(
-        // Base styles
-        "aspect-square flex items-center justify-center font-bold border transition-all duration-200 user-select-none relative",
+        // Base styles - ULTRA COMPACT
+        "aspect-square flex items-center justify-center font-bold border-0 transition-all duration-100 user-select-none relative",
 
-        // Size and layout - responsive with CSS Grid fr units
-        "min-w-4 min-h-4",
+        // NO minimum sizes - let it scale down to nothing if needed
+        "",
 
         // Interactive states
         interactive && [
@@ -192,7 +194,8 @@ export function ResponsiveGrid({
   enableDragToPaint = false,
   title,
   className = '',
-  disabled = false
+  disabled = false,
+  scale = 30
 }: ResponsiveGridProps) {
   const [localGrid, setLocalGrid] = useState<ARCGrid>(grid);
   const [dragState, setDragState] = useState<{
@@ -334,28 +337,29 @@ export function ResponsiveGrid({
   }
 
   return (
-    <div className={cn("text-center", className)}>
+    <div className={cn("", className)}>
       {/* Title */}
       {title && (
-        <div className="text-xs text-primary mb-2 font-semibold uppercase tracking-wide">
+        <div className="text-xs text-primary mb-1 font-semibold uppercase tracking-wide">
           {title}
         </div>
       )}
 
-      {/* Responsive Grid using CSS Grid with fractional units */}
+      {/* Ultra-compact grid - NO WASTED SPACE */}
       <div
         className={cn(
-          "inline-grid gap-px p-3 rounded border-2 mx-auto",
+          "inline-grid gap-0 p-0 border",
           interactive && !disabled ? "bg-card border-border" : "bg-muted border-border",
           disabled && "opacity-50"
         )}
         style={{
           gridTemplateColumns: `repeat(${gridWidth}, 1fr)`,
           gridTemplateRows: `repeat(${gridHeight}, 1fr)`,
-          // Responsive sizing with container constraint - prevents overflow
-          width: `clamp(200px, ${Math.min(40, gridWidth * 4)}vw, min(100%, 500px))`,
+          // Direct size control based on scale parameter
+          width: `${gridWidth * scale}px`,
+          height: `${gridHeight * scale}px`,
           maxWidth: '100%',
-          aspectRatio: `${gridWidth} / ${gridHeight}`
+          maxHeight: '100%'
         }}
         onContextMenu={(e) => e.preventDefault()}
       >
@@ -383,15 +387,7 @@ export function ResponsiveGrid({
         )}
       </div>
 
-      {/* Instructions */}
-      {interactive && !disabled && (
-        <div className="text-xs text-muted-foreground mt-2">
-          {enableDragToPaint
-            ? 'Click or drag to paint with selected value • Right-click to clear'
-            : 'Click cells to paint • Right-click to clear'
-          }
-        </div>
-      )}
+      {/* No instructions - save space */}
     </div>
   );
 }

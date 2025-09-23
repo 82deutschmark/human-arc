@@ -323,6 +323,11 @@ DONE???
 
 Task 5.9: CLEANUP and make sure the build works!!!
 
+
+TASK 6.0: Debugging new components!
+
+
+
 ## Critical Issues Resolved 
 
 ### 1. **Theme Color Violations - FIXED**
