@@ -10,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Resize } from 'lucide-react';
+import { Move } from 'lucide-react';
 
 interface PuzzleSolverControlsProps {
   currentDimensions: { width: number; height: number };
@@ -37,7 +37,7 @@ export function PuzzleSolverControls({
     <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-primary text-lg flex items-center gap-2 justify-center">
-          <Resize className="w-5 h-5" />
+          <Move className="w-5 h-5" />
           Output Size
         </CardTitle>
       </CardHeader>

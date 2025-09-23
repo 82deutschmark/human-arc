@@ -21,7 +21,7 @@ import { Input } from '@/components/ui/input';
 import { AlertTriangle, ArrowLeft, Search, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { useOfficerPuzzles } from '@/hooks/useOfficerPuzzles';
-import { PuzzleGrid } from '@/components/officer/PuzzleGrid';
+import { PuzzleGrid } from '@/components/ui/PuzzleGrid';
 import { PuzzleLoadingModal } from '@/components/ui/PuzzleLoadingModal';
 import {
   playFabRequestManager,

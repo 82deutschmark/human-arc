@@ -113,6 +113,8 @@ These are the secure, server-side functions that perform all critical validation
 
 The following systems are part of the legacy codebase and are no longer in use. They are preserved for historical context but should not be used or modified.
 
+-   **Officer Components**: This folder `client/src/components/officer/`, was used a mess of SRP, DRY, and shadcn/ui violations. It has been superseded by the new correct components that use shadcn/ui properly.
+
 -   **Narrative Story Wrapper System**: This system, located in `server/data/problems.json` and `server/tools/story-factory.ts`, was designed to add a story layer to tasks. It has been superseded by the PlayFab-centric architecture.
 -   **AI Failure Content System**: This system, located in `server/data/ai_failure.json` and `scripts/enhance-tasks.js`, was used to add humorous and educational content about AI failures to tasks. It is also deprecated.
 

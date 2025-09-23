@@ -21,7 +21,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useDocumentMeta } from "@/utils/useDocumentMeta";
 import MissionControl from "@/pages/MissionControl";
-import OfficerTrackSimple from "@/pages/OfficerTrackSimple";
 import HARCPuzzleBrowser from "@/pages/HARCPuzzleBrowser";
 import PuzzleSolver from "@/pages/PuzzleSolver";
 
@@ -50,7 +49,7 @@ function Router() {
     <Switch>
       <Route path="/" component={HARCPlatform} />
       <Route path="/space-force" component={MissionControl} />
-      <Route path="/space-force/officer-track" component={OfficerTrackSimple} />
+      
       <Route path="/space-force/officer-track/solve/:puzzleId" component={PuzzleSolver} />
      
       

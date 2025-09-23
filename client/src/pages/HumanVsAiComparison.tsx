@@ -1,5 +1,5 @@
 /**
- * THIS PAGE SEEMS LIKE IT IS UNUSED AND DANGEROUS.  NEEDS AUDIT FOR DELETION!!
+ * THIS PAGE SEEMS LIKE IT IS UNUSED AND DANGEROUS.  LOOKS LIKE IT DUPLICATES FUNCTIONS IN THE PersonalPerformance page.  NEEDS AUDIT FOR DELETION!!
  * Human vs. AI Comparison Page
  * ==============================
  * This page provides a detailed comparison of the user's assessment performance
