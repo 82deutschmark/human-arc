@@ -1,5 +1,5 @@
 // Authored by: Cascade using Claude 3.5 Sonnet
-// Date: 2025-09-21T02:38:52.568Z
+// Date: 2025-09-25T17:12:52.576Z
 // Purpose: Source of truth for AI model to PlayFab ID mappings
 // How it works: Maps arc-explainer model keys to their corresponding PlayFab player IDs
 // Project usage: Used by client-side code to reference AI players and for duplicate detection during registration
@@ -445,6 +445,22 @@ export const AI_MODEL_PLAYFAB_MAPPINGS: Record<string, AIModelMapping> = {
     playFabId: 'E40EF54572B3B49F',
     customId: 'AI_OPENROUTER_X_AI_GROK_4_FAST_FREE',
     registrationDate: '2025-09-21T02:38:52.568Z'
+  },
+  'qwen/qwen3-30b-a3b-instruct': {
+    key: 'qwen/qwen3-30b-a3b-instruct',
+    name: 'Qwen3 30B A3B Instruct',
+    provider: 'OpenRouter',
+    playFabId: 'C75EA5215DB6D93B',
+    customId: 'AI_OPENROUTER_QWEN_QWEN3_30B_A3B_INSTRUCT',
+    registrationDate: '2025-09-25T17:12:26.086Z'
+  },
+  'qwen/qwen3-235b-a22b-thinking': {
+    key: 'qwen/qwen3-235b-a22b-thinking',
+    name: 'Qwen3 235B A22B Thinking',
+    provider: 'OpenRouter',
+    playFabId: '44AA316466E6EB85',
+    customId: 'AI_OPENROUTER_QWEN_QWEN3_235B_A22B_THINKING',
+    registrationDate: '2025-09-25T17:12:52.576Z'
   }
 };
 
