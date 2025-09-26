@@ -331,8 +331,23 @@ export function ResponsiveGrid({
   const gridHeight = localGrid.length;
   const gridWidth = localGrid[0]?.length || 0;
 
-  // Calculate actual cell size - use fixedCellSize if provided, otherwise use scale
-  const actualCellSize = fixedCellSize || scale;
+  // Calculate responsive cell size - more sophisticated than just fixed pixels
+  const getResponsiveCellSize = () => {
+    if (fixedCellSize) {
+      // Fixed size override - use exactly what user specified
+      return fixedCellSize;
+    }
+
+    // Responsive calculation based on scale preference and screen constraints
+    const baseSize = scale;
+    const maxCellSize = Math.min(60, Math.floor(window.innerWidth / (gridWidth * 1.2))); // Screen-aware max
+    const minCellSize = Math.max(16, Math.floor(window.innerWidth / (gridWidth * 8))); // Screen-aware min
+
+    // Clamp the user's scale preference to responsive bounds
+    return Math.max(minCellSize, Math.min(maxCellSize, baseSize));
+  };
+
+  const actualCellSize = getResponsiveCellSize();
   const fontSize = Math.max(10, Math.floor(actualCellSize * 0.5));
 
   if (gridHeight === 0 || gridWidth === 0) {

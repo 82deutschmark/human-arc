@@ -10,8 +10,10 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { SizeSlider } from '@/components/ui/SizeSlider';
 import { ResponsiveGrid } from '@/components/ui/ResponsiveGrid';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lightbulb, Eye, Sparkles } from 'lucide-react';
 import type { ARCGrid, DisplayMode, EmojiSet } from '@/types/arcTypes';
 
 interface TrainingExample {
@@ -63,11 +65,8 @@ const GridWithDimensionsDisplay = React.memo(({
         interactive={false}
         displayMode={displayMode}
         emojiSet={emojiSet}
+        scale={cellSize}
         className={cn("mx-auto")}
-        style={{
-          width: `${Math.max(currentWidth * cellSize + 24, 120)}px`,
-          height: `${Math.max(currentHeight * cellSize + 24, 120)}px`
-        }}
       />
     </div>
   );
@@ -125,11 +124,33 @@ export function TrainingExamples({
         {/* Responsive horizontal scrolling container */}
         <div className="overflow-x-auto pb-4">
           <div className="flex gap-6 min-w-max">
-            {examples.map((example, index) => (
-              <Card
-                key={index}
-                className="flex-shrink-0 border-2 shadow-lg"
-              >
+            {examples.map((example, index) => {
+              // Generate subtle color variety for cards
+              const cardColors = [
+                "border-blue-200 bg-blue-50/30 dark:border-blue-800 dark:bg-blue-950/20",
+                "border-emerald-200 bg-emerald-50/30 dark:border-emerald-800 dark:bg-emerald-950/20",
+                "border-amber-200 bg-amber-50/30 dark:border-amber-800 dark:bg-amber-950/20",
+                "border-purple-200 bg-purple-50/30 dark:border-purple-800 dark:bg-purple-950/20",
+                "border-rose-200 bg-rose-50/30 dark:border-rose-800 dark:bg-rose-950/20",
+                "border-cyan-200 bg-cyan-50/30 dark:border-cyan-800 dark:bg-cyan-950/20",
+                "border-orange-200 bg-orange-50/30 dark:border-orange-800 dark:bg-orange-950/20"
+              ];
+              const cardColor = cardColors[index % cardColors.length];
+
+              return (
+              <TooltipProvider key={index}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Card
+                      className={cn(
+                        "flex-shrink-0 border-2 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]",
+                        "relative overflow-hidden",
+                        cardColor,
+                        // Decorative corner borders
+                        "before:absolute before:top-0 before:left-0 before:w-4 before:h-4 before:border-l-2 before:border-t-2 before:border-primary/30",
+                        "after:absolute after:bottom-0 after:right-0 after:w-4 after:h-4 after:border-r-2 after:border-b-2 after:border-primary/30"
+                      )}
+                    >
                 <CardHeader className="pb-2">
                   <CardTitle className="text-center text-lg">
                     Example {index + 1}
@@ -161,26 +182,46 @@ export function TrainingExamples({
                     />
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+                    </Card>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-sm">
+                    <p>
+                      <strong>Training Example {index + 1}</strong>
+                    </p>
+                    <p className="text-sm">
+                      Study the transformation: {example.input.length}×{example.input[0]?.length || 0} → {example.output.length}×{example.output[0]?.length || 0}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Look for patterns in colors, shapes, and positions
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              );
+            })}
           </div>
         </div>
 
-        {/* Pattern Analysis Hint for complex puzzles */}
+        {/* Enhanced Pattern Analysis Hint for complex puzzles */}
         {examples.length >= 3 && (
-          <Card className="mt-4 border-primary/20 bg-primary/5">
-            <CardContent className="pt-6">
-              <div className="text-primary">
-                <strong className="flex items-center gap-2">
-                  💡 Pattern Analysis
-                </strong>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Study these {examples.length} examples to identify the transformation pattern.
+          <Alert className="mt-4 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+            <Lightbulb className="h-4 w-4" />
+            <div className="ml-2">
+              <strong className="flex items-center gap-2 text-primary">
+                <Sparkles className="h-4 w-4" />
+                Pattern Analysis Challenge
+              </strong>
+              <AlertDescription className="mt-2">
+                <p className="text-sm">
+                  Study these <Badge variant="secondary" className="mx-1">{examples.length}</Badge> examples to identify the transformation pattern.
+                </p>
+                <p className="text-xs text-muted-foreground mt-2 flex items-center gap-2">
+                  <Eye className="h-3 w-3" />
                   Look for consistent rules that apply across all input → output pairs.
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+              </AlertDescription>
+            </div>
+          </Alert>
         )}
       </CardContent>
     </Card>

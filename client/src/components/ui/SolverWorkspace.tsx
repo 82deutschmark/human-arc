@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SizeSlider } from '@/components/ui/SizeSlider';
 import { ResponsiveGrid } from '@/components/ui/ResponsiveGrid';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Clock, Lock, Target } from 'lucide-react';
 import type { ARCGrid, OfficerTrackPuzzle, ARCExample } from '@/types/arcTypes';
@@ -244,33 +245,80 @@ export const SolverWorkspace = React.memo(({
               />
             </div>
 
-            {/* Submit Button */}
-            <Button
-              variant={getSubmitButtonVariant()}
-              size="lg"
-              disabled={isLocked || isValidating}
-              onClick={isLocked ? undefined : onValidate}
-              className={cn(
-                "shadow-lg transition-all duration-300",
-                attemptsRemaining === 1 && "animate-pulse",
-                !isLocked && !isValidating && "hover:scale-105"
-              )}
-            >
-              {getSubmitButtonIcon()}
-              {getSubmitButtonText()}
-            </Button>
+            {/* Enhanced Submit Button with Pulse Effects */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={getSubmitButtonVariant()}
+                    size="lg"
+                    disabled={isLocked || isValidating}
+                    onClick={isLocked ? undefined : onValidate}
+                    className={cn(
+                      "shadow-lg transition-all duration-300 relative overflow-hidden",
+                      // Enhanced animations based on attempt status
+                      attemptsRemaining === 1 && "animate-pulse shadow-destructive/50 ring-2 ring-destructive/30",
+                      attemptsRemaining === 2 && "shadow-amber-500/50 ring-1 ring-amber-500/30",
+                      attemptsRemaining > 2 && "shadow-primary/50",
+                      // Hover effects
+                      !isLocked && !isValidating && "hover:scale-105 hover:shadow-xl",
+                      // Glowing pulse effect for urgent states
+                      attemptsRemaining === 1 && "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-destructive/10 before:to-transparent before:animate-pulse",
+                      // Success state preparation
+                      isValidating && "animate-pulse shadow-primary/70 ring-2 ring-primary/40"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 relative z-10">
+                      {getSubmitButtonIcon()}
+                      <span className="font-semibold">{getSubmitButtonText()}</span>
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-sm">
+                  <div className="text-center">
+                    {isLocked ? (
+                      <p>Solution attempts exhausted</p>
+                    ) : isValidating ? (
+                      <p>Checking your solution...</p>
+                    ) : attemptsRemaining === 1 ? (
+                      <>
+                        <p className="font-semibold text-destructive">⚠️ Final Attempt</p>
+                        <p className="text-xs">Make sure your solution is correct!</p>
+                      </>
+                    ) : (
+                      <>
+                        <p>Submit your solution</p>
+                        <p className="text-xs text-muted-foreground">{attemptsRemaining} attempts remaining</p>
+                      </>
+                    )}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardHeader>
       </Card>
 
-      {/* Main Workspace */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
+      {/* Main Workspace - Enhanced Mobile Responsiveness */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 w-full">
         {/* Test Input */}
-        <Card className="lg:col-span-1">
+        <Card className="md:col-span-1 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-primary text-3xl font-bold">Test Input</CardTitle>
-              <div className="min-w-0 flex-1 max-w-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <CardTitle className="text-primary text-2xl sm:text-3xl font-bold cursor-help text-center sm:text-left">
+                      Test Input
+                    </CardTitle>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="max-w-sm">
+                    <p><strong>This is the puzzle input</strong></p>
+                    <p className="text-sm">Apply the pattern you learned from training examples to transform this grid</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <div className="min-w-0 flex-1 max-w-full sm:max-w-xs">
                 <SizeSlider
                   value={inputCellSize}
                   onChange={setInputCellSize}
@@ -293,9 +341,21 @@ export const SolverWorkspace = React.memo(({
         </Card>
 
         {/* Central Controls */}
-        <Card className="lg:col-span-1">
+        <Card className="md:col-span-2 lg:col-span-1 border-amber-200/50 bg-gradient-to-br from-amber-50/30 to-amber-100/20 dark:border-amber-800/50 dark:from-amber-950/20 dark:to-amber-900/10">
           <CardHeader>
-            <CardTitle className="text-primary text-3xl font-bold text-center">Controls</CardTitle>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <CardTitle className="text-primary text-2xl sm:text-3xl font-bold text-center cursor-help">
+                    Controls
+                  </CardTitle>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-sm">
+                  <p><strong>Puzzle Solving Tools</strong></p>
+                  <p className="text-sm">Adjust grid size, select values, and use helpful actions to solve the puzzle</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Puzzle Solver Controls */}
@@ -321,17 +381,38 @@ export const SolverWorkspace = React.memo(({
         </Card>
 
         {/* User Solution */}
-        <Card className="lg:col-span-1">
+        <Card className={cn(
+          "lg:col-span-1 transition-all duration-300",
+          // Enhanced visual feedback based on solution state
+          "border-emerald-200/50 bg-gradient-to-br from-emerald-50/30 to-emerald-100/20 dark:border-emerald-800/50 dark:from-emerald-950/20 dark:to-emerald-900/10",
+          // Pulse effect when validation is active
+          isValidating && "ring-2 ring-primary/30 shadow-lg shadow-primary/20"
+        )}>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-primary text-3xl font-bold">
-                Your Solution
-                {isAssessmentMode && totalTests > 1 && (
-                  <span className="text-muted-foreground text-xl font-normal ml-2">
-                    - Test {currentTestIndex + 1} of {totalTests}
-                  </span>
-                )}
-              </CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <CardTitle className="text-primary text-3xl font-bold cursor-help">
+                      Your Solution
+                      {isAssessmentMode && totalTests > 1 && (
+                        <span className="text-muted-foreground text-xl font-normal ml-2">
+                          - Test {currentTestIndex + 1} of {totalTests}
+                        </span>
+                      )}
+                    </CardTitle>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-sm">
+                    <p><strong>Build your solution here</strong></p>
+                    <p className="text-sm">Click cells to paint them with your selected value. Use drag-to-paint for efficiency!</p>
+                    {expectedDimensions && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Expected size: {expectedDimensions.height}×{expectedDimensions.width}
+                      </p>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <div className="min-w-0 flex-1 max-w-xs">
                 <SizeSlider
                   value={outputCellSize}
