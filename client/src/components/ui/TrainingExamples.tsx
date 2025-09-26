@@ -115,7 +115,7 @@ export function TrainingExamples({
               onChange={setCellSize}
               min={16}
               max={80}
-              label="Size"
+              label="Grid Size"
             />
           </div>
         </div>
@@ -140,7 +140,7 @@ export function TrainingExamples({
                     {/* Input Grid */}
                     <GridWithDimensionsDisplay
                       grid={example.input}
-                      label="Input"
+                      label="This grid"
                       displayMode={displayMode}
                       emojiSet={emojiSet}
                       cellSize={cellSize}
@@ -154,7 +154,7 @@ export function TrainingExamples({
                     {/* Output Grid */}
                     <GridWithDimensionsDisplay
                       grid={example.output}
-                      label="Output"
+                      label="becomes this grid!"
                       displayMode={displayMode}
                       emojiSet={emojiSet}
                       cellSize={cellSize}

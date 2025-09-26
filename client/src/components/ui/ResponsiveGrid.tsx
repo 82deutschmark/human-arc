@@ -32,8 +32,10 @@ interface ResponsiveGridProps {
   className?: string;
   /** Whether the grid is disabled */
   disabled?: boolean;
-  /** Scale factor for grid size (10-50px) */
+  /** Scale factor for grid size (10-50px) - deprecated, use fixedCellSize */
   scale?: number;
+  /** Fixed cell size in pixels - overrides scale calculation */
+  fixedCellSize?: number;
 }
 
 interface GridCellProps {
@@ -195,7 +197,8 @@ export function ResponsiveGrid({
   title,
   className = '',
   disabled = false,
-  scale = 30
+  scale = 30,
+  fixedCellSize
 }: ResponsiveGridProps) {
   const [localGrid, setLocalGrid] = useState<ARCGrid>(grid);
   const [dragState, setDragState] = useState<{
@@ -328,6 +331,10 @@ export function ResponsiveGrid({
   const gridHeight = localGrid.length;
   const gridWidth = localGrid[0]?.length || 0;
 
+  // Calculate actual cell size - use fixedCellSize if provided, otherwise use scale
+  const actualCellSize = fixedCellSize || scale;
+  const fontSize = Math.max(10, Math.floor(actualCellSize * 0.5));
+
   if (gridHeight === 0 || gridWidth === 0) {
     return (
       <div className={cn("text-center p-4", className)}>
@@ -352,12 +359,18 @@ export function ResponsiveGrid({
           interactive && !disabled ? "bg-card border-border" : "bg-muted border-border",
           disabled && "opacity-50"
         )}
-        style={{
+        style={fixedCellSize ? {
+          // Pixel-based grid styling when fixedCellSize is provided (like original ResponsiveOfficerGrid)
+          gridTemplateColumns: `repeat(${gridWidth}, ${actualCellSize}px)`,
+          gridTemplateRows: `repeat(${gridHeight}, ${actualCellSize}px)`,
+          maxWidth: '100%',
+          maxHeight: '100%'
+        } : {
+          // Fallback to responsive fractional units
           gridTemplateColumns: `repeat(${gridWidth}, 1fr)`,
           gridTemplateRows: `repeat(${gridHeight}, 1fr)`,
-          // Direct size control based on scale parameter
-          width: `${gridWidth * scale}px`,
-          height: `${gridHeight * scale}px`,
+          width: `${gridWidth * actualCellSize}px`,
+          height: `${gridHeight * actualCellSize}px`,
           maxWidth: '100%',
           maxHeight: '100%'
         }}

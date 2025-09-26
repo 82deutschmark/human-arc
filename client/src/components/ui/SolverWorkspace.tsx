@@ -48,6 +48,7 @@ export interface SolverWorkspaceProps {
   onHintUsed: (hintLevel: number, totalHints: number) => void;
   onAutoResizeGrid: (height: number, width: number) => void;
   updateCurrentSolution: (newGrid: ARCGrid) => void;
+  onReplayTutorial?: () => void;
 }
 
 interface GridWithDimensionsDisplayProps {
@@ -107,10 +108,7 @@ const GridWithDimensionsDisplay = React.memo(({
         enableDragToPaint={interactive}
         className="mx-auto"
         onChange={onChange}
-        style={{
-          width: `clamp(200px, ${Math.min(80, currentWidth * 8)}vw, 600px)`,
-          aspectRatio: `${currentWidth} / ${currentHeight}`
-        }}
+        fixedCellSize={cellSize}
       />
     </div>
   );
@@ -144,6 +142,7 @@ export const SolverWorkspace = React.memo(({
   onHintUsed,
   onAutoResizeGrid,
   updateCurrentSolution,
+  onReplayTutorial,
 }: SolverWorkspaceProps) => {
 
   const [inputCellSize, setInputCellSize] = useState(50);
@@ -227,10 +226,10 @@ export const SolverWorkspace = React.memo(({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <CardTitle className="text-primary text-3xl">
+              <CardTitle className="text-amber-400 text-5xl font-bold">
                 Test Case {currentTestIndex + 1}
                 {isAssessmentMode && totalTests > 1 && (
-                  <span className="text-muted-foreground text-xl font-normal ml-2">
+                  <span className="text-slate-400 text-2xl font-normal ml-2">
                     of {totalTests}
                   </span>
                 )}
@@ -270,14 +269,14 @@ export const SolverWorkspace = React.memo(({
         <Card className="lg:col-span-1">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-primary text-xl">Test Input</CardTitle>
+              <CardTitle className="text-primary text-3xl font-bold">Test Input</CardTitle>
               <div className="min-w-0 flex-1 max-w-xs">
                 <SizeSlider
                   value={inputCellSize}
                   onChange={setInputCellSize}
                   min={25}
                   max={75}
-                  label="Size"
+                  label="Grid Size"
                 />
               </div>
             </div>
@@ -296,7 +295,7 @@ export const SolverWorkspace = React.memo(({
         {/* Central Controls */}
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle className="text-primary text-xl text-center">Controls</CardTitle>
+            <CardTitle className="text-primary text-3xl font-bold text-center">Controls</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Puzzle Solver Controls */}
@@ -314,6 +313,7 @@ export const SolverWorkspace = React.memo(({
               onValueSelect={onValueSelect}
               onCopyInput={onCopyInput}
               onResetSolution={onResetSolution}
+              onReplayTutorial={onReplayTutorial}
               usedValues={usedValues}
               isAssessmentMode={isAssessmentMode}
             />
@@ -324,11 +324,11 @@ export const SolverWorkspace = React.memo(({
         <Card className="lg:col-span-1">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-primary text-xl">
+              <CardTitle className="text-primary text-3xl font-bold">
                 Your Solution
                 {isAssessmentMode && totalTests > 1 && (
-                  <span className="text-muted-foreground text-sm font-normal block">
-                    Test {currentTestIndex + 1} of {totalTests}
+                  <span className="text-muted-foreground text-xl font-normal ml-2">
+                    - Test {currentTestIndex + 1} of {totalTests}
                   </span>
                 )}
               </CardTitle>
@@ -338,7 +338,7 @@ export const SolverWorkspace = React.memo(({
                   onChange={setOutputCellSize}
                   min={25}
                   max={75}
-                  label="Size"
+                  label="Grid Size"
                 />
               </div>
             </div>

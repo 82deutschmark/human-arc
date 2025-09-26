@@ -31,13 +31,6 @@ This document describes the public APIs that external applications rely on. Thes
 ### AI Model Analysis SUPER IMPORTANT!!
 - `GET /api/models` - List all available AI models and providers
 
-THESE ARE LARGELY DEPRECATED!  They never worked correctly.
-- `POST /api/model/batch-analyze` - Start batch analysis across multiple puzzles
-- `GET /api/model/batch-status/:sessionId` - Get batch analysis progress
-- `POST /api/model/batch-control/:sessionId` - Control batch analysis (pause/resume/stop)
-- `GET /api/model/batch-results/:sessionId` - Get batch analysis results
-- `GET /api/model/batch-sessions` - Get all batch analysis sessions
-
 ### Explanation Management   SUPER IMPORTANT!!
 - `GET /api/puzzle/:puzzleId/explanations` - Get all explanations for a puzzle
 - `GET /api/puzzle/:puzzleId/explanation` - Get single explanation for a puzzle
