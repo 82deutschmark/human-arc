@@ -18,6 +18,7 @@ export const ASSESSMENT_PUZZLE_IDS = [
 ];
 
 /*
+'30f42897'  //  3x14 -> 3x14 that involves stamping the special color around the edges
 '00576224', //  2x2 -> 6x6 baseline test that is easy to understand but complex to do because it will require frequent color switching
 'b15fca0b', //  5x5 draw a line to connect them!
 '1e32b0e9', //  17x17 You are shown the shape to draw in the upper left, draw it using the color/emoji of the grid lines in each 3x3 box and do not remove any existing elements there 
