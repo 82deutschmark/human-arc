@@ -413,6 +413,7 @@ export function AssessmentInterface() {
 
       {/* The HARCResponsiveSolverUI - Modern HARC solver interface */}
       <HARCResponsiveSolverUI
+        key={currentPuzzle.id}
         puzzle={currentPuzzle}
         onBack={handleBackToLanding}
         isAssessmentMode={true}
