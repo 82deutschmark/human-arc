@@ -86,6 +86,14 @@ export function HARCResponsiveSolverUI({
     onAssessmentAdvance,
   });
 
+  const {
+    validationState,
+    validateSolution,
+    clearValidationState,
+    setShowSuccessModal,
+    setShowFailureModal,
+  } = solutionValidation;
+
   const solutionManager = usePuzzleSolutionManager({
     currentTestIndex: puzzleState.currentTestIndex,
     totalTests: puzzleState.totalTests,
@@ -163,6 +171,22 @@ export function HARCResponsiveSolverUI({
     });
   }, [sessionLogger.logPlayerAction, puzzleState.currentTestIndex, puzzle.id]);
 
+  useEffect(() => {
+    clearValidationState();
+  }, [puzzle.id, clearValidationState]);
+
+  const handleAssessmentSuccessModalClose = useCallback(() => {
+    setShowSuccessModal(false);
+  }, [setShowSuccessModal]);
+
+  const handleAssessmentAdvance = useCallback(() => {
+    setShowSuccessModal(false);
+    clearValidationState();
+    if (onAssessmentAdvance) {
+      onAssessmentAdvance();
+    }
+  }, [setShowSuccessModal, clearValidationState, onAssessmentAdvance]);
+
   const handleRetry = useCallback(() => {
     // TODO: Implement retry logic
     console.log('Retry validation requested');
@@ -213,14 +237,14 @@ export function HARCResponsiveSolverUI({
           displayState={displayState}
           isAssessmentMode={isAssessmentMode}
           allTestsCompleted={solutionManager.allTestsCompleted}
-          isValidating={solutionValidation.validationState.isValidating}
+          isValidating={validationState.isValidating}
           isLocked={attemptStatus?.status === 'locked'}
           attemptsRemaining={attemptStatus?.attemptsRemaining ?? 2}
           onCellInteraction={handleCellInteraction}
           onSizeChange={puzzleState.handleSizeChange}
           onCopyInput={handleCopyInput}
           onResetSolution={handleResetSolution}
-          onValidate={solutionValidation.validateSolution}
+          onValidate={validateSolution}
           onDisplayModeChange={displayState.handleDisplayModeChange}
           onEmojiSetChange={displayState.handleEmojiSetChange}
           onValueSelect={displayState.handleValueSelect}
@@ -231,33 +255,33 @@ export function HARCResponsiveSolverUI({
 
         <ValidationStatus
           puzzleId={puzzle.id}
-          validationState={solutionValidation.validationState}
+          validationState={validationState}
           attemptStatus={attemptStatus}
           isAssessmentMode={isAssessmentMode}
           allTestsCompleted={solutionManager.allTestsCompleted}
-          onSubmit={solutionValidation.validateSolution}
+          onSubmit={validateSolution}
           onRetry={handleRetry}
-          setShowFailureModal={solutionValidation.setShowFailureModal}
+          setShowFailureModal={setShowFailureModal}
         />
 
       </main>
 
       {isAssessmentMode ? (
         <AssessmentStepSuccessModal
-          open={solutionValidation.validationState.showSuccessModal}
+          open={validationState.showSuccessModal}
           puzzleId={puzzle.id}
-          onClose={() => {}}
-          onAssessmentAdvance={onAssessmentAdvance}
-          fallbackMode={solutionValidation.validationState.validationResult?.fallback || false}
+          onClose={handleAssessmentSuccessModalClose}
+          onAssessmentAdvance={handleAssessmentAdvance}
+          fallbackMode={validationState.validationResult?.fallback || false}
         />
       ) : (
         <SuccessModal
-          open={solutionValidation.validationState.showSuccessModal}
-          onClose={() => solutionValidation.setShowSuccessModal(false)}
+          open={validationState.showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
           title="Excellent Work!"
           message="Puzzle solved successfully!"
           puzzleId={puzzle.id}
-          scoreDetails={solutionValidation.validationState.validationResult || undefined}
+          scoreDetails={validationState.validationResult || undefined}
         />
       )}
     </div>
