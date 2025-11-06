@@ -1,5 +1,5 @@
 #   Claude Code
-Every file you create or modify must follow the header format here as an example:
+Every file you create or modify should follow the header format here as an example:
 *   **Author**: {your model name}
 *   **Date**: {date} {time} 
 *   **PURPOSE**: This document serves as the primary technical and architectural guide for the AI assistant (Cascade). It consolidates all development rules, architectural patterns, and critical project insights. It is the single source of truth for the AI, ensuring adherence to best practices and preventing common errors.
