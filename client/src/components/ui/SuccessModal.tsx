@@ -1,12 +1,8 @@
 /**
- * 
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-12
- * PURPOSE: Reusable success feedback modal with randomized emojis and smooth transitions.
- * Used across the project for success -> transition flows. Provides professional fanfare
- * and celebrates user achievements while maintaining consistent design language.
- * SRP and DRY check: Pass - Single responsibility (success feedback), reusable component
- * 
+ * **Author**: Cascade (OpenAI GPT-4.1)
+ * **Date**: 2025-11-05 23:08
+ * **PURPOSE**: Reusable success feedback modal with randomized emojis and smooth transitions.
+ * **shadcn/ui and SRP and DRY check**: Pass - Single responsibility (success feedback), reusable component leveraging shadcn/ui Dialog primitives.
  */
 
 import { useEffect, useState } from 'react';
@@ -21,16 +17,17 @@ interface Props {
   onClose: () => void;
   title?: string;
   message?: string;
-  autoCloseDelay?: number;
   showDesignerNotes?: boolean;
   fallbackMode?: boolean;
+
   scoreDetails?: {
     basePoints?: number;
     speedBonus?: number;
     efficiencyBonus?: number;
     finalScore?: number;
   };
-  // New props for AI comparison and strategy submission
+
+  // New props with defaults
   puzzleId?: string;
   enableAIComparison?: boolean;
   enableStrategySubmission?: boolean;
@@ -45,7 +42,7 @@ interface Props {
 function getRandomEmojis(count: number = 6): string[] {
   const emojiSetKeys = Object.keys(SPACE_EMOJIS) as EmojiSet[];
   const selectedEmojis: string[] = [];
-  
+
   // Get random emojis from different sets to ensure variety
   for (let i = 0; i < count; i++) {
     const randomSetKey = emojiSetKeys[Math.floor(Math.random() * emojiSetKeys.length)];
@@ -54,7 +51,7 @@ function getRandomEmojis(count: number = 6): string[] {
     const randomEmoji = emojiSet[Math.floor(Math.random() * 9) + 1];
     selectedEmojis.push(randomEmoji);
   }
-  
+
   return selectedEmojis;
 }
 
@@ -63,10 +60,10 @@ export function SuccessModal({
   onClose,
   title = "Success!",
   message = "Great work! Moving to the next challenge...",
-  autoCloseDelay = 0, // Default to no auto-close,
   showDesignerNotes = true,
   fallbackMode = false,
   scoreDetails,
+
   // New props with defaults
   puzzleId,
   enableAIComparison = false,
@@ -74,7 +71,6 @@ export function SuccessModal({
   aiPerformanceData
 }: Props) {
   const [celebrationEmojis, setCelebrationEmojis] = useState<string[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
 
   // AI performance state
   const [aiStats, setAiStats] = useState<AggregatedAIStats | null>(aiPerformanceData || null);
@@ -99,43 +95,27 @@ export function SuccessModal({
 
   // Generate new random emojis each time modal opens
   useEffect(() => {
-    if (open) {
-      setCelebrationEmojis(getRandomEmojis(5));
-      setIsVisible(true);
-
-      // Load AI performance data if enabled and not already provided
-      if (enableAIComparison && puzzleId && !aiPerformanceData && !aiStats) {
-        loadAIPerformanceData();
-      }
-
-      // Reset strategy submission state
-      setStrategyText('');
-      setStrategySubmitted(false);
-      setStrategyError(null);
-
-      // Reset LLM analysis state
-      setIsAnalyzingAI(false);
-      setAnalysisComplete(false);
-      setAnalysisError(null);
-
-      // Only auto close if delay is explicitly set and no strategy submission in progress
-      if (autoCloseDelay > 0) {
-        const timer = setTimeout(async () => {
-          // Auto-submit strategy if user entered one
-          if (enableStrategySubmission && strategyText.trim() && !strategySubmitted) {
-            await handleSubmitStrategy();
-          }
-
-          setIsVisible(false);
-          setTimeout(onClose, 300); // Wait for fade out animation
-        }, autoCloseDelay);
-
-        return () => clearTimeout(timer);
-      }
-    } else {
-      setIsVisible(false);
+    if (!open) {
+      return;
     }
-  }, [open, autoCloseDelay, onClose, enableAIComparison, puzzleId, aiPerformanceData]);
+
+    setCelebrationEmojis(getRandomEmojis(5));
+
+    // Load AI performance data if enabled and not already provided
+    if (enableAIComparison && puzzleId && !aiPerformanceData && !aiStats) {
+      loadAIPerformanceData();
+    }
+
+    // Reset strategy submission state
+    setStrategyText('');
+    setStrategySubmitted(false);
+    setStrategyError(null);
+
+    // Reset LLM analysis state
+    setIsAnalyzingAI(false);
+    setAnalysisComplete(false);
+    setAnalysisError(null);
+  }, [open, enableAIComparison, puzzleId, aiPerformanceData, aiStats]);
 
   // Load AI performance data
   const loadAIPerformanceData = async () => {
@@ -270,9 +250,15 @@ export function SuccessModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={(isOpen: boolean) => {
+      if (!isOpen) {
+        void handleClose();
+      }
+    }}>
       <DialogContent
-        className="max-w-lg mx-auto bg-card border text-card-foreground text-center p-6 rounded-lg shadow-lg"
+        onInteractOutside={(event: Event) => event.preventDefault()}
+        onEscapeKeyDown={(event: Event) => event.preventDefault()}
+        className="max-w-lg mx-auto bg-card border text-card-foreground text-center p-6 rounded-lg shadow-lg max-h-[85vh] overflow-y-auto"
       >
         <DialogTitle className="sr-only">Puzzle Attempt Successful</DialogTitle>
         <DialogDescription className="sr-only">You have successfully solved the puzzle. You can now proceed to the next puzzle or review your results.</DialogDescription>
@@ -547,7 +533,7 @@ export function SuccessModal({
         {/* OK Button */}
         <div className="mt-6">
           <button
-            onClick={handleClose}
+            onClick={() => void handleClose()}
             disabled={isSubmittingStrategy}
             className="px-8 py-3 text-lg font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >

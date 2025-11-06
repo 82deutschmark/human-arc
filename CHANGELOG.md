@@ -1,3 +1,29 @@
+## Version 0.3.9 - Success Modal Accessibility & Stability
+**Author**: Cascade (OpenAI GPT-4.1)
+**Date**: 2025-11-06
+**Status**: 🟢 PRODUCTION READY - UI POLISH
+
+#### Summary
+Refined the post-solve success dialog to stay fully visible on all screen sizes and require an explicit user confirmation before closing, eliminating accidental dismissals.
+
+#### Key Fixes
+- **Viewport Safe Layout**: Capped dialog height with internal scrolling so titles, actions, and supplemental sections remain accessible on laptops and tablets.
+- **Explicit Dismissal**: Removed background timer-driven auto close logic and disabled escape/outside interactions, ensuring users control when the modal disappears.
+- **Action Guardrails**: Centralized the close path so the modal can auto-submit pending strategy notes before closing, preserving community data capture.
+
+#### Technical Notes
+- Simplified modal state effects by stripping the `autoCloseDelay` timers and unused visibility flag.
+- Added `max-h-[85vh]` with `overflow-y-auto` on the `DialogContent` and prevented `onInteractOutside` / `onEscapeKeyDown` from closing the dialog.
+- Updated the `Dialog` `onOpenChange` handler to route all close events through the guarded async `handleClose` helper.
+
+#### Files Updated
+- ✅ **Enhanced**: `client/src/components/ui/SuccessModal.tsx` – layout constraints, manual-close enforcement, and effect clean-up.
+
+#### Testing Instructions
+1. Solve a puzzle (or trigger the already-completed flow) and confirm the success modal stays within the viewport with scrollable body content.
+2. Attempt to click outside the modal or press Escape; modal should stay open until the OK button is pressed.
+3. Enter strategy text, close with OK, and verify submission still occurs before dismissal.
+
 ## Version 0.3.8 - shadcn/ui Integration & Responsive Design Enhancement
 **Author**: Sonnet 4
 **Date**: 2025-09-26
