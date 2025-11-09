@@ -1,5 +1,5 @@
 // Authored by: Cascade using Claude 3.5 Sonnet
-// Date: 2025-09-25T17:12:52.576Z
+// Date: 2025-11-09T05:15:41.646Z
 // Purpose: Source of truth for AI model to PlayFab ID mappings
 // How it works: Maps arc-explainer model keys to their corresponding PlayFab player IDs
 // Project usage: Used by client-side code to reference AI players and for duplicate detection during registration
@@ -461,6 +461,150 @@ export const AI_MODEL_PLAYFAB_MAPPINGS: Record<string, AIModelMapping> = {
     playFabId: '44AA316466E6EB85',
     customId: 'AI_OPENROUTER_QWEN_QWEN3_235B_A22B_THINKING',
     registrationDate: '2025-09-25T17:12:52.576Z'
+  },
+  'claude-sonnet-4-5-20250929': {
+    key: 'claude-sonnet-4-5-20250929',
+    name: 'Claude Sonnet 4.5',
+    provider: 'Anthropic',
+    playFabId: '347809AB010DD54D',
+    customId: 'AI_ANTHROPIC_CLAUDE_SONNET_4_5_20250929',
+    registrationDate: '2025-11-09T05:08:15.380Z'
+  },
+  'claude-haiku-4-5-20251015': {
+    key: 'claude-haiku-4-5-20251015',
+    name: 'Claude Haiku 4.5',
+    provider: 'Anthropic',
+    playFabId: '9A1994C5D3909570',
+    customId: 'AI_ANTHROPIC_CLAUDE_HAIKU_4_5_20251015',
+    registrationDate: '2025-11-09T05:08:41.376Z'
+  },
+  'deepseek/deepseek-v3.1-terminus': {
+    key: 'deepseek/deepseek-v3.1-terminus',
+    name: 'DeepSeek V3.1 Terminus',
+    provider: 'OpenRouter',
+    playFabId: 'E8CE0D22DFFD251B',
+    customId: 'AI_OPENROUTER_DEEPSEEK_DEEPSEEK_V3_1_TERMINUS',
+    registrationDate: '2025-11-09T05:09:08.033Z'
+  },
+  'moonshotai/kimi-k2-thinking': {
+    key: 'moonshotai/kimi-k2-thinking',
+    name: 'Moonshot Kimi K2 Thinking',
+    provider: 'OpenRouter',
+    playFabId: '320757F9F7F33305',
+    customId: 'AI_OPENROUTER_MOONSHOTAI_KIMI_K2_THINKING',
+    registrationDate: '2025-11-09T05:09:34.284Z'
+  },
+  'openrouter/polaris-alpha': {
+    key: 'openrouter/polaris-alpha',
+    name: 'OpenRouter Polaris (Temporary Alias)',
+    provider: 'OpenRouter',
+    playFabId: '51CB2BE0C582BABD',
+    customId: 'AI_OPENROUTER_OPENROUTER_POLARIS_ALPHA',
+    registrationDate: '2025-11-09T05:10:00.953Z'
+  },
+  'grok-4': {
+    key: 'grok-4',
+    name: 'Grok 4',
+    provider: 'xAI',
+    playFabId: 'B4200E2A5600B916',
+    customId: 'AI_XAI_GROK_4',
+    registrationDate: '2025-11-09T05:10:26.987Z'
+  },
+  'grok-4-fast-reasoning': {
+    key: 'grok-4-fast-reasoning',
+    name: 'Grok 4 Fast Reasoning',
+    provider: 'xAI',
+    playFabId: '25E1AC442A1E6A36',
+    customId: 'AI_XAI_GROK_4_FAST_REASONING',
+    registrationDate: '2025-11-09T05:10:53.109Z'
+  },
+  'grok-4-fast-non-reasoning': {
+    key: 'grok-4-fast-non-reasoning',
+    name: 'Grok 4 Fast Non-Reasoning',
+    provider: 'xAI',
+    playFabId: '10F25EC2CEAEE1E8',
+    customId: 'AI_XAI_GROK_4_FAST_NON_REASONING',
+    registrationDate: '2025-11-09T05:11:19.255Z'
+  },
+  'x-ai/grok-3-mini-fast': {
+    key: 'x-ai/grok-3-mini-fast',
+    name: 'Grok 3 Mini Fast',
+    provider: 'OpenRouter',
+    playFabId: '136784E2053DC53',
+    customId: 'AI_OPENROUTER_X_AI_GROK_3_MINI_FAST',
+    registrationDate: '2025-11-09T05:11:45.198Z'
+  },
+  'anthropic/claude-haiku-4.5': {
+    key: 'anthropic/claude-haiku-4.5',
+    name: 'Claude Haiku 4.5 (OpenRouter)',
+    provider: 'OpenRouter',
+    playFabId: 'E074BA28DAA76C1F',
+    customId: 'AI_OPENROUTER_ANTHROPIC_CLAUDE_HAIKU_4_5',
+    registrationDate: '2025-11-09T05:12:11.464Z'
+  },
+  'nvidia/nemotron-nano-12b-v2-vl:free': {
+    key: 'nvidia/nemotron-nano-12b-v2-vl:free',
+    name: 'Nemotron Nano 12B V2 VL (Free)',
+    provider: 'OpenRouter',
+    playFabId: '185B214C33949FAB',
+    customId: 'AI_OPENROUTER_NVIDIA_NEMOTRON_NANO_12B_V2_VL_FREE',
+    registrationDate: '2025-11-09T05:12:37.622Z'
+  },
+  'amazon/nova-premier-v1': {
+    key: 'amazon/nova-premier-v1',
+    name: 'Amazon Nova Premier 1.0',
+    provider: 'OpenRouter',
+    playFabId: '47A0AA64B7F88022',
+    customId: 'AI_OPENROUTER_AMAZON_NOVA_PREMIER_V1',
+    registrationDate: '2025-11-09T05:13:04.290Z'
+  },
+  'minimax/minimax-m2': {
+    key: 'minimax/minimax-m2',
+    name: 'MiniMax M2',
+    provider: 'OpenRouter',
+    playFabId: '995454B27941EBEF',
+    customId: 'AI_OPENROUTER_MINIMAX_MINIMAX_M2',
+    registrationDate: '2025-11-09T05:13:30.283Z'
+  },
+  'google/gemini-2.5-flash-preview-09-2025': {
+    key: 'google/gemini-2.5-flash-preview-09-2025',
+    name: 'Gemini 2.5 Flash Preview (Sep 2025)',
+    provider: 'OpenRouter',
+    playFabId: '8FA5F477574AF146',
+    customId: 'AI_OPENROUTER_GOOGLE_GEMINI_2_5_FLASH_PREVIEW_09_2025',
+    registrationDate: '2025-11-09T05:13:56.435Z'
+  },
+  'z-ai/glm-4.6': {
+    key: 'z-ai/glm-4.6',
+    name: 'GLM 4.6',
+    provider: 'OpenRouter',
+    playFabId: '68FCABDB7ECEB20E',
+    customId: 'AI_OPENROUTER_Z_AI_GLM_4_6',
+    registrationDate: '2025-11-09T05:14:22.895Z'
+  },
+  'grover-grok-4-fast-reasoning': {
+    key: 'grover-grok-4-fast-reasoning',
+    name: 'Grover (Grok 4 Fast Reasoning)',
+    provider: 'Grover',
+    playFabId: '5AEDDF90B3DA07E2',
+    customId: 'AI_GROVER_GROVER_GROK_4_FAST_REASONING',
+    registrationDate: '2025-11-09T05:14:49.172Z'
+  },
+  'grover-gpt-5-nano': {
+    key: 'grover-gpt-5-nano',
+    name: 'Grover (GPT-5 Nano)',
+    provider: 'Grover',
+    playFabId: 'BDBC98123FFB9201',
+    customId: 'AI_GROVER_GROVER_GPT_5_NANO',
+    registrationDate: '2025-11-09T05:15:15.139Z'
+  },
+  'grover-gpt-5-mini': {
+    key: 'grover-gpt-5-mini',
+    name: 'Grover (GPT-5 Mini)',
+    provider: 'Grover',
+    playFabId: '5CEDC4F59EC636BF',
+    customId: 'AI_GROVER_GROVER_GPT_5_MINI',
+    registrationDate: '2025-11-09T05:15:41.646Z'
   }
 };
 
