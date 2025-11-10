@@ -294,7 +294,7 @@ export function AssessmentStepSuccessModal({
           <h2 className="text-xl font-bold text-amber-400">{title}</h2>
           <p className="text-xs text-slate-500">{puzzle.id} [{puzzle.dataset}]</p>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className="max-h-[calc(90vh-140px)] overflow-y-auto">
           <div className="p-4 mb-4 text-center bg-slate-800 rounded-lg">
             <p className="font-semibold text-white">{getPerformanceMessage()}</p>
           </div>
