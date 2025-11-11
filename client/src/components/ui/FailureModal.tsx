@@ -179,10 +179,10 @@ export function FailureModal({
           </div>
         )}
 
-        {/* Designer notes placeholder */}
+        {/* Design notes placeholder */}
         {showDesignerNotes && (
           <p className="text-muted-foreground/50 text-xs italic border-t border-border/30 pt-0.5 mt-1">
-            DESIGNER NOTES HERE TO BE FILLED IN
+            DESIGN NOTES HERE TO BE FILLED IN
           </p>
         )}
 
