@@ -179,6 +179,13 @@ export function FailureModal({
           </div>
         )}
 
+        {/* Designer notes placeholder */}
+        {showDesignerNotes && (
+          <p className="text-muted-foreground text-xs italic border-t border-border pt-1.5 mt-1.5">
+            DESIGNER NOTES HERE TO BE FILLED IN
+          </p>
+        )}
+
         {/* Custom CSS for entrance animation */}
         <style>{`
           @keyframes FailureEntrance {
