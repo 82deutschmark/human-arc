@@ -257,7 +257,7 @@ export function AssessmentStepSuccessModal({
       const displayModels = showAllModels ? sortedModels : sortedModels.slice(0, 4);
 
       return (
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-slate-400 text-xs font-medium">Individual Model Performance:</span>
             {sortedModels.length > 6 && (
@@ -272,13 +272,13 @@ export function AssessmentStepSuccessModal({
 
           {/* Highlight worst performer */}
           {sortedModels.length > 0 && (
-            <div className="p-1.5 border-l-2 border-red-400 bg-red-900/20 rounded">
+            <div className="p-1 border-l-2 border-red-400 bg-red-900/20 rounded">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-red-400 text-sm">👎</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-red-400 text-xs">👎</span>
                   <span className="text-slate-300 text-xs font-medium">Worst: {sortedModels[0].modelName}</span>
                 </div>
-                <span className={`font-bold text-sm ${getPerformanceColor(sortedModels[0].accuracy)}`}>
+                <span className={`font-bold text-xs ${getPerformanceColor(sortedModels[0].accuracy)}`}>
                   {formatAccuracy(sortedModels[0].accuracy)}%
                 </span>
               </div>
@@ -289,14 +289,14 @@ export function AssessmentStepSuccessModal({
           )}
 
           {/* Grid display for other models */}
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-3 gap-1">
             {displayModels.slice(1).map((model) => (
-              <div key={model.modelName} className="flex items-center justify-between p-1.5 bg-slate-700/30 rounded text-xs">
-                <div className="flex items-center gap-1 min-w-0 flex-1">
+              <div key={model.modelName} className="flex items-center justify-between p-1 bg-slate-700/30 rounded text-xs">
+                <div className="flex items-center gap-0.5 min-w-0 flex-1">
                   <span className="text-xs">{getPerformanceIcon(model.accuracy)}</span>
                   <span className="text-slate-300 truncate text-xs">{model.modelName}</span>
                 </div>
-                <span className={`font-medium text-xs ${getPerformanceColor(model.accuracy)} ml-1 whitespace-nowrap`}>
+                <span className={`font-medium text-xs ${getPerformanceColor(model.accuracy)} ml-0.5 whitespace-nowrap`}>
                   {formatAccuracy(model.accuracy)}%
                 </span>
               </div>
@@ -308,47 +308,47 @@ export function AssessmentStepSuccessModal({
 
     return (
       <>
-        <ModalHeader className="flex flex-col gap-0.5 text-center py-2">
-          <span className="text-2xl">🎯🧠🎉</span>
-          <h2 className="text-lg font-bold text-amber-400">{title}</h2>
+        <ModalHeader className="flex flex-col gap-0 text-center py-1">
+          <span className="text-lg">🎯🧠🎉</span>
+          <h2 className="text-base font-bold text-amber-400">{title}</h2>
           <p className="text-xs text-slate-500">{puzzle.id} [{puzzle.dataset}]</p>
         </ModalHeader>
-        <ModalBody className="py-2 px-3">
-          <div className="p-2 mb-2 text-center bg-slate-800 rounded-lg">
-            <p className="font-semibold text-white text-sm">{getPerformanceMessage()}</p>
+        <ModalBody className="py-1.5 px-2">
+          <div className="p-1.5 mb-1.5 text-center bg-slate-800 rounded">
+            <p className="font-semibold text-white text-xs">{getPerformanceMessage()}</p>
           </div>
 
           {/* Fallback mode indicator */}
           {fallbackMode && (
-            <div className="mb-2 px-2 py-1 bg-blue-900/50 border border-blue-500 rounded">
+            <div className="mb-1.5 px-1.5 py-0.5 bg-blue-900/50 border border-blue-500 rounded">
               <p className="text-blue-300 text-xs text-center">
                 ⚡ Validated using backup system - all progress saved!
               </p>
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-2">
-            <div className="bg-slate-800/50 border border-slate-700 rounded p-2">
-              <h4 className="font-bold text-sm text-amber-500 mb-1">Designer's Explanation</h4>
-              <p className="text-slate-300 text-xs leading-snug">{explanation}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-1.5">
+            <div className="bg-slate-800/50 border border-slate-700 rounded p-1.5">
+              <h4 className="font-bold text-xs text-amber-500 mb-0.5">Designer's Explanation</h4>
+              <p className="text-slate-300 text-xs leading-tight">{explanation}</p>
             </div>
 
-            <div className="bg-slate-800/50 border border-slate-700 rounded p-2">
-              <h4 className="font-bold text-sm text-amber-500 mb-1">What makes this hard for AI?</h4>
-              <p className="text-slate-300 text-xs leading-snug">{aiDifficultyContext}</p>
+            <div className="bg-slate-800/50 border border-slate-700 rounded p-1.5">
+              <h4 className="font-bold text-xs text-amber-500 mb-0.5">What makes this hard for AI?</h4>
+              <p className="text-slate-300 text-xs leading-tight">{aiDifficultyContext}</p>
             </div>
           </div>
 
           {aiStats && aiStats.hasData && (
-            <div className="p-2 mb-2 border border-amber-500/30 bg-slate-800/50 rounded">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-amber-400 text-sm">🤖</span>
-                <h5 className="font-semibold text-amber-400 text-sm">AI Performance Analysis</h5>
+            <div className="p-1.5 mb-1.5 border border-amber-500/30 bg-slate-800/50 rounded">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="text-amber-400 text-xs">🤖</span>
+                <h5 className="font-semibold text-amber-400 text-xs">AI Performance Analysis</h5>
               </div>
 
-              <div className="mb-2 p-1.5 bg-slate-700/50 rounded">
+              <div className="mb-1.5 p-1 bg-slate-700/50 rounded">
                 <span className="text-slate-400 text-xs">Overall AI Success Rate: </span>
-                <span className="font-bold text-white text-sm">{formatAccuracy(aiStats.accuracy)}%</span>
+                <span className="font-bold text-white text-xs">{formatAccuracy(aiStats.accuracy)}%</span>
                 <span className="text-slate-500 text-xs ml-1">({aiStats.correctAttempts}/{aiStats.totalAttempts} attempts)</span>
               </div>
 
@@ -357,13 +357,13 @@ export function AssessmentStepSuccessModal({
           )}
 
           {/* Strategy Submission Section */}
-          <div className="mt-2 pt-2 border-t border-slate-700">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="text-amber-400 text-sm">💭</span>
-              <h4 className="font-bold text-sm text-amber-500">Share Your Strategy</h4>
+          <div className="mt-1.5 pt-1.5 border-t border-slate-700">
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-amber-400 text-xs">💭</span>
+              <h4 className="font-bold text-xs text-amber-500">Share Your Strategy</h4>
               <span className="text-xs text-slate-500 ml-auto">(Optional)</span>
             </div>
-            <p className="text-slate-400 text-xs mb-2">
+            <p className="text-slate-400 text-xs mb-1.5">
               Help other solvers by sharing how you approached this puzzle. Your strategy will be added to the community solutions.
             </p>
 
@@ -371,24 +371,24 @@ export function AssessmentStepSuccessModal({
               placeholder="Describe your solving approach, what patterns you noticed, or the steps you took..."
               value={strategyText}
               onChange={(e) => setStrategyText(e.target.value)}
-              className="mb-2 bg-slate-800/50 border-slate-600 text-slate-200 placeholder-slate-500 text-xs"
+              className="mb-1.5 bg-slate-800/50 border-slate-600 text-slate-200 placeholder-slate-500 text-xs"
               rows={2}
               maxLength={1000}
             />
 
             {strategyError && (
-              <div className="mb-2 p-1.5 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-xs">
+              <div className="mb-1.5 p-1 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-xs">
                 {strategyError}
               </div>
             )}
 
             {strategySubmitted && (
-              <div className="mb-2 space-y-1">
-                <div className="p-1.5 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-xs flex items-center gap-1.5">
+              <div className="mb-1.5 space-y-0.5">
+                <div className="p-1 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-xs flex items-center gap-1">
                   <span>✅</span> Strategy submitted successfully! Thank you for contributing.
                 </div>
                 {bonusAwarded && bonusPoints && (
-                  <div className="p-1.5 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-xs flex items-center gap-1.5">
+                  <div className="p-1 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-xs flex items-center gap-1">
                     <span>🎉</span> Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
                   </div>
                 )}
@@ -396,7 +396,7 @@ export function AssessmentStepSuccessModal({
             )}
 
             {strategyText.trim() && !strategySubmitted && (
-              <div className="flex gap-2 mb-2">
+              <div className="flex gap-1.5 mb-1.5">
                 <Button
                   size="sm"
                   color="warning"
@@ -404,7 +404,7 @@ export function AssessmentStepSuccessModal({
                   onPress={handleSubmitStrategy}
                   isLoading={isSubmittingStrategy}
                   isDisabled={isSubmittingStrategy}
-                  className="text-xs py-1"
+                  className="text-xs py-0.5 min-w-0 h-7"
                 >
                   {isSubmittingStrategy ? 'Submitting...' : 'Submit Strategy'}
                 </Button>
@@ -413,7 +413,7 @@ export function AssessmentStepSuccessModal({
                   variant="ghost"
                   onPress={() => setStrategyText('')}
                   isDisabled={isSubmittingStrategy}
-                  className="text-xs py-1"
+                  className="text-xs py-0.5 min-w-0 h-7"
                 >
                   Clear
                 </Button>
@@ -422,13 +422,14 @@ export function AssessmentStepSuccessModal({
           </div>
 
         </ModalBody>
-        <ModalFooter className="py-2">
+        <ModalFooter className="py-1.5">
           <Button
             color="primary"
+            size="sm"
             onPress={handleAdvance}
             isLoading={isSubmittingStrategy}
             isDisabled={isSubmittingStrategy}
-            className="w-full"
+            className="w-full text-xs"
           >
             {isSubmittingStrategy ? 'Submitting...' : (strategyText.trim() && !strategySubmitted ? 'Submit & Continue' : 'Continue to Next Puzzle')}
           </Button>

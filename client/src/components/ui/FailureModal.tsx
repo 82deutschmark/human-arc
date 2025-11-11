@@ -87,12 +87,12 @@ export function FailureModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className={`max-w-3xl mx-auto bg-card border text-card-foreground text-center p-3 rounded-lg shadow-lg ${borderColor}`}
+        className={`max-w-3xl mx-auto bg-card border text-card-foreground text-center p-2 rounded-lg shadow-lg ${borderColor}`}
       >
         <DialogTitle className="sr-only">Puzzle Attempt Failed</DialogTitle>
         <DialogDescription className="sr-only">You have failed to solve the puzzle. You have {attemptsRemaining} attempt(s) remaining.</DialogDescription>
         {/* Failure emojis */}
-        <div className="flex justify-center space-x-2 mb-3 text-3xl">
+        <div className="flex justify-center space-x-1.5 mb-2 text-2xl">
           {failureEmojis.map((emoji, index) => (
             <span
               key={index}
@@ -108,12 +108,12 @@ export function FailureModal({
         </div>
 
         {/* Failure title */}
-        <h2 className={`text-2xl font-bold ${titleColor} mb-2`}>
+        <h2 className={`text-lg font-bold ${titleColor} mb-1`}>
           {isLocked ? "Puzzle Locked" : title}
         </h2>
 
         {/* Failure message */}
-        <p className="text-muted-foreground text-base mb-2">
+        <p className="text-muted-foreground text-xs mb-1.5">
           {isLocked
             ? "Maximum attempts exceeded. You cannot earn points for this puzzle."
             : message
@@ -122,15 +122,15 @@ export function FailureModal({
 
         {/* Attempt counter display */}
         {!isLocked && (
-          <div className="my-3 text-center bg-muted p-2 rounded border border-orange-400/30">
-            <h3 className="text-lg font-bold text-orange-500 mb-1">Attempts Remaining</h3>
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-2xl font-bold text-orange-500">
+          <div className="my-2 text-center bg-muted p-1.5 rounded border border-orange-400/30">
+            <h3 className="text-sm font-bold text-orange-500 mb-0.5">Attempts Remaining</h3>
+            <div className="flex items-center justify-center gap-1.5">
+              <span className="text-lg font-bold text-orange-500">
                 1
               </span>
-              <span className="text-muted-foreground text-sm">of 2</span>
+              <span className="text-muted-foreground text-xs">of 2</span>
             </div>
-            <p className="text-orange-500 text-xs mt-1 font-semibold">
+            <p className="text-orange-500 text-xs mt-0.5 font-semibold">
               ⚠️ This is your final attempt!
             </p>
           </div>
@@ -138,10 +138,10 @@ export function FailureModal({
 
         {/* Locked state display */}
         {isLocked && (
-          <div className="my-3 text-center bg-destructive/10 p-2 rounded border border-destructive/30">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <span className="text-xl">🔒</span>
-              <h3 className="text-lg font-bold text-destructive">Puzzle Locked</h3>
+          <div className="my-2 text-center bg-destructive/10 p-1.5 rounded border border-destructive/30">
+            <div className="flex items-center justify-center gap-1.5 mb-0.5">
+              <span className="text-base">🔒</span>
+              <h3 className="text-sm font-bold text-destructive">Puzzle Locked</h3>
             </div>
             <p className="text-destructive text-xs">
               You used all {totalAttempts} attempts for this puzzle.
@@ -152,10 +152,10 @@ export function FailureModal({
         )}
 
         {/* Action buttons */}
-        <div className="mt-3 flex gap-2 justify-center">
+        <div className="mt-2 flex gap-1.5 justify-center">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-base font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
+            className="px-3 py-1.5 text-xs font-bold rounded bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow"
           >
             {isLocked ? 'Try Different Puzzle' : 'Review Solution'}
           </button>
@@ -163,7 +163,7 @@ export function FailureModal({
           {!isLocked && (
             <button
               onClick={onClose}
-              className="px-4 py-2 text-base font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
+              className="px-3 py-1.5 text-xs font-bold rounded bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow"
             >
               Try Different Puzzle
             </button>
@@ -172,7 +172,7 @@ export function FailureModal({
 
         {/* Encouragement message for non-locked failures */}
         {!isLocked && (
-          <div className="mt-3 text-center">
+          <div className="mt-2 text-center">
             <p className="text-muted-foreground text-xs italic">
               💡 Tip: Look carefully at the training examples for patterns
             </p>
@@ -181,7 +181,7 @@ export function FailureModal({
 
         {/* Designer notes placeholder */}
         {showDesignerNotes && (
-          <p className="text-muted-foreground text-xs italic border-t border-border pt-2 mt-2">
+          <p className="text-muted-foreground text-xs italic border-t border-border pt-1.5 mt-1.5">
             DESIGNER NOTES HERE TO BE FILLED IN
           </p>
         )}

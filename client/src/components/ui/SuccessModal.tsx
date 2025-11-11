@@ -246,12 +246,12 @@ export function SuccessModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-4xl mx-auto bg-card border text-card-foreground text-center p-3 rounded-lg shadow-lg max-h-[95vh] overflow-y-auto"
+        className="max-w-4xl mx-auto bg-card border text-card-foreground text-center p-2 rounded-lg shadow-lg max-h-[95vh] overflow-y-auto"
       >
         <DialogTitle className="sr-only">Puzzle Attempt Successful</DialogTitle>
         <DialogDescription className="sr-only">You have successfully solved the puzzle. You can now proceed to the next puzzle or review your results.</DialogDescription>
         {/* Large celebration emojis */}
-        <div className="flex justify-center space-x-2 mb-3 text-4xl">
+        <div className="flex justify-center space-x-1.5 mb-2 text-2xl">
           {celebrationEmojis.map((emoji, index) => (
             <span 
               key={index}
@@ -267,18 +267,18 @@ export function SuccessModal({
         </div>
 
         {/* Success title */}
-        <h2 className="text-2xl font-bold text-primary mb-2">
+        <h2 className="text-lg font-bold text-primary mb-1">
           {title}
         </h2>
 
         {/* Success message */}
-        <p className="text-muted-foreground text-base mb-2">
+        <p className="text-muted-foreground text-xs mb-1.5">
           {message}
         </p>
 
         {/* Fallback mode indicator */}
         {fallbackMode && (
-          <div className="mb-2 px-2 py-1 bg-blue-900/50 border border-blue-500 rounded">
+          <div className="mb-1.5 px-1.5 py-0.5 bg-blue-900/50 border border-blue-500 rounded">
             <p className="text-blue-300 text-xs">
               ⚡ Validated using backup system - all progress saved!
             </p>
@@ -287,9 +287,9 @@ export function SuccessModal({
 
         {/* Score Breakdown */}
         {scoreDetails && (
-          <div className="my-3 text-left bg-muted p-2 rounded border">
-            <h3 className="text-lg font-bold text-primary mb-2 text-center">Score Breakdown</h3>
-            <div className="grid grid-cols-2 gap-1.5 text-foreground text-sm">
+          <div className="my-2 text-left bg-muted p-1.5 rounded border">
+            <h3 className="text-sm font-bold text-primary mb-1 text-center">Score Breakdown</h3>
+            <div className="grid grid-cols-2 gap-1 text-foreground text-xs">
               <span className="font-semibold">Base Points:</span>
               <span className="text-right font-mono">{scoreDetails.basePoints?.toLocaleString() ?? 'N/A'}</span>
 
@@ -309,20 +309,20 @@ export function SuccessModal({
 
         {/* AI Performance Comparison */}
         {enableAIComparison && (
-          <div className="my-3 text-center bg-muted p-2 rounded border">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-2xl">🤖</span>
-              <h3 className="text-lg font-bold text-primary">You vs AI</h3>
+          <div className="my-2 text-center bg-muted p-1.5 rounded border">
+            <div className="flex items-center justify-center gap-1.5 mb-1">
+              <span className="text-lg">🤖</span>
+              <h3 className="text-sm font-bold text-primary">You vs AI</h3>
             </div>
 
             {isLoadingAI ? (
-              <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
-                <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full"></div>
+              <div className="flex items-center justify-center gap-1.5 text-muted-foreground text-xs">
+                <div className="animate-spin w-3 h-3 border-2 border-primary border-t-transparent rounded-full"></div>
                 <span>Loading AI performance...</span>
               </div>
             ) : aiStats && aiStats.hasData ? (
               <>
-                <div className="mb-2">
+                <div className="mb-1.5">
                   {(() => {
                     const failureRate = 100 - aiStats.accuracy;
                     const modelCount = aiStats.modelBreakdown?.length || 0;
@@ -330,19 +330,19 @@ export function SuccessModal({
 
                     if (aiStats.accuracy === 0) {
                       return (
-                        <p className="text-primary font-semibold text-base">
+                        <p className="text-primary font-semibold text-sm">
                           🏆 You solved an impossible puzzle! No AI model got this right!
                         </p>
                       );
                     } else if (worseModels === modelCount) {
                       return (
-                        <p className="text-primary font-semibold text-base">
+                        <p className="text-primary font-semibold text-sm">
                           🥇 You outperformed all {modelCount} AI models on this puzzle!
                         </p>
                       );
                     } else {
                       return (
-                        <p className="text-primary font-semibold text-sm">
+                        <p className="text-primary font-semibold text-xs">
                           You beat {worseModels} out of {modelCount} AI models
                           <br />
                           <span className="text-muted-foreground text-xs">
@@ -362,8 +362,8 @@ export function SuccessModal({
                 </button>
 
                 {showAIDetails && aiStats.modelBreakdown && (
-                  <div className="mt-2 space-y-1 text-left">
-                    <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
+                  <div className="mt-1.5 space-y-0.5 text-left">
+                    <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto">
                       {aiStats.modelBreakdown
                         .sort((a, b) => a.accuracy - b.accuracy) // Worst first
                         .map((model, index) => {
@@ -374,18 +374,18 @@ export function SuccessModal({
                           return (
                             <div
                               key={model.modelName}
-                              className={`flex justify-between items-center p-1.5 rounded text-xs ${
+                              className={`flex justify-between items-center p-1 rounded text-xs ${
                                 isWorst ? 'bg-red-100 border border-red-200 dark:bg-red-900/20 dark:border-red-500/50' : 'bg-muted'
                               }`}
                             >
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-0.5">
                                 <span className="text-xs">{icon}</span>
                                 <span className={`truncate ${isWorst ? 'text-red-600 font-semibold dark:text-red-300' : 'text-foreground'}`}>
                                   {model.modelName}
                                 </span>
                                 {isWorst && <span className="text-red-500 text-xs dark:text-red-400">WORST</span>}
                               </div>
-                              <span className="font-mono text-xs text-muted-foreground whitespace-nowrap ml-1">
+                              <span className="font-mono text-xs text-muted-foreground whitespace-nowrap ml-0.5">
                                 {accuracy}% ({model.correct}/{model.attempts})
                               </span>
                             </div>
@@ -405,13 +405,13 @@ export function SuccessModal({
 
         {/* LLM Analysis Section - Collapsed by default */}
         {puzzleId && (
-          <div className="my-3 text-center bg-muted p-2 rounded border">
+          <div className="my-2 text-center bg-muted p-1.5 rounded border">
             <button
               onClick={() => setShowLLMAnalysis(!showLLMAnalysis)}
-              className="flex items-center justify-center gap-1.5 mb-2 w-full text-primary hover:text-primary/80 transition-colors"
+              className="flex items-center justify-center gap-1 mb-1 w-full text-primary hover:text-primary/80 transition-colors"
             >
-              <span className="text-xl">🏆</span>
-              <h3 className="text-base font-bold">Update AI Leaderboards</h3>
+              <span className="text-base">🏆</span>
+              <h3 className="text-xs font-bold">Update AI Leaderboards</h3>
               <span className="text-xs">{showLLMAnalysis ? '▲' : '▼'}</span>
             </button>
 
@@ -459,13 +459,13 @@ export function SuccessModal({
 
         {/* Strategy Submission Section */}
         {enableStrategySubmission && (
-          <div className="my-3 text-left bg-muted p-2 rounded border">
-            <div className="flex items-center gap-1.5 mb-2 justify-center">
-              <span className="text-xl">💭</span>
-              <h3 className="text-base font-bold text-primary">Share Your Strategy</h3>
-              <span className="text-xs text-muted-foreground ml-1">(Optional)</span>
+          <div className="my-2 text-left bg-muted p-1.5 rounded border">
+            <div className="flex items-center gap-1 mb-1.5 justify-center">
+              <span className="text-base">💭</span>
+              <h3 className="text-xs font-bold text-primary">Share Your Strategy</h3>
+              <span className="text-xs text-muted-foreground ml-0.5">(Optional)</span>
             </div>
-            <p className="text-muted-foreground text-xs mb-2 text-center">
+            <p className="text-muted-foreground text-xs mb-1.5 text-center">
               Help others by sharing how you solved this puzzle
             </p>
 
@@ -473,7 +473,7 @@ export function SuccessModal({
               placeholder="Describe your approach, patterns you noticed, or steps you took..."
               value={strategyText}
               onChange={(e) => setStrategyText(e.target.value)}
-              className="mb-2 text-xs"
+              className="mb-1.5 text-xs"
               rows={2}
               maxLength={1000}
             />
@@ -519,11 +519,11 @@ export function SuccessModal({
         )}
 
         {/* OK Button */}
-        <div className="mt-3">
+        <div className="mt-2">
           <button
             onClick={handleClose}
             disabled={isSubmittingStrategy}
-            className="px-6 py-2 text-base font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-1.5 text-xs font-bold rounded bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmittingStrategy
               ? 'Submitting...'
@@ -535,7 +535,7 @@ export function SuccessModal({
 
         {/* Designer notes placeholder */}
         {showDesignerNotes && (
-          <p className="text-muted-foreground text-xs italic border-t border-border pt-2 mt-2">
+          <p className="text-muted-foreground text-xs italic border-t border-border pt-1.5 mt-1.5">
             DESIGNER NOTES HERE TO BE FILLED IN
           </p>
         )}
