@@ -74,8 +74,16 @@ export async function setupVite(app: Express, server: Server) {
   });
 }
 
+/*
+  Author: GPT-4.1 (Cascade)
+  Date: 2025-11-11 13:20
+  PURPOSE: Serve the built client in production. Aligns server static path with Vite outDir.
+  shadcn/ui and SRP and DRY check: Pass
+*/
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "public");
+  // Align with vite.config.ts build.outDir which outputs to `<repo>/dist`.
+  // __dirname here is `<repo>/server`, so resolve one level up to `dist`.
+  const distPath = path.resolve(__dirname, "..", "dist");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
