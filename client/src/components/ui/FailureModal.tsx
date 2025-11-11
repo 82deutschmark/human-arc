@@ -126,13 +126,15 @@ export function FailureModal({
             <h3 className="text-sm font-bold text-orange-500 mb-0.5">Attempts Remaining</h3>
             <div className="flex items-center justify-center gap-1.5">
               <span className="text-lg font-bold text-orange-500">
-                1
+                {attemptsRemaining}
               </span>
-              <span className="text-muted-foreground text-xs">of 2</span>
+              <span className="text-muted-foreground text-xs">of {totalAttempts}</span>
             </div>
-            <p className="text-orange-500 text-xs mt-0.5 font-semibold">
-              ⚠️ This is your final attempt!
-            </p>
+            {attemptsRemaining === 1 && (
+              <p className="text-orange-500 text-xs mt-0.5 font-semibold">
+                ⚠️ This is your final attempt!
+              </p>
+            )}
           </div>
         )}
 
