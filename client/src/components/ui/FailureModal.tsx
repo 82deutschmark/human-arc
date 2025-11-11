@@ -174,16 +174,9 @@ export function FailureModal({
         {!isLocked && (
           <div className="mt-2 text-center">
             <p className="text-muted-foreground text-xs italic">
-              💡 Tip: Look carefully at the training examples for patterns
+              💡 Review the training examples carefully
             </p>
           </div>
-        )}
-
-        {/* Designer notes placeholder */}
-        {showDesignerNotes && (
-          <p className="text-muted-foreground text-xs italic border-t border-border pt-1.5 mt-1.5">
-            DESIGNER NOTES HERE TO BE FILLED IN
-          </p>
         )}
 
         {/* Custom CSS for entrance animation */}

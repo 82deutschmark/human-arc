@@ -318,23 +318,14 @@ export function AssessmentStepSuccessModal({
             <p className="font-semibold text-white text-xs">{getPerformanceMessage()}</p>
           </div>
 
-          {/* Fallback mode indicator */}
-          {fallbackMode && (
-            <div className="mb-1.5 px-1.5 py-0.5 bg-blue-900/50 border border-blue-500 rounded">
-              <p className="text-blue-300 text-xs text-center">
-                ⚡ Validated using backup system - all progress saved!
-              </p>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-1.5">
             <div className="bg-slate-800/50 border border-slate-700 rounded p-1.5">
-              <h4 className="font-bold text-xs text-amber-500 mb-0.5">Designer's Explanation</h4>
+              <h4 className="font-bold text-xs text-amber-500 mb-0.5">Solution</h4>
               <p className="text-slate-300 text-xs leading-tight">{explanation}</p>
             </div>
 
             <div className="bg-slate-800/50 border border-slate-700 rounded p-1.5">
-              <h4 className="font-bold text-xs text-amber-500 mb-0.5">What makes this hard for AI?</h4>
+              <h4 className="font-bold text-xs text-amber-500 mb-0.5">Why AI Struggles</h4>
               <p className="text-slate-300 text-xs leading-tight">{aiDifficultyContext}</p>
             </div>
           </div>

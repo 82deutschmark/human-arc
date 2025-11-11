@@ -276,15 +276,6 @@ export function SuccessModal({
           {message}
         </p>
 
-        {/* Fallback mode indicator */}
-        {fallbackMode && (
-          <div className="mb-1.5 px-1.5 py-0.5 bg-blue-900/50 border border-blue-500 rounded">
-            <p className="text-blue-300 text-xs">
-              ⚡ Validated using backup system - all progress saved!
-            </p>
-          </div>
-        )}
-
         {/* Score Breakdown */}
         {scoreDetails && (
           <div className="my-2 text-left bg-muted p-1.5 rounded border">
@@ -532,13 +523,6 @@ export function SuccessModal({
                 : 'OK')}
           </button>
         </div>
-
-        {/* Designer notes placeholder */}
-        {showDesignerNotes && (
-          <p className="text-muted-foreground text-xs italic border-t border-border pt-1.5 mt-1.5">
-            DESIGNER NOTES HERE TO BE FILLED IN
-          </p>
-        )}
 
         {/* Custom CSS for entrance animation */}
         <style>{`
