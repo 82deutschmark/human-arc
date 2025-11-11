@@ -147,8 +147,8 @@ const GridCell = React.memo(({
           displayMode === 'emoji' || displayMode === 'numbers'
             ? "bg-muted text-primary border-border"
             : "border-border",
-          // Hover state
-          "hover:border-primary hover:scale-105 hover:shadow-md hover:shadow-primary/20",
+          // Hover state - minimal feedback, no scale/shadow to avoid distraction
+          "hover:border-primary/50",
           // Selected state
           isSelected && [
             "border-primary border-2 scale-105 shadow-lg shadow-primary/30",
