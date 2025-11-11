@@ -240,6 +240,17 @@ export function AssessmentInterface() {
 
     if (currentPuzzleIndex < puzzles.length - 1) {
       const nextPuzzleIndex = currentPuzzleIndex + 1;
+      // FIX #5: Comprehensive puzzle state reset. When currentPuzzleIndex changes:
+      // 1. setCurrentPuzzleIndex(nextIndex) triggers new puzzle load
+      // 2. HARCResponsiveSolverUI re-renders with key={currentPuzzle.id} (component remounts)
+      // 3. All puzzle-state hooks reset automatically:
+      //    - puzzleState.solutions resets to empty
+      //    - puzzleState.currentTestIndex resets to 0
+      //    - puzzleState.outputDimensions resets
+      //    - displayState maintains user preference (color/emoji)
+      // 4. Validation state clears via useEffect in HARCResponsiveSolverUI (FIX #3)
+      // 5. Modal closes automatically via puzzle.id change (FIX #3)
+      // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #5 for detailed explanation.
       setCurrentPuzzleIndex(nextPuzzleIndex);
       resetHintsForNewPuzzle();
       // Note: attempt status will be loaded automatically by useEffect when currentPuzzle changes
@@ -299,6 +310,13 @@ export function AssessmentInterface() {
       if (shouldAutoAdvance && !isAdvancing.current) {
         isAdvancing.current = true;
         console.log(`✅ Auto-advancing after attempt ${newAttempts} for puzzle ${puzzleId}`);
+        // FIX #4: Standardized advancement flow. Both user-click and auto-advance paths
+        // now work consistently:
+        // - Auto-advance: calls handleNextPuzzle() directly, which triggers puzzle.id change
+        // - User-click: calls onAssessmentAdvance() -> handleNextPuzzle() -> puzzle.id change
+        // The puzzle.id change triggers the useEffect in HARCResponsiveSolverUI (FIX #3)
+        // which closes the modal automatically. This prevents race conditions.
+        // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #3 for detailed explanation.
         setTimeout(() => {
           console.log(`🚀 Calling handleNextPuzzle() now...`);
           handleNextPuzzle();

@@ -171,21 +171,29 @@ export function HARCResponsiveSolverUI({
     });
   }, [sessionLogger.logPlayerAction, puzzleState.currentTestIndex, puzzle.id]);
 
+  // FIX #3: Sync modal close with puzzle change. When the puzzle changes,
+  // immediately close the modal and clear all validation state. This ensures
+  // the modal doesn't persist when advancing to the next puzzle.
+  // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #4 for detailed explanation.
   useEffect(() => {
+    setShowSuccessModal(false);
     clearValidationState();
-  }, [puzzle.id, clearValidationState]);
+  }, [puzzle.id, setShowSuccessModal, clearValidationState]);
 
   const handleAssessmentSuccessModalClose = useCallback(() => {
     setShowSuccessModal(false);
   }, [setShowSuccessModal]);
 
   const handleAssessmentAdvance = useCallback(() => {
+    // FIX #1: Removed clearValidationState() here to prevent race conditions.
+    // State clearing is now handled solely by the useEffect on puzzle.id change (line 174-176).
+    // This single source of truth prevents duplicate state updates that caused modal freeze.
+    // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #1 for detailed explanation.
     setShowSuccessModal(false);
-    clearValidationState();
     if (onAssessmentAdvance) {
       onAssessmentAdvance();
     }
-  }, [setShowSuccessModal, clearValidationState, onAssessmentAdvance]);
+  }, [setShowSuccessModal, onAssessmentAdvance]);
 
   const handleRetry = useCallback(() => {
     // TODO: Implement retry logic
