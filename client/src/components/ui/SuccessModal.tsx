@@ -246,7 +246,7 @@ export function SuccessModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-lg mx-auto bg-card border text-card-foreground text-center p-6 rounded-lg shadow-lg"
+        className="max-w-lg mx-auto bg-card border text-card-foreground text-center p-6 rounded-lg shadow-lg max-h-[90vh] overflow-y-auto"
       >
         <DialogTitle className="sr-only">Puzzle Attempt Successful</DialogTitle>
         <DialogDescription className="sr-only">You have successfully solved the puzzle. You can now proceed to the next puzzle or review your results.</DialogDescription>

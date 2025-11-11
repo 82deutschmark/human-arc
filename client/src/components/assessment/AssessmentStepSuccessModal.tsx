@@ -45,6 +45,11 @@ export function AssessmentStepSuccessModal({
   const [bonusPoints, setBonusPoints] = useState<number | null>(null);
 
   useEffect(() => {
+    // FIX #2: Add AbortController to cancel pending async operations when modal closes.
+    // This prevents state updates on unmounted component and memory leaks.
+    // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #2 for detailed explanation.
+    const abortController = new AbortController();
+
     const loadContent = async () => {
       if (open && puzzleId) {
         setIsLoading(true);
@@ -56,27 +61,41 @@ export function AssessmentStepSuccessModal({
             arcExplainerClient.getBatchExplanationsStats([puzzleId])
           ]);
 
-          if (fetchedContent) {
-            setContent(fetchedContent);
-          } else {
-            setError('Failed to load assessment content. The necessary data could not be found.');
+          // Only update state if not aborted (component still mounted)
+          if (!abortController.signal.aborted) {
+            if (fetchedContent) {
+              setContent(fetchedContent);
+            } else {
+              setError('Failed to load assessment content. The necessary data could not be found.');
+            }
+
+            // Get AI stats using the same approach as HumanVsAiComparison
+            const arcId = idConverter.normalizeToArcId(puzzleId);
+            const aiData = arcId ? aiDataMap.get(arcId) : null;
+            setAiStats(aiData || null);
+
+            setIsLoading(false);
           }
 
-          // Get AI stats using the same approach as HumanVsAiComparison
-          const arcId = idConverter.normalizeToArcId(puzzleId);
-          const aiData = arcId ? aiDataMap.get(arcId) : null;
-          setAiStats(aiData || null);
-
         } catch (e) {
-          console.error('Error loading assessment content:', e);
-          setError('An unexpected error occurred while loading content.');
-        } finally {
-          setIsLoading(false);
+          // Don't log AbortError - this is expected when modal closes
+          if (e instanceof Error && e.name !== 'AbortError') {
+            console.error('Error loading assessment content:', e);
+            if (!abortController.signal.aborted) {
+              setError('An unexpected error occurred while loading content.');
+              setIsLoading(false);
+            }
+          }
         }
       }
     };
 
     loadContent();
+
+    // Cleanup: Cancel pending operations if modal closes or puzzle changes
+    return () => {
+      abortController.abort();
+    };
   }, [open, puzzleId]);
 
   const handleClose = () => {
@@ -294,7 +313,7 @@ export function AssessmentStepSuccessModal({
           <h2 className="text-xl font-bold text-amber-400">{title}</h2>
           <p className="text-xs text-slate-500">{puzzle.id} [{puzzle.dataset}]</p>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className="max-h-[calc(90vh-140px)] overflow-y-auto">
           <div className="p-4 mb-4 text-center bg-slate-800 rounded-lg">
             <p className="font-semibold text-white">{getPerformanceMessage()}</p>
           </div>
