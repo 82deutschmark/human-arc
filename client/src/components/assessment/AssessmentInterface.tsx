@@ -240,6 +240,17 @@ export function AssessmentInterface() {
 
     if (currentPuzzleIndex < puzzles.length - 1) {
       const nextPuzzleIndex = currentPuzzleIndex + 1;
+      // FIX #5: Comprehensive puzzle state reset. When currentPuzzleIndex changes:
+      // 1. setCurrentPuzzleIndex(nextIndex) triggers new puzzle load
+      // 2. HARCResponsiveSolverUI re-renders with key={currentPuzzle.id} (component remounts)
+      // 3. All puzzle-state hooks reset automatically:
+      //    - puzzleState.solutions resets to empty
+      //    - puzzleState.currentTestIndex resets to 0
+      //    - puzzleState.outputDimensions resets
+      //    - displayState maintains user preference (color/emoji)
+      // 4. Validation state clears via useEffect in HARCResponsiveSolverUI (FIX #3)
+      // 5. Modal closes automatically via puzzle.id change (FIX #3)
+      // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #5 for detailed explanation.
       setCurrentPuzzleIndex(nextPuzzleIndex);
       resetHintsForNewPuzzle();
       // Note: attempt status will be loaded automatically by useEffect when currentPuzzle changes
@@ -299,6 +310,13 @@ export function AssessmentInterface() {
       if (shouldAutoAdvance && !isAdvancing.current) {
         isAdvancing.current = true;
         console.log(`✅ Auto-advancing after attempt ${newAttempts} for puzzle ${puzzleId}`);
+        // FIX #4: Standardized advancement flow. Both user-click and auto-advance paths
+        // now work consistently:
+        // - Auto-advance: calls handleNextPuzzle() directly, which triggers puzzle.id change
+        // - User-click: calls onAssessmentAdvance() -> handleNextPuzzle() -> puzzle.id change
+        // The puzzle.id change triggers the useEffect in HARCResponsiveSolverUI (FIX #3)
+        // which closes the modal automatically. This prevents race conditions.
+        // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #3 for detailed explanation.
         setTimeout(() => {
           console.log(`🚀 Calling handleNextPuzzle() now...`);
           handleNextPuzzle();
@@ -352,16 +370,16 @@ export function AssessmentInterface() {
   if (isComplete) {
     return (
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🎉</div>
-          <h1 className="text-3xl font-bold text-amber-400 mb-4">Assessment Complete!</h1>
-          <p className="text-muted-foreground mb-6">
+        <div className="text-center max-w-md px-4">
+          <div className="text-4xl mb-3">🎉</div>
+          <h1 className="text-xl font-bold text-amber-400 mb-2">Assessment Complete!</h1>
+          <p className="text-muted-foreground text-sm mb-3">
             Congratulations! You've completed all assessment puzzles.
           </p>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-muted-foreground text-sm mb-4">
             Redirecting you to the performance comparison page...
           </p>
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-400 mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mx-auto"></div>
         </div>
       </div>
     );
@@ -384,26 +402,26 @@ export function AssessmentInterface() {
       
       {/* Assessment-specific controls IMPORTANT TO KEEP*/}
       <div className="bg-card border-b border-border sticky top-16 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2">
           <div className="flex items-center justify-between">
-            <p className="text-muted-foreground text-base">
+            <p className="text-muted-foreground text-sm">
               Puzzle {currentPuzzleIndex + 1} of {puzzles.length}
               {currentPuzzle && currentPuzzleAttemptStatus && currentPuzzleAttemptStatus.totalAttempts > 0 && (
-                <span className="ml-2 text-amber-300">
+                <span className="ml-1.5 text-amber-300 text-xs">
                   (Attempt {currentPuzzleAttemptStatus.totalAttempts} of 2)
                 </span>
               )}
             </p>
-            <div className="flex gap-4">
-              <Button 
-                onClick={() => setShowModal(true)} 
-                variant="outline" 
-                size="lg"
-                className="border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-slate-900"
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowModal(true)}
+                variant="outline"
+                size="sm"
+                className="border-sky-400 text-sky-400 hover:bg-sky-400 hover:text-slate-900 text-xs h-8"
               >
                 About Assessment
               </Button>
-              <Button onClick={handleBackToLanding} variant="outline" size="lg" className="border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900">
+              <Button onClick={handleBackToLanding} variant="outline" size="sm" className="border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-slate-900 text-xs h-8">
                 Exit Assessment
               </Button>
             </div>
@@ -413,6 +431,7 @@ export function AssessmentInterface() {
 
       {/* The HARCResponsiveSolverUI - Modern HARC solver interface */}
       <HARCResponsiveSolverUI
+        key={currentPuzzle.id}
         puzzle={currentPuzzle}
         onBack={handleBackToLanding}
         isAssessmentMode={true}
@@ -425,25 +444,26 @@ export function AssessmentInterface() {
       {/* Hint System is now handled within HARCResponsiveSolverUI */}
 
       {/* Navigation controls */}
-      <div className="bg-card p-4">
+      <div className="bg-card p-2">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <Button
             onClick={handlePreviousPuzzle}
             disabled={currentPuzzleIndex === 0}
             variant="outline"
-            size="lg"
+            size="sm"
+            className="text-xs h-8"
           >
             ← Previous
           </Button>
 
-          <div className="text-foreground text-lg">
+          <div className="text-foreground text-sm font-medium">
             {currentPuzzleIndex + 1} / {puzzles.length}
           </div>
-          
-          <Button 
-            onClick={handleNextPuzzle} 
-            className="bg-amber-600 hover:bg-amber-700"
-            size="lg"
+
+          <Button
+            onClick={handleNextPuzzle}
+            className="bg-amber-600 hover:bg-amber-700 text-xs h-8"
+            size="sm"
           >
             {currentPuzzleIndex === puzzles.length - 1 ? 'Finish Assessment' : 'Next →'}
           </Button>

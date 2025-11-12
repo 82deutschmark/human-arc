@@ -50,6 +50,11 @@ export function AssessmentStepSuccessModal({
   const [bonusPoints, setBonusPoints] = useState<number | null>(null);
 
   useEffect(() => {
+    // FIX #2: Add AbortController to cancel pending async operations when modal closes.
+    // This prevents state updates on unmounted component and memory leaks.
+    // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #2 for detailed explanation.
+    const abortController = new AbortController();
+
     const loadContent = async () => {
       if (open && puzzleId) {
         setIsLoading(true);
@@ -61,27 +66,41 @@ export function AssessmentStepSuccessModal({
             arcExplainerClient.getBatchExplanationsStats([puzzleId])
           ]);
 
-          if (fetchedContent) {
-            setContent(fetchedContent);
-          } else {
-            setError('Failed to load assessment content. The necessary data could not be found.');
+          // Only update state if not aborted (component still mounted)
+          if (!abortController.signal.aborted) {
+            if (fetchedContent) {
+              setContent(fetchedContent);
+            } else {
+              setError('Failed to load assessment content. The necessary data could not be found.');
+            }
+
+            // Get AI stats using the same approach as HumanVsAiComparison
+            const arcId = idConverter.normalizeToArcId(puzzleId);
+            const aiData = arcId ? aiDataMap.get(arcId) : null;
+            setAiStats(aiData || null);
+
+            setIsLoading(false);
           }
 
-          // Get AI stats using the same approach as HumanVsAiComparison
-          const arcId = idConverter.normalizeToArcId(puzzleId);
-          const aiData = arcId ? aiDataMap.get(arcId) : null;
-          setAiStats(aiData || null);
-
         } catch (e) {
-          console.error('Error loading assessment content:', e);
-          setError('An unexpected error occurred while loading content.');
-        } finally {
-          setIsLoading(false);
+          // Don't log AbortError - this is expected when modal closes
+          if (e instanceof Error && e.name !== 'AbortError') {
+            console.error('Error loading assessment content:', e);
+            if (!abortController.signal.aborted) {
+              setError('An unexpected error occurred while loading content.');
+              setIsLoading(false);
+            }
+          }
         }
       }
     };
 
     loadContent();
+
+    // Cleanup: Cancel pending operations if modal closes or puzzle changes
+    return () => {
+      abortController.abort();
+    };
   }, [open, puzzleId]);
 
   const handleClose = () => {
@@ -271,13 +290,11 @@ export function AssessmentStepSuccessModal({
       const displayModels = showAllModels ? sortedModels : sortedModels.slice(0, 4);
 
       return (
-        <div className="space-y-3">
+        <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-sm font-medium">Individual Model Performance:</span>
-            {sortedModels.length > 4 && (
-              <Button
-                variant="ghost"
-                size="sm"
+            <span className="text-slate-400 text-xs font-medium">Individual Model Performance:</span>
+            {sortedModels.length > 6 && (
+              <button
                 onClick={() => setShowAllModels(!showAllModels)}
                 className="text-xs h-auto p-1 text-amber-500 hover:text-amber-400"
               >
@@ -288,46 +305,35 @@ export function AssessmentStepSuccessModal({
 
           {/* Highlight worst performer */}
           {sortedModels.length > 0 && (
-            <Card className="border-l-4 border-l-destructive bg-destructive/5">
-              <CardContent className="p-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-destructive">👎</span>
-                    <span className="text-foreground text-sm font-medium">Worst: {sortedModels[0].modelName}</span>
-                  </div>
-                  <Badge variant="destructive">
-                    {formatAccuracy(sortedModels[0].accuracy)}%
-                  </Badge>
+            <div className="p-1 border-l-2 border-red-400 bg-red-900/20 rounded">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1">
+                  <span className="text-red-400 text-xs">👎</span>
+                  <span className="text-slate-300 text-xs font-medium">Worst: {sortedModels[0].modelName}</span>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {sortedModels[0].correct}/{sortedModels[0].attempts} attempts
-                </p>
-              </CardContent>
-            </Card>
+                <span className={`font-bold text-xs ${getPerformanceColor(sortedModels[0].accuracy)}`}>
+                  {formatAccuracy(sortedModels[0].accuracy)}%
+                </span>
+              </div>
+              <div className="text-xs text-slate-500">
+                {sortedModels[0].correct}/{sortedModels[0].attempts} attempts
+              </div>
+            </div>
           )}
 
           {/* Grid display for other models */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {displayModels.slice(1).map((model) => {
-              const accuracy = parseFloat(formatAccuracy(model.accuracy));
-              const variant = accuracy >= 70 ? 'default' : accuracy >= 40 ? 'secondary' : 'destructive';
-
-              return (
-                <Card key={model.modelName} className="bg-muted/30">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-1 min-w-0 flex-1">
-                        <span className="text-xs">{getPerformanceIcon(model.accuracy)}</span>
-                        <span className="text-foreground truncate">{model.modelName}</span>
-                      </div>
-                      <Badge variant={variant} className="ml-2 whitespace-nowrap text-xs">
-                        {formatAccuracy(model.accuracy)}%
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="grid grid-cols-3 gap-1">
+            {displayModels.slice(1).map((model) => (
+              <div key={model.modelName} className="flex items-center justify-between p-1 bg-slate-700/30 rounded text-xs">
+                <div className="flex items-center gap-0.5 min-w-0 flex-1">
+                  <span className="text-xs">{getPerformanceIcon(model.accuracy)}</span>
+                  <span className="text-slate-300 truncate text-xs">{model.modelName}</span>
+                </div>
+                <span className={`font-medium text-xs ${getPerformanceColor(model.accuracy)} ml-0.5 whitespace-nowrap`}>
+                  {formatAccuracy(model.accuracy)}%
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -335,169 +341,121 @@ export function AssessmentStepSuccessModal({
 
     return (
       <>
-        <DialogHeader className="text-center space-y-2">
-          <div className="text-4xl mb-2">🎯🧠🎉</div>
-          <DialogTitle className="text-2xl font-bold text-amber-400">{title}</DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">{puzzle.id} [{puzzle.dataset}]</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-6 max-h-[70vh] overflow-y-auto px-1">
-          <Card className="bg-primary/10 border-primary/20">
-            <CardContent className="pt-4">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Brain className="h-5 w-5 text-primary" />
-                <span className="font-semibold text-primary">Human Intelligence Victory</span>
+        <ModalHeader className="flex flex-col gap-0 text-center py-1">
+          <span className="text-lg">🎯🧠🎉</span>
+          <h2 className="text-base font-bold text-amber-400">{title}</h2>
+          <p className="text-xs text-slate-500">{puzzle.id} [{puzzle.dataset}]</p>
+        </ModalHeader>
+        <ModalBody className="py-1.5 px-2">
+          <div className="p-1.5 mb-1.5 text-center bg-slate-800 rounded">
+            <p className="font-semibold text-white text-xs">{getPerformanceMessage()}</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-1.5">
+            <div className="bg-slate-800/50 border border-slate-700 rounded p-1.5">
+              <h4 className="font-bold text-xs text-amber-500 mb-0.5">Solution</h4>
+              <p className="text-slate-300 text-xs leading-tight">{explanation}</p>
+            </div>
+
+            <div className="bg-slate-800/50 border border-slate-700 rounded p-1.5">
+              <h4 className="font-bold text-xs text-amber-500 mb-0.5">Why AI Struggles</h4>
+              <p className="text-slate-300 text-xs leading-tight">{aiDifficultyContext}</p>
+            </div>
+          </div>
+
+          {aiStats && aiStats.hasData && (
+            <div className="p-1.5 mb-1.5 border border-amber-500/30 bg-slate-800/50 rounded">
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="text-amber-400 text-xs">🤖</span>
+                <h5 className="font-semibold text-amber-400 text-xs">AI Performance Analysis</h5>
               </div>
-              <p className="font-semibold text-center">{getPerformanceMessage()}</p>
-            </CardContent>
-          </Card>
 
-          {/* Fallback mode indicator */}
-          {fallbackMode && (
-            <Card className="bg-blue-500/10 border-blue-500/30">
-              <CardContent className="pt-4">
-                <p className="text-blue-400 text-sm text-center flex items-center justify-center gap-2">
-                  <span>⚡</span> Validated using backup system - all progress saved!
-                </p>
-              </CardContent>
-            </Card>
+              <div className="mb-1.5 p-1 bg-slate-700/50 rounded">
+                <span className="text-slate-400 text-xs">Overall AI Success Rate: </span>
+                <span className="font-bold text-white text-xs">{formatAccuracy(aiStats.accuracy)}%</span>
+                <span className="text-slate-500 text-xs ml-1">({aiStats.correctAttempts}/{aiStats.totalAttempts} attempts)</span>
+              </div>
+
+              {aiStats.modelBreakdown && aiStats.modelBreakdown.length > 0 && renderModelBreakdown(aiStats.modelBreakdown)}
+            </div>
           )}
-          
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-md text-amber-500 flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Designer's Explanation
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <p className="text-foreground">{explanation}</p>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-md text-amber-500 flex items-center gap-2">
-                <Brain className="h-4 w-4" />
-                What makes this hard for AI?
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-4">
-              <p className="text-foreground">{aiDifficultyContext}</p>
-              {aiStats && aiStats.hasData && (
-                <Card className="border-amber-500/30 bg-muted/50">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-amber-400">
-                      <span className="text-lg">🤖</span>
-                      AI Performance Analysis
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0 space-y-3">
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <span className="text-muted-foreground text-sm">Overall AI Success Rate: </span>
-                      <span className="font-bold text-foreground">{formatAccuracy(aiStats.accuracy)}%</span>
-                      <span className="text-muted-foreground text-sm ml-2">({aiStats.correctAttempts}/{aiStats.totalAttempts} attempts)</span>
-                    </div>
+          {/* Strategy Submission Section */}
+          <div className="mt-1.5 pt-1.5 border-t border-slate-700">
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-amber-400 text-xs">💭</span>
+              <h4 className="font-bold text-xs text-amber-500">Share Your Strategy</h4>
+              <span className="text-xs text-slate-500 ml-auto">(Optional)</span>
+            </div>
+            <p className="text-slate-400 text-xs mb-1.5">
+              Help other solvers by sharing how you approached this puzzle. Your strategy will be added to the community solutions.
+            </p>
 
-                    {aiStats.modelBreakdown && aiStats.modelBreakdown.length > 0 && renderModelBreakdown(aiStats.modelBreakdown)}
-                  </CardContent>
-                </Card>
-              )}
-            </CardContent>
-          </Card>
+            <Textarea
+              placeholder="Describe your solving approach, what patterns you noticed, or the steps you took..."
+              value={strategyText}
+              onChange={(e) => setStrategyText(e.target.value)}
+              className="mb-1.5 bg-slate-800/50 border-slate-600 text-slate-200 placeholder-slate-500 text-xs"
+              rows={2}
+              maxLength={1000}
+            />
 
-          {/* Strategy Submission Section - Optimized with shadcn/ui */}
-          <Card className="border-t">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-amber-500">
-                  <MessageSquare className="h-4 w-4" />
-                  Share Your Strategy
+            {strategyError && (
+              <div className="mb-1.5 p-1 bg-red-900/20 border border-red-500/50 rounded text-red-400 text-xs">
+                {strategyError}
+              </div>
+            )}
+
+            {strategySubmitted && (
+              <div className="mb-1.5 space-y-0.5">
+                <div className="p-1 bg-green-900/20 border border-green-500/50 rounded text-green-400 text-xs flex items-center gap-1">
+                  <span>✅</span> Strategy submitted successfully! Thank you for contributing.
                 </div>
-                <Badge variant="outline" className="text-xs">Optional</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-0 space-y-4">
-              <p className="text-muted-foreground text-sm">
-                Help other solvers by sharing how you approached this puzzle. Your strategy will be added to the community solutions.
-              </p>
+                {bonusAwarded && bonusPoints && (
+                  <div className="p-1 bg-amber-900/20 border border-amber-500/50 rounded text-amber-400 text-xs flex items-center gap-1">
+                    <span>🎉</span> Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
+                  </div>
+                )}
+              </div>
+            )}
 
-              <Textarea
-                placeholder="Describe your solving approach, what patterns you noticed, or the steps you took..."
-                value={strategyText}
-                onChange={(e) => setStrategyText(e.target.value)}
-                className="min-h-[80px] resize-none"
-                maxLength={1000}
-              />
+            {strategyText.trim() && !strategySubmitted && (
+              <div className="flex gap-1.5 mb-1.5">
+                <Button
+                  size="sm"
+                  color="warning"
+                  variant="bordered"
+                  onPress={handleSubmitStrategy}
+                  isLoading={isSubmittingStrategy}
+                  isDisabled={isSubmittingStrategy}
+                  className="text-xs py-0.5 min-w-0 h-7"
+                >
+                  {isSubmittingStrategy ? 'Submitting...' : 'Submit Strategy'}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onPress={() => setStrategyText('')}
+                  isDisabled={isSubmittingStrategy}
+                  className="text-xs py-0.5 min-w-0 h-7"
+                >
+                  Clear
+                </Button>
+              </div>
+            )}
+          </div>
 
-              {strategyError && (
-                <Card className="bg-destructive/10 border-destructive/30">
-                  <CardContent className="pt-4">
-                    <p className="text-destructive text-sm flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
-                      {strategyError}
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-
-              {strategySubmitted && (
-                <div className="space-y-3">
-                  <Card className="bg-green-500/10 border-green-500/30">
-                    <CardContent className="pt-4">
-                      <p className="text-green-500 text-sm flex items-center gap-2">
-                        <span>✅</span> Strategy submitted successfully! Thank you for contributing.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  {bonusAwarded && bonusPoints && (
-                    <Card className="bg-amber-500/10 border-amber-500/30">
-                      <CardContent className="pt-4">
-                        <p className="text-amber-500 text-sm flex items-center gap-2">
-                          <Trophy className="h-4 w-4" />
-                          Bonus awarded: +{bonusPoints.toLocaleString()} points to all leaderboards!
-                        </p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              )}
-
-              {strategyText.trim() && !strategySubmitted && (
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleSubmitStrategy}
-                    disabled={isSubmittingStrategy}
-                    className="border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-background"
-                  >
-                    {isSubmittingStrategy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {isSubmittingStrategy ? 'Submitting...' : 'Submit Strategy'}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setStrategyText('')}
-                    disabled={isSubmittingStrategy}
-                  >
-                    Clear
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Footer with action button */}
-        <div className="flex justify-center pt-4 border-t">
+        </ModalBody>
+        <ModalFooter className="py-1.5">
           <Button
-            size="lg"
-            onClick={handleAdvance}
-            disabled={isSubmittingStrategy}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground min-w-32"
+            color="primary"
+            size="sm"
+            onPress={handleAdvance}
+            isLoading={isSubmittingStrategy}
+            isDisabled={isSubmittingStrategy}
+            className="w-full text-xs"
           >
-            {isSubmittingStrategy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSubmittingStrategy ? 'Submitting...' : (strategyText.trim() && !strategySubmitted ? 'Submit & Continue' : 'Continue')}
+            {isSubmittingStrategy ? 'Submitting...' : (strategyText.trim() && !strategySubmitted ? 'Submit & Continue' : 'Continue to Next Puzzle')}
           </Button>
         </div>
       </>
@@ -505,16 +463,19 @@ export function AssessmentStepSuccessModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className={cn(
-        "max-w-4xl w-[95vw] max-h-[95vh]",
-        "bg-background border text-foreground",
-        "p-0 overflow-hidden"
-      )}>
-        <div className="p-6 pb-4">
-          {isLoading ? renderLoadingState() : error ? renderErrorState() : renderContent()}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <Modal
+      isOpen={open}
+      onClose={handleClose}
+      backdrop="blur"
+      size="5xl"
+      closeButton={false}
+      isDismissable={false}
+      isKeyboardDismissDisabled={true}
+      scrollBehavior="inside"
+    >
+      <ModalContent className="bg-slate-900 text-white border border-slate-700 max-h-[95vh]">
+        {isLoading ? renderLoadingState() : error ? renderErrorState() : renderContent()}
+      </ModalContent>
+    </Modal>
   );
 }

@@ -86,6 +86,14 @@ export function HARCResponsiveSolverUI({
     onAssessmentAdvance,
   });
 
+  const {
+    validationState,
+    validateSolution,
+    clearValidationState,
+    setShowSuccessModal,
+    setShowFailureModal,
+  } = solutionValidation;
+
   const solutionManager = usePuzzleSolutionManager({
     currentTestIndex: puzzleState.currentTestIndex,
     totalTests: puzzleState.totalTests,
@@ -163,6 +171,30 @@ export function HARCResponsiveSolverUI({
     });
   }, [sessionLogger.logPlayerAction, puzzleState.currentTestIndex, puzzle.id]);
 
+  // FIX #3: Sync modal close with puzzle change. When the puzzle changes,
+  // immediately close the modal and clear all validation state. This ensures
+  // the modal doesn't persist when advancing to the next puzzle.
+  // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #4 for detailed explanation.
+  useEffect(() => {
+    setShowSuccessModal(false);
+    clearValidationState();
+  }, [puzzle.id, setShowSuccessModal, clearValidationState]);
+
+  const handleAssessmentSuccessModalClose = useCallback(() => {
+    setShowSuccessModal(false);
+  }, [setShowSuccessModal]);
+
+  const handleAssessmentAdvance = useCallback(() => {
+    // FIX #1: Removed clearValidationState() here to prevent race conditions.
+    // State clearing is now handled solely by the useEffect on puzzle.id change (line 174-176).
+    // This single source of truth prevents duplicate state updates that caused modal freeze.
+    // See: ASSESSMENT_MODAL_DEEP_DIVE.md - Issue #1 for detailed explanation.
+    setShowSuccessModal(false);
+    if (onAssessmentAdvance) {
+      onAssessmentAdvance();
+    }
+  }, [setShowSuccessModal, onAssessmentAdvance]);
+
   const handleRetry = useCallback(() => {
     // TODO: Implement retry logic
     console.log('Retry validation requested');
@@ -212,14 +244,14 @@ export function HARCResponsiveSolverUI({
           displayState={displayState}
           isAssessmentMode={isAssessmentMode}
           allTestsCompleted={solutionManager.allTestsCompleted}
-          isValidating={solutionValidation.validationState.isValidating}
+          isValidating={validationState.isValidating}
           isLocked={attemptStatus?.status === 'locked'}
           attemptsRemaining={attemptStatus?.attemptsRemaining ?? 2}
           onCellInteraction={handleCellInteraction}
           onSizeChange={puzzleState.handleSizeChange}
           onCopyInput={handleCopyInput}
           onResetSolution={handleResetSolution}
-          onValidate={solutionValidation.validateSolution}
+          onValidate={validateSolution}
           onDisplayModeChange={displayState.handleDisplayModeChange}
           onEmojiSetChange={displayState.handleEmojiSetChange}
           onValueSelect={displayState.handleValueSelect}
@@ -230,33 +262,33 @@ export function HARCResponsiveSolverUI({
 
         <ValidationStatus
           puzzleId={puzzle.id}
-          validationState={solutionValidation.validationState}
+          validationState={validationState}
           attemptStatus={attemptStatus}
           isAssessmentMode={isAssessmentMode}
           allTestsCompleted={solutionManager.allTestsCompleted}
-          onSubmit={solutionValidation.validateSolution}
+          onSubmit={validateSolution}
           onRetry={handleRetry}
-          setShowFailureModal={solutionValidation.setShowFailureModal}
+          setShowFailureModal={setShowFailureModal}
         />
 
       </main>
 
       {isAssessmentMode ? (
         <AssessmentStepSuccessModal
-          open={solutionValidation.validationState.showSuccessModal}
+          open={validationState.showSuccessModal}
           puzzleId={puzzle.id}
-          onClose={() => {}}
-          onAssessmentAdvance={onAssessmentAdvance}
-          fallbackMode={solutionValidation.validationState.validationResult?.fallback || false}
+          onClose={handleAssessmentSuccessModalClose}
+          onAssessmentAdvance={handleAssessmentAdvance}
+          fallbackMode={validationState.validationResult?.fallback || false}
         />
       ) : (
         <SuccessModal
-          open={solutionValidation.validationState.showSuccessModal}
-          onClose={() => solutionValidation.setShowSuccessModal(false)}
+          open={validationState.showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
           title="Excellent Work!"
           message="Puzzle solved successfully!"
           puzzleId={puzzle.id}
-          scoreDetails={solutionValidation.validationState.validationResult || undefined}
+          scoreDetails={validationState.validationResult || undefined}
         />
       )}
     </div>

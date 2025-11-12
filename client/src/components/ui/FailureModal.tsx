@@ -89,12 +89,12 @@ export function FailureModal({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className={`max-w-lg mx-auto bg-card border text-card-foreground text-center p-6 rounded-lg shadow-lg ${borderColor}`}
+        className={`max-w-3xl mx-auto bg-card border text-card-foreground text-center p-2 rounded-lg shadow-lg ${borderColor}`}
       >
         <DialogTitle className="sr-only">Puzzle Attempt Failed</DialogTitle>
         <DialogDescription className="sr-only">You have failed to solve the puzzle. You have {attemptsRemaining} attempt(s) remaining.</DialogDescription>
         {/* Failure emojis */}
-        <div className="flex justify-center space-x-2 mb-6 text-4xl">
+        <div className="flex justify-center space-x-1.5 mb-2 text-2xl">
           {failureEmojis.map((emoji, index) => (
             <span
               key={index}
@@ -110,12 +110,12 @@ export function FailureModal({
         </div>
 
         {/* Failure title */}
-        <h2 className={`text-3xl font-bold ${titleColor} mb-4`}>
+        <h2 className={`text-lg font-bold ${titleColor} mb-1`}>
           {isLocked ? "Puzzle Locked" : title}
         </h2>
 
         {/* Failure message */}
-        <p className="text-muted-foreground text-lg mb-4">
+        <p className="text-muted-foreground text-xs mb-1.5">
           {isLocked
             ? "Maximum attempts exceeded. You cannot earn points for this puzzle."
             : message
@@ -124,22 +124,17 @@ export function FailureModal({
 
         {/* Attempt counter display */}
         {!isLocked && (
-          <div className="my-6 text-center bg-muted p-4 rounded-lg border border-orange-400/30">
-            <h3 className="text-xl font-bold text-orange-500 mb-2">Attempts Remaining</h3>
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-3xl font-bold text-orange-500">
+          <div className="my-2 text-center bg-muted p-1.5 rounded border border-orange-400/30">
+            <h3 className="text-sm font-bold text-orange-500 mb-0.5">Attempts Remaining</h3>
+            <div className="flex items-center justify-center gap-1.5">
+              <span className="text-lg font-bold text-orange-500">
                 {attemptsRemaining}
               </span>
-              <span className="text-muted-foreground">attempt{attemptsRemaining !== 1 ? 's' : ''} left</span>
+              <span className="text-muted-foreground text-xs">of {totalAttempts}</span>
             </div>
             {attemptsRemaining === 1 && (
-              <p className="text-orange-500 text-sm mt-2 font-semibold">
+              <p className="text-orange-500 text-xs mt-0.5 font-semibold">
                 ⚠️ This is your final attempt!
-              </p>
-            )}
-            {attemptsRemaining === 0 && (
-              <p className="text-destructive text-sm mt-2 font-semibold">
-                🔒 No attempts remaining - this shouldn't show!
               </p>
             )}
           </div>
@@ -147,12 +142,12 @@ export function FailureModal({
 
         {/* Locked state display */}
         {isLocked && (
-          <div className="my-6 text-center bg-destructive/10 p-4 rounded-lg border border-destructive/30">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <span className="text-2xl">🔒</span>
-              <h3 className="text-xl font-bold text-destructive">Puzzle Locked</h3>
+          <div className="my-2 text-center bg-destructive/10 p-1.5 rounded border border-destructive/30">
+            <div className="flex items-center justify-center gap-1.5 mb-0.5">
+              <span className="text-base">🔒</span>
+              <h3 className="text-sm font-bold text-destructive">Puzzle Locked</h3>
             </div>
-            <p className="text-destructive text-sm">
+            <p className="text-destructive text-xs">
               You used all {totalAttempts} attempts for this puzzle.
               <br />
               Try other puzzles to continue earning points.
@@ -161,74 +156,37 @@ export function FailureModal({
         )}
 
         {/* Action buttons */}
-        <div className="mt-6 flex flex-col gap-3">
-          {isLocked ? (
-            // For locked puzzles, show only dashboard option
-            <>
-              <div className="flex justify-center">
-                <button
-                  onClick={() => {
-                    onClose();
-                    if (onNavigateToDashboard) {
-                      onNavigateToDashboard();
-                    } else {
-                      // Fallback navigation - go to dashboard
-                      window.location.href = '/dashboard';
-                    }
-                  }}
-                  className="px-6 py-3 text-lg font-bold rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition-all duration-200 hover:scale-105 shadow-lg"
-                >
-                  📊 View Dashboard
-                </button>
-              </div>
-              <p className="text-center text-muted-foreground text-sm">
-                Check your progress and attempt count on the dashboard
-              </p>
-            </>
-          ) : (
-            // For non-locked puzzles, show only review option
-            <>
-              <div className="flex justify-center">
-                <button
-                  onClick={onClose}
-                  className="px-6 py-3 text-lg font-bold rounded-lg bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow-lg"
-                >
-                  🔍 Review Solution
-                </button>
-              </div>
-              <div className="flex justify-center mt-2">
-                <button
-                  onClick={() => {
-                    onClose();
-                    if (onNavigateToDashboard) {
-                      onNavigateToDashboard();
-                    } else {
-                      // Fallback navigation - go to dashboard
-                      window.location.href = '/dashboard';
-                    }
-                  }}
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-amber-100 hover:bg-amber-200 text-amber-800 transition-all duration-200"
-                >
-                  📊 View Progress
-                </button>
-              </div>
-            </>
+        <div className="mt-2 flex gap-1.5 justify-center">
+          <button
+            onClick={onClose}
+            className="px-3 py-1.5 text-xs font-bold rounded bg-secondary hover:bg-secondary/90 text-secondary-foreground transition-all duration-200 hover:scale-105 shadow"
+          >
+            {isLocked ? 'Try Different Puzzle' : 'Review Solution'}
+          </button>
+
+          {!isLocked && (
+            <button
+              onClick={onClose}
+              className="px-3 py-1.5 text-xs font-bold rounded bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105 shadow"
+            >
+              Try Different Puzzle
+            </button>
           )}
         </div>
 
         {/* Encouragement message for non-locked failures */}
         {!isLocked && (
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground text-sm italic">
-              💡 Tip: Look carefully at the training examples for patterns
+          <div className="mt-2 text-center">
+            <p className="text-muted-foreground text-xs italic">
+              💡 Review the training examples carefully
             </p>
           </div>
         )}
 
-        {/* Designer notes placeholder */}
+        {/* Design notes placeholder */}
         {showDesignerNotes && (
-          <p className="text-muted-foreground text-sm italic border-t border-border pt-4 mt-4">
-            DESIGNER NOTES HERE TO BE FILLED IN
+          <p className="text-muted-foreground/50 text-xs italic border-t border-border/30 pt-0.5 mt-1">
+            DESIGN NOTES HERE TO BE FILLED IN
           </p>
         )}
 
