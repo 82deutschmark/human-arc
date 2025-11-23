@@ -12,9 +12,31 @@ export const ASSESSMENT_PUZZLE_IDS = [
   'fc754716', // Make the outline whatever the dot is
   'a699fb00', // Connect the dots
   'ea786f4a',  // Make an X
-  
+
   '66e6c45b',   // Expand!
-  
+
+];
+
+/**
+ * Featured puzzle IDs curated from Gemini 3 Pro and DeepThinker analysis
+ * These puzzles showcase key aspects of AI reasoning and complexity scaling
+ */
+export const FEATURED_PUZZLE_IDS = [
+  // ARC v2 "complexity scaling" solves
+  '65b59efc',
+  'e3721c99',
+  'dd6b8c4b',
+  // Fast, efficient v2 solve
+  '2ba387bc',
+  // ARC v1 failures / surprising misses
+  '14754a24',
+  'b457fec5',
+  '891232d6',
+  // Reasoning-effort case study & efficiency comparison
+  '7b5033c1',
+  '981571dc',
+  // Extra curated featured puzzle for visual variety
+  '136b0064',
 ];
 
 /*

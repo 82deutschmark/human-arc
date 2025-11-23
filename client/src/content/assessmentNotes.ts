@@ -64,3 +64,34 @@ export const assessmentNotes = new Map<string, DesignerNote>([
 export const getAssessmentNote = (puzzleId: string): DesignerNote | undefined => {
   return assessmentNotes.get(puzzleId);
 };
+
+/**
+ * Team notes for featured puzzles based on Gemini 3 Pro and DeepThinker analysis
+ * These notes explain why each puzzle was selected and what it demonstrates
+ */
+export const TEAM_NOTES: Record<string, string> = {
+  '65b59efc':
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
+  'e3721c99':
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
+  'dd6b8c4b':
+    'ARC v2 task highlighted by the team as evidence of clear complexity scaling over ARC v1.',
+  '2ba387bc':
+    'Fastest ARC v2 task in the team\'s write‑up: Gemini 3 Pro solved it with ~772 tokens in 188 seconds vs humans at ~147 seconds.',
+  '14754a24':
+    'ARC v1 task that DeepThinker still gets wrong despite strong v2 performance — used as a surprising failure example.',
+  'b457fec5':
+    'ARC v1 task that DeepThinker still gets wrong — one of the team\'s canonical "obvious miss" examples.',
+  '891232d6':
+    'Another ARC v1 task called out by the team where reasoning systems still fail, even though it is simpler than many v2 solves.',
+  '7b5033c1':
+    'Case where Gemini 3 Pro reasoning solved the task with ~2,000 tokens while DeepThinker failed after ~300,000 tokens.',
+  '981571dc':
+    'Efficiency contrast example: both systems solved it, but Gemini 3 Pro needed ~7,600 tokens vs ~1,400,000 for DeepThinker (>100× efficiency).',
+  '136b0064':
+    'Additional curated ARC puzzle chosen as a visually interesting featured sample for this gallery.',
+};
+
+export const getTeamNote = (puzzleId: string): string | undefined => {
+  return TEAM_NOTES[puzzleId];
+};
