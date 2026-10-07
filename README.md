@@ -1,3 +1,15 @@
+# Human ARC
+
+Human ARC introduces people to ARC puzzles and compares human and AI performance. Its public home is [ARC Explainer / Human ARC](https://arc.markbarney.net/human-arc/).
+
+## Hosting
+
+Run `npm ci` then `npm run build`. Root hosting remains the default. ARC Explainer builds with `HARC_BASE_PATH=/human-arc/`, `VITE_PLAYFAB_TITLE_ID=19FACB`, and `VITE_ARC_EXPLAINER_URL=https://arc.markbarney.net`. The PlayFab title ID is public application configuration; do not provide a PlayFab secret key to any frontend build. The existing PlayFab backend continues storing puzzles and progress. Browser-local guest identity does not transfer automatically between origins.
+
+For a subpath deployment, serve `dist/` under that prefix and return its `index.html` for application routes. Missing assets must return 404. ARC Explainer handles this in its dedicated Human ARC middleware.
+
+---
+
 * Author: Cascade using gpt-4-turbo
 * Date: 2025-09-18  T17:12:13-04:00
 * PURPOSE: High-level project overview and release documentation. Captures major changes and architecture decisions through v0.2.7.

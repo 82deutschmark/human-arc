@@ -1,4 +1,10 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Open library puzzles from ARC Explainer using the existing repository fallback.
+ * SRP/DRY check: Pass — reuses the assessment's established puzzle source and conversion.
+ */
+/**
  * PuzzleSolver Page  - VERY BAD NAME!!!
  * Not sure if this has been deprecated for ResponsivePuzzleSolver ???
  * Author: Cascade
@@ -109,8 +115,8 @@ export default function PuzzleSolver() {
           console.warn(`⚠️ Warning: This is your last attempt for puzzle ${puzzleId}`);
         }
 
-        // Use the centralized service to find the puzzle
-        const puzzleData = await puzzleRepository.findById(puzzleId, true);
+        // The library lists ARC Explainer puzzles; use that same source, with PlayFab fallback.
+        const puzzleData = await puzzleRepository.findById(puzzleId, true, true);
 
         if (puzzleData) {
           setPuzzle(puzzleData);
@@ -154,7 +160,7 @@ export default function PuzzleSolver() {
   const handleSolveAgain = () => {
     setShowAlreadyCompletedModal(false);
     // Continue loading the puzzle for solving (no points awarded)
-    puzzleRepository.findById(puzzleId!, true).then(puzzleData => {
+    puzzleRepository.findById(puzzleId!, true, true).then(puzzleData => {
       if (puzzleData) {
         setPuzzle(puzzleData);
         console.log('✅ Puzzle loaded for re-solving (no points):', puzzleData.id);

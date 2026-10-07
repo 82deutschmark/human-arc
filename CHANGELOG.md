@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-10-07
+
+- Author: Codex. Support hosting under `/human-arc/` with configurable Vite/Wouter base, prefixed assets and raw navigation, and relative manifest URLs. Root hosting remains supported.
+- Library solving now uses the same ARC Explainer puzzle source as the library and assessment, with existing PlayFab fallback, so listed puzzles missing from PlayFab can open.
+- Add ARC Explainer and public GitHub source links; move canonical URLs to ARC Explainer.
+- ARC Explainer builds a pinned revision with its public PlayFab title ID and model-data API URL. Never pass a PlayFab secret key into the browser build.
+
 ## [1.0.2] - 2025-11-11
 
 ### Fixed

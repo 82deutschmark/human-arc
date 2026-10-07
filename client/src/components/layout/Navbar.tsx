@@ -1,3 +1,9 @@
+/**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { playFabAuth } from '@/services/playfab/auth';
@@ -37,6 +43,10 @@ export function Navbar({
   return (
     <nav className={`bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between py-1 text-xs text-gray-600">
+          <a href="https://arc.markbarney.net/" className="hover:underline">← ARC Explainer</a>
+          <a href="https://github.com/82deutschmark/human-arc" className="hover:underline">Source on GitHub</a>
+        </div>
         <div className="flex items-center justify-between h-16">
           {/* Left side - Logo and title */}
           <div className="flex items-center">

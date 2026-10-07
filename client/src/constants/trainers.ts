@@ -1,3 +1,10 @@
+/**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
+import { appPath } from "@/utils/appPath";
 export interface Trainer {
   id: string;
   name: string;
@@ -12,7 +19,7 @@ export const TRAINERS: Trainer[] = [
     id: 'wyatt',
     name: 'Wyatt',
     rank: 'Sergeant',
-    image: '/wyatt-space-force.jpg',
+    image: appPath('/wyatt-space-force.jpg'),
     speciality: 'Basic Training',
     type: 'trainer'
   },
@@ -20,7 +27,7 @@ export const TRAINERS: Trainer[] = [
     id: 'trainer1',
     name: 'Rodriguez',
     rank: 'Instructor',
-    image: '/Trainer1.PNG',
+    image: appPath('/Trainer1.PNG'),
     speciality: 'Communications',
     type: 'trainer'
   },
@@ -28,7 +35,7 @@ export const TRAINERS: Trainer[] = [
     id: 'trainer2',
     name: 'Chen',
     rank: 'Staff Sergeant',
-    image: '/Trainer2.png',
+    image: appPath('/Trainer2.png'),
     speciality: 'Navigation Systems',
     type: 'trainer'
   },
@@ -36,7 +43,7 @@ export const TRAINERS: Trainer[] = [
     id: 'trainer3',
     name: 'Thompson',
     rank: 'Technical Sergeant',
-    image: '/Trainer3.png',
+    image: appPath('/Trainer3.png'),
     speciality: 'Power Systems',
     type: 'trainer'
   }
@@ -47,14 +54,14 @@ export const CADETS: Trainer[] = [
     id: 'fatma',
     name: 'Fatma',
     rank: 'Cadet',
-    image: '/Cadet-fatma.png',
+    image: appPath('/Cadet-fatma.png'),
     type: 'cadet'
   },
   {
     id: 'yvonne',
     name: 'Yvonne',
     rank: 'Cadet',
-    image: '/Cadet-Yvonne.PNG',
+    image: appPath('/Cadet-Yvonne.PNG'),
     type: 'cadet'
   }
 ];
@@ -64,7 +71,7 @@ export const OFFICERS: Trainer[] = [
     id: 'wyatt-mc',
     name: 'Wyatt',
     rank: 'Master Chief',
-    image: '/master-chief-wyatt.png',
+    image: appPath('/master-chief-wyatt.png'),
     speciality: 'Advanced Operations',
     type: 'officer'
   },
@@ -72,7 +79,7 @@ export const OFFICERS: Trainer[] = [
     id: 'yasemin',
     name: 'Yasemin',
     rank: 'Master Chief',
-    image: '/masterchief-yasemin.png',
+    image: appPath('/masterchief-yasemin.png'),
     speciality: 'Strategic Analysis',
     type: 'officer'
   },
@@ -80,7 +87,7 @@ export const OFFICERS: Trainer[] = [
     id: 'divyapriya',
     name: 'Divyapriya',
     rank: 'Captain',
-    image: '/captain-divyapriya.PNG',
+    image: appPath('/captain-divyapriya.PNG'),
     speciality: 'Flight Operations',
     type: 'officer'
   },
@@ -88,7 +95,7 @@ export const OFFICERS: Trainer[] = [
     id: 'iki',
     name: 'Iki',
     rank: 'Captain',
-    image: '/captain-iki.png',
+    image: appPath('/captain-iki.png'),
     speciality: 'Tactical Systems',
     type: 'officer'
   },
@@ -96,7 +103,7 @@ export const OFFICERS: Trainer[] = [
     id: 'luz',
     name: 'Luz',
     rank: 'Lieutenant Colonel',
-    image: '/ltcol-Luz.png',
+    image: appPath('/ltcol-Luz.png'),
     speciality: 'Command Operations',
     type: 'officer'
   },
@@ -104,7 +111,7 @@ export const OFFICERS: Trainer[] = [
     id: 'kim',
     name: 'Kim',
     rank: 'Colonel',
-    image: '/col-kim.png',
+    image: appPath('/col-kim.png'),
     speciality: 'Strategic Command',
     type: 'officer'
   }

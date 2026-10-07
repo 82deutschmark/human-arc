@@ -1,4 +1,11 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
+import { appPath } from "@/utils/appPath";
+/**
  * LoadingSplash Component
  * --------------------------------------------------------
  * Author: Cascade AI with Claude 3.7 Sonnet Thinking
@@ -17,17 +24,17 @@ import { useLocation } from 'wouter';
 import { SPACE_EMOJIS } from "@/constants/spaceEmojis";
 
 const TRAINER_IMAGES = [
-  '/Trainer1.PNG',
-  '/Trainer2.png',
-  '/Trainer3.png',
-  '/captain-divyapriya.PNG',
-  '/captain-iki.png',
-  '/col-kim.png',
-  '/ltcol-Luz.png',
-  '/master-chief-wyatt.png',
-  '/masterchief-yasemin.png',
-  '/Cadet-Yvonne.PNG',
-  '/Cadet-fatma.png'
+  appPath('/Trainer1.PNG'),
+  appPath('/Trainer2.png'),
+  appPath('/Trainer3.png'),
+  appPath('/captain-divyapriya.PNG'),
+  appPath('/captain-iki.png'),
+  appPath('/col-kim.png'),
+  appPath('/ltcol-Luz.png'),
+  appPath('/master-chief-wyatt.png'),
+  appPath('/masterchief-yasemin.png'),
+  appPath('/Cadet-Yvonne.PNG'),
+  appPath('/Cadet-fatma.png')
 ];
 
 interface LoadingSplashProps {

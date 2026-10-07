@@ -1,4 +1,11 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
+import { appPath } from "@/utils/appPath";
+/**
  * Author: Claude Code using Sonnet 4
  * Date: 2025-09-14
  * PURPOSE: Personal performance comparison page showing player vs individual LLM models across ALL completed puzzles
@@ -229,25 +236,25 @@ export function PersonalPerformanceComparison() {
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
-                onClick={() => window.location.href = '/assessment'}
+                onClick={() => window.location.href = appPath('/assessment')}
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold"
               >
                 📋 Take Assessment
               </Button>
               <Button
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => window.location.href = appPath('/dashboard')}
                 className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
               >
                 📊 View Dashboard
               </Button>
               <Button
-                onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+                onClick={() => window.location.href = appPath('/leaderboards/harc_leaderboard')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
               >
                 🏆 Leaderboard
               </Button>
               <Button
-                onClick={() => window.location.href = '/puzzles'}
+                onClick={() => window.location.href = appPath('/puzzles')}
                 className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
               >
                 🧩 Puzzle Library
@@ -273,25 +280,25 @@ export function PersonalPerformanceComparison() {
           rightContent={
             <div className="flex items-center space-x-3">
               <Button
-                onClick={() => window.location.href = '/assessment'}
+                onClick={() => window.location.href = appPath('/assessment')}
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold"
               >
                 📋 Take Assessment
               </Button>
               <Button
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => window.location.href = appPath('/dashboard')}
                 className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
               >
                 📊 View Dashboard
               </Button>
               <Button
-                onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+                onClick={() => window.location.href = appPath('/leaderboards/harc_leaderboard')}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
               >
                 🏆 Leaderboard
               </Button>
               <Button
-                onClick={() => window.location.href = '/puzzles'}
+                onClick={() => window.location.href = appPath('/puzzles')}
                 className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
               >
                 🧩 Puzzle Library
@@ -324,25 +331,25 @@ export function PersonalPerformanceComparison() {
         rightContent={
           <div className="flex items-center space-x-3">
             <Button
-              onClick={() => window.location.href = '/assessment'}
+              onClick={() => window.location.href = appPath('/assessment')}
               className="bg-green-600 hover:bg-green-700 text-white font-semibold"
             >
               📋 Take Assessment
             </Button>
             <Button
-              onClick={() => window.location.href = '/dashboard'}
+              onClick={() => window.location.href = appPath('/dashboard')}
               className="bg-amber-600 hover:bg-amber-700 text-white font-semibold"
             >
               📊 View Dashboard
             </Button>
             <Button
-              onClick={() => window.location.href = '/leaderboards/harc_leaderboard'}
+              onClick={() => window.location.href = appPath('/leaderboards/harc_leaderboard')}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
             >
               🏆 Leaderboard
             </Button>
             <Button
-              onClick={() => window.location.href = '/puzzles'}
+              onClick={() => window.location.href = appPath('/puzzles')}
               className="bg-purple-600 hover:bg-purple-700 text-white font-semibold"
             >
               🧩 Puzzle Library
@@ -439,7 +446,7 @@ export function PersonalPerformanceComparison() {
               </div>
               <div className="mt-4 pt-4 border-t border-slate-600/30">
                 <Link
-                  href="/profile"
+                  href={appPath("/profile")}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600/20 border border-amber-500/30 rounded-lg text-amber-300 hover:bg-amber-600/30 hover:text-amber-200 transition-all"
                 >
                   <span>⚙️</span>

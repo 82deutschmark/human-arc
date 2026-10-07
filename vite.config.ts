@@ -1,8 +1,15 @@
+/**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 
 export default defineConfig({
+  base: process.env.HARC_BASE_PATH || "/",
   plugins: [
     react(),
   ],

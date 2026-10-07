@@ -1,3 +1,10 @@
+/**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
+import { appPath } from "@/utils/appPath";
 /*
  * Author: Cascade using Claude 4 Sonnet Thinking
  * Date: 2025-09-14T23:02:19-04:00
@@ -24,38 +31,38 @@ const ROUTE_CONFIGS: Record<string, DocumentMetaConfig> = {
     title: 'HARC Platform - Human vs AI Reasoning Research',
     favicon: null,
     description: 'Compare your cognitive abilities against state-of-the-art AI on abstract reasoning tasks',
-    canonicalUrl: 'https://human-arc.gptpluspro.com'
+    canonicalUrl: 'https://arc.markbarney.net/human-arc'
   },
   '/assessment': {
     title: 'ARC Assessment - Human Cognitive Benchmarking',
-    favicon: '/assessment-favicon.svg',
+    favicon: appPath('/assessment-favicon.svg'),
     description: 'Test your pattern recognition abilities with curated ARC puzzles',
-    canonicalUrl: 'https://human-arc.gptpluspro.com/assessment'
+    canonicalUrl: 'https://arc.markbarney.net/human-arc/assessment'
   },
   '/puzzles': {
     title: 'HARC Puzzle Library - AI Research Challenges',
     favicon: null,
     description: 'Practice on puzzles that challenge the most advanced AI systems',
-    canonicalUrl: 'https://human-arc.gptpluspro.com/puzzles'
+    canonicalUrl: 'https://arc.markbarney.net/human-arc/puzzles'
   },
   '/dashboard': {
     title: 'HARC Dashboard - Your Cognitive Performance',
     favicon: null,
     description: 'View your performance analysis and comparison with AI models',
-    canonicalUrl: 'https://human-arc.gptpluspro.com/dashboard'
+    canonicalUrl: 'https://arc.markbarney.net/human-arc/dashboard'
   },
   '/space-force': {
     title: 'Mission Control 2050 - Space Force Operations Center',
     favicon: null,
     description: 'Join the Space Force Operations Center where cadets solve ARC-style puzzles to advance through military ranks',
-    canonicalUrl: 'https://human-arc.gptpluspro.com/space-force'
+    canonicalUrl: 'https://arc.markbarney.net/human-arc/space-force'
   },
   // Default fallback for HARC routes
   default: {
     title: 'HARC Platform - Human vs AI Reasoning Research',
     favicon: null,
     description: 'Research platform comparing human and artificial intelligence on abstract reasoning tasks',
-    canonicalUrl: 'https://human-arc.gptpluspro.com'
+    canonicalUrl: 'https://arc.markbarney.net/human-arc'
   }
 };
 

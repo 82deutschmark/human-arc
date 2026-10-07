@@ -1,4 +1,11 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
+import { appPath } from "@/utils/appPath";
+/**
  * Author: Cascade using gpt-4-turbo
  * Date: 2025-09-17
  * PURPOSE: This component renders the header for the tutorial mode. It displays the current step number, the title of the step, the instructor's avatar, and provides buttons for toggling the guidance panel and exiting the tutorial. It's a presentational component that provides context and navigation for the tutorial.
@@ -32,7 +39,7 @@ export function TutorialHeader({
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <img 
-              src="/Cadet-Yvonne.PNG" 
+              src={appPath("/Cadet-Yvonne.PNG")}
               alt="Cadet Yvonne" 
               className="w-12 h-12 rounded-full border-2 border-cyan-400 object-cover" 
             />

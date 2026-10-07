@@ -1,4 +1,11 @@
 /**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
+import { appPath } from "@/utils/appPath";
+/**
  * Author: Cascade using gpt-4-turbo
  * Date: 2025-09-17
  * PURPOSE: This component provides a multi-step tutorial modal for onboarding users to the Officer Academy. It guides them through the basic concepts of puzzle solving, from grid interaction to advanced validation. It is built on the `useTutorialProgress` hook, which manages the state and flow of the tutorial.
@@ -73,7 +80,7 @@ export function OfficerTutorialModal({ open, onClose, onStartTutorial }: Officer
             <div>
               <div className="flex justify-center mb-4">
                 <img 
-                  src="/Cadet-Yvonne.PNG" 
+                  src={appPath("/Cadet-Yvonne.PNG")}
                   alt="Cadet Yvonne - Tutorial Instructor" 
                   className="w-48 h-48 sm:w-64 sm:h-64 rounded-full border-4 border-cyan-400 object-cover transition-transform duration-300 hover:scale-105" 
                 />
@@ -168,7 +175,7 @@ export function OfficerTutorialModal({ open, onClose, onStartTutorial }: Officer
           <div className="flex items-center justify-between border-b border-slate-600 pb-4">
             <div className="flex items-center space-x-4">
               <img 
-                src="/Cadet-Yvonne.PNG" 
+                src={appPath("/Cadet-Yvonne.PNG")}
                 alt="Cadet Yvonne" 
                 className="w-16 h-16 rounded-full border-4 border-cyan-400 object-cover" 
               />

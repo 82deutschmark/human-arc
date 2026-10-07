@@ -1,3 +1,9 @@
+/**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
+ * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ */
 /*
  *
  * Author: Cascade using Gemini 2.5 Pro
@@ -61,7 +67,7 @@ export function About() {
                       Personal Website
                     </a>
                     <a
-                      href="https://arc.gptpluspro.com"
+                      href="https://arc.markbarney.net"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200"

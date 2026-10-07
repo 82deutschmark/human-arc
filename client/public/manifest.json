@@ -3,35 +3,21 @@
   "name": "Human-ARC Assessment Platform",
   "short_name": "Human-ARC",
   "description": "Assess human and AI performance on Abstract Reasoning Corpus puzzles. Compare your problem-solving skills against state-of-the-art LLMs.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#1a202c",
   "theme_color": "#667eea",
   "orientation": "any",
-  "scope": "/",
+  "scope": "./",
   "lang": "en",
-  "categories": ["education", "games", "productivity"],
+  "categories": [
+    "education",
+    "games",
+    "productivity"
+  ],
   "icons": [
     {
-      "src": "/favicon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/favicon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assessment-favicon.svg",
+      "src": "assessment-favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
