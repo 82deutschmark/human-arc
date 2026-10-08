@@ -30,11 +30,11 @@ const ROUTE_CONFIGS: Record<string, DocumentMetaConfig> = {
   '/': {
     title: 'HARC Platform - Human vs AI Reasoning Research',
     favicon: null,
-    description: 'Compare your cognitive abilities against state-of-the-art AI on abstract reasoning tasks',
-    canonicalUrl: 'https://arc.markbarney.net/human-arc'
+    description: 'Solve ARC puzzles, review your results and explore archived AI comparisons',
+    canonicalUrl: 'https://arc.markbarney.net/human-arc/'
   },
   '/assessment': {
-    title: 'ARC Assessment - Human Cognitive Benchmarking',
+    title: 'ARC Assessment - Human Puzzle Performance',
     favicon: appPath('/assessment-favicon.svg'),
     description: 'Test your pattern recognition abilities with curated ARC puzzles',
     canonicalUrl: 'https://arc.markbarney.net/human-arc/assessment'
@@ -46,7 +46,7 @@ const ROUTE_CONFIGS: Record<string, DocumentMetaConfig> = {
     canonicalUrl: 'https://arc.markbarney.net/human-arc/puzzles'
   },
   '/dashboard': {
-    title: 'HARC Dashboard - Your Cognitive Performance',
+    title: 'HARC Dashboard - Your Puzzle Performance',
     favicon: null,
     description: 'View your performance analysis and comparison with AI models',
     canonicalUrl: 'https://arc.markbarney.net/human-arc/dashboard'

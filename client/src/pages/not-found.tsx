@@ -1,4 +1,12 @@
+/**
+ * Author: Codex
+ * Date: 2026-10-07
+ * PURPOSE: Help visitors recover from an unavailable Human ARC page.
+ * SRP/DRY check: Pass — reuses shared card, button and router components.
+ */
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import { AlertCircle } from "lucide-react";
 
 export default function NotFound() {
@@ -12,8 +20,9 @@ export default function NotFound() {
           </div>
 
           <p className="mt-4 text-sm text-gray-600">
-            Did you forget to add the page to the router?
+            This page is unavailable. You can return to Human ARC and choose a puzzle or assessment.
           </p>
+          <Button asChild className="mt-6"><Link href="/">Return to Human ARC</Link></Button>
         </CardContent>
       </Card>
     </div>

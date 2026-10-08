@@ -1,7 +1,7 @@
 /**
  *
- * Author: Claude Code using Sonnet 4
- * Date: 2025-09-16
+ * Author: Claude Code using Sonnet 4; cleanup by Codex
+ * Date: 2026-10-07
  * PURPOSE: HARC Platform landing page with navigation links to assessment, dashboard, and puzzle library.
  * Simplified version that focuses on navigation and core functionality without bogus stats.
  * SRP and DRY check: Pass - Single responsibility of providing navigation to HARC features.
@@ -88,7 +88,7 @@ export default function HARCPlatform() {
             Could an AI solve novel abstract reasoning tasks better than you?
           </h1>
           <p className="text-xl text-gray-600">
-            Compare yourself to the state of the art.
+            Solve ARC puzzles and explore published AI results.
           </p>
         </div>
       </div>
@@ -180,8 +180,8 @@ export default function HARCPlatform() {
             </CardHeader>
             <CardContent className="p-6">
               <p className="text-gray-700 text-center leading-relaxed">
-                View detailed comparisons of your performance against the latest state of the art AI models, with insights into
-                how you compare to the best AI models and where humans excel.
+                Compare your puzzle results with AI runs available in ARC Explainer's archive.
+                Model coverage and evaluation conditions vary; these are not a current official leaderboard.
               </p>
             </CardContent>
           </Card>
@@ -195,7 +195,7 @@ export default function HARCPlatform() {
             <CardContent className="p-6">
               <p className="text-gray-700 text-center leading-relaxed">
                 Building a dataset of human performance on abstract reasoning tasks. Contribute to research while
-                discovering your cognitive strengths in novel problem-solving.
+                exploring how you approach unfamiliar patterns and rules.
               </p>
             </CardContent>
           </Card>
@@ -211,21 +211,21 @@ export default function HARCPlatform() {
               <div className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">1</div>
               <div className="flex-1">
                 <h4 className="font-bold text-emerald-700 mb-2 text-lg">Complete the Assessment</h4>
-                <p className="text-gray-700 leading-relaxed">Solve a curated set of Abstract Reasoning Corpus (ARC) puzzles that measure different aspects of cognitive reasoning. Each puzzle tests your ability to identify patterns and rules in novel scenarios.</p>
+                <p className="text-gray-700 leading-relaxed">Solve a curated set of Abstraction and Reasoning Corpus (ARC) puzzles. Use the examples to identify patterns and rules, then draw the missing output.</p>
               </div>
             </div>
             <div className="flex items-start space-x-6">
               <div className="bg-gradient-to-br from-amber-500 to-orange-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">2</div>
               <div className="flex-1">
-                <h4 className="font-bold text-amber-700 mb-2 text-lg">Receive Your Cognitive Performance Score</h4>
-                <p className="text-gray-700 leading-relaxed">Get a detailed breakdown of your performance against state-of-the-art AI models and other humans! See where you excel and discover the unique strengths of human reasoning.</p>
+                <h4 className="font-bold text-amber-700 mb-2 text-lg">Review Your Puzzle Results</h4>
+                <p className="text-gray-700 leading-relaxed">See your results on the puzzles you attempted and compare available human and AI records. This is a puzzle performance record, not an intelligence test.</p>
               </div>
             </div>
             <div className="flex items-start space-x-6">
               <div className="bg-gradient-to-br from-purple-500 to-pink-600 text-white w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">3</div>
               <div className="flex-1">
-                <h4 className="font-bold text-purple-700 mb-2 text-lg">Ongoing Cognitive Training</h4>
-                <p className="text-gray-700 leading-relaxed">Fluid intelligence is the ability to solve novel problems that haven't been seen before. This is where AI breaks down and humans excel. By regularly solving puzzles, you can improve your fluid intelligence and cognitive reasoning skills.</p>
+                <h4 className="font-bold text-purple-700 mb-2 text-lg">Keep Practicing</h4>
+                <p className="text-gray-700 leading-relaxed">Explore more puzzles, try different approaches and learn from the examples. Practice helps you become familiar with ARC tasks; this site does not establish that it improves general intelligence.</p>
               </div>
             </div>
           </CardContent>
@@ -240,7 +240,7 @@ export default function HARCPlatform() {
                 <h3 className="text-xl font-bold text-slate-700">Research Foundation</h3>
               </div>
               <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
-                The Abstract Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning.
+                The Abstraction and Reasoning Corpus (ARC) is a benchmark designed to measure AI progress on abstract reasoning.
                 The HARC Platform extends this work by collecting systematic human performance data,
                 enabling direct human vs AI comparisons on identical reasoning tasks. Someday it might contribute to the
                 understanding of the unique capabilities that distinguish human and artificial intelligence.  Collaborators to the project are always welcome!

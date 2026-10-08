@@ -1,13 +1,11 @@
 /**
  * Author: Codex
  * Date: 2026-10-07
- * PURPOSE: Support Human ARC at a configurable hosting prefix within ARC Explainer.
- * SRP/DRY check: Pass — shared appPath helper keeps application and asset URLs consistent.
+ * PURPOSE: Provide working Human ARC navigation, including the existing guest profile flow.
+ * SRP/DRY check: Pass — reuses Wouter links and shared navigation buttons.
  */
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { playFabAuth } from '@/services/playfab/auth';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface NavbarProps {
   /** Optional title to display in the navbar */
@@ -32,8 +30,6 @@ export function Navbar({
   className = '' 
 }: NavbarProps) {
   const [location] = useLocation();
-  const isAuthenticated = playFabAuth.isAuthenticated();
-  const isLoading = false; // No direct loading state in auth manager
 
   // Don't show navbar on certain pages
   if (['/play', '/game', '/officer-track'].some(path => location.startsWith(path))) {
@@ -77,23 +73,12 @@ export function Navbar({
                 <NavButton href="/puzzles" variant="puzzles">🧩 Puzzles</NavButton>
                 <NavButton href="/about" variant="about">ℹ️ About</NavButton>
 
-                {isLoading ? (
-                  <Skeleton className="h-9 w-24 rounded-md" />
-                ) : isAuthenticated ? (
-                  <Button
-                    asChild
-                    className="border border-blue-500 bg-white text-blue-600 hover:bg-blue-50"
-                  >
-                    <Link href="/profile">My Profile</Link>
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    <Link href="/login">Sign In</Link>
-                  </Button>
-                )}
+                <Button
+                  asChild
+                  className="border border-blue-500 bg-white text-blue-600 hover:bg-blue-50"
+                >
+                  <Link href="/profile">My Profile</Link>
+                </Button>
               </div>
             )}
           </div>

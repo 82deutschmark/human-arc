@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.1] - 2026-10-07
+
+- Author: Codex. Replace the unimplemented sign-in destination with the existing anonymous profile flow and give missing pages a return link.
+- Describe scores as puzzle results, qualify archived AI comparisons, and remove unsubstantiated claims about measuring or improving intelligence.
+
 ## [1.1.0] - 2026-10-07
 
 - Author: Codex. Support hosting under `/human-arc/` with configurable Vite/Wouter base, prefixed assets and raw navigation, and relative manifest URLs. Root hosting remains supported.
