@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.1] - 2026-10-07
 
+- Replace the malformed legacy README with current setup, hosting and architecture notes, retaining links to historical documentation.
+
 - Author: Codex. Replace the unimplemented sign-in destination with the existing anonymous profile flow and give missing pages a return link.
 - Describe scores as puzzle results, qualify archived AI comparisons, and remove unsubstantiated claims about measuring or improving intelligence.
 

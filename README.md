@@ -1,527 +1,84 @@
 # Human ARC
 
-Human ARC introduces people to ARC puzzles and compares human and AI performance. Its public home is [ARC Explainer / Human ARC](https://arc.markbarney.net/human-arc/).
+[Open Human ARC on ARC Explainer](https://arc.markbarney.net/human-arc/)
 
-## Hosting
+Human ARC is a browser app for people to try ARC puzzles, review their results, and explore archived AI results on the same tasks. Created by Mark Barney, it includes a guided assessment, a puzzle library, a guest profile, and human-versus-AI comparison views.
 
-Run `npm ci` then `npm run build`. Root hosting remains the default. ARC Explainer builds with `HARC_BASE_PATH=/human-arc/`, `VITE_PLAYFAB_TITLE_ID=19FACB`, and `VITE_ARC_EXPLAINER_URL=https://arc.markbarney.net`. The PlayFab title ID is public application configuration; do not provide a PlayFab secret key to any frontend build. The existing PlayFab backend continues storing puzzles and progress. Browser-local guest identity does not transfer automatically between origins.
+The app also retains the earlier Space Force Mission Control experience under `/space-force`. Human ARC is the main entry point.
 
-For a subpath deployment, serve `dist/` under that prefix and return its `index.html` for application routes. Missing assets must return 404. ARC Explainer handles this in its dedicated Human ARC middleware.
+## What the results mean
 
----
+Human ARC records puzzle attempts and progress. Its scores describe activity in this app; they are not IQ scores or a validated measure of intelligence. AI comparisons use the results available through ARC Explainer, including historical evaluations, and should not be read as a current model leaderboard or a controlled human-versus-AI experiment.
 
-* Author: Cascade using gpt-4-turbo
-* Date: 2025-09-18  T17:12:13-04:00
-* PURPOSE: High-level project overview and release documentation. Captures major changes and architecture decisions through v0.2.7.
-* SRP and DRY check: Pass – README focuses solely on documentation.
+## Run locally
 
-# HARC Platform / Space Force Mission Control 2050 
-## Version 0.2.7 - Modular Solver, ARC-AGI Prize Compliance & Platform Restructure (September 18, 2025)
-
-### 🚀 Release Highlights (v0.2.x)
-- **Platform Pivot to HARC** – `/` now loads the HARC research experience. Space-Force content lives under `/space-force/*`. Added `HARCPuzzleBrowser.tsx` and streamlined puzzle flow (assessment → comparison → practice).
-- **Modular Puzzle Solver (Phases 3-5)** – Replaced 1075-line `ResponsivePuzzleSolver.tsx` with lean container `HARCResponsiveSolverUI.tsx`, four presentational components, custom hooks, robust error boundary, and >90 % test coverage.
-- **ARC-AGI 2-Attempt Limit** – Full prize-rules enforcement via CloudScript `AttemptTrackingService`, client `attemptTracker.ts`, and UI badges.
-- **Strategy Sharing & 10 K Bonus** – Success modals now allow users to publish solutions. CloudScript `AwardStrategyBonus` grants 10 000 points for the first valid submission.
-- **HARC Leaderboard** – Ranks players across all 1 920+ ARC puzzles using real `finalScore` data. ParticipantDashboard shows rich stats.
-- **Security & Scoring Fixes** – Patched infinite-score exploit, added smart completion detection, duplicate prevention, and hardened CloudScript.
-- **Service-Layer Refactor** – Introduced `cacheManager`, `arcExplainerClient`, `playfabPuzzleClient`, and `puzzleRepository`, eliminating ~3 000 duplicate lines.
-- **Validation Resilience** – Automatic client-side fallback keeps validations working during CloudScript outages and logs fallback usage.
-- **ID Conversion & Data Integrity** – Bullet-proof `idConverter.validateId()` accepts any PlayFab puzzle ID format, resolving comparison page failures.
-- **UX & Accessibility** – Raw numbers display mode, revamped assessment success modal, responsive layouts, performance badges, and colorblind-safe themes.
-
-> Detailed per-version notes live in `CHANGELOG.md`.
-This app is several different wrappers for the same basic core data and functionality. 
-
-### One component is a research platform for the ARC-AGI datasets and how humans perform against AI models.  This is HARC.
-
-### The other component is a Space Force-themed puzzle platform featuring integrated human vs AI performance comparison. 
-
-
-### Both of these wrappers use the same basic architecture and this successfully unifies PlayFab and arc-explainer APIs to provide real-time performance analysis comparing human puzzle-solving abilities against state-of-the-art AI models. Built on the Abstract Reasoning Corpus (ARC) framework.
-
-
-## **Core Achievement: Human vs AI Performance Comparison**
-- **Real Performance Data**: Integrated PlayFab human performance tracking with arc-explainer AI statistics
-- **Unified APIs**: Successfully bridges PlayFab CloudScript validation with external AI performance data
-- **Assessment Pipeline**: Complete user flow from puzzle solving → performance comparison → puzzle discovery
-- **Technical Foundation**: Establishes architecture for the full HARC Platform implementation
-
-## **Key Features**
-- **Assessment Interface**: Users solve curated ARC puzzles with full performance tracking
-- **Performance Comparison**: Real-time comparison of human vs AI solving statistics
-- **Puzzle Discovery**: Foundation for browsing challenging puzzles based on AI difficulty metrics
-- **Space Force Dual Track System**: Enlisted (themed tasks) + Officer (raw ARC-AGI datasets)
-- **Platform**: Static web application with PlayFab cloud backend
-
-https://learn.microsoft.com/en-us/rest/api/playfab/server/?view=playfab-rest - PlayFab Server API Reference
-
-**Architecture**: Pure static site deployment with PlayFab-only backend. No server infrastructure required!
-
-## **Technical Architecture**
-- **Frontend**: React + TypeScript + Vite static application
-- **Backend**: PlayFab CloudScript functions for secure validation and scoring
-- **External APIs**: arc-explainer integration for AI performance benchmarks
-- **Data Flow**: Assessment → PlayFab Storage → Comparison Analysis → Puzzle Discovery
-- **Deployment**: Static site with no server infrastructure requirements
-
-## **User Experience Flow**
-1. **Assessment**: Users solve curated ARC puzzles in `/assessment`
-2. **Performance Tracking**: All actions logged to PlayFab with comprehensive metrics
-3. **Comparison Analysis**: View detailed human vs AI performance at `/assessment/comparison`
-4. **Puzzle Discovery**: Browse challenging puzzles where humans outperform or struggle vs AI (foundation for HARC Platform)
-
-# Legacy Features
-### Space Force-themed puzzle platform features:
-### Enlisted Track (155 Tasks)
-- **Themed Categories**: O₂ Systems, Navigation, Power, Communications, Fuel Systems, Pre-Launch, Security
-- **Rank Progression**: Advance through Space Force enlisted ranks (E1-E9)
-- **Curated Content**: Space Force themed transformations with storylines
-
-### Officer Track (2,020 Puzzles) ✅ Fully Operational with AI-Curated Difficulty 
-- **ARC-AGI Datasets**: Complete training, training2, evaluation, evaluation2 datasets
-- **AI-Curated Difficulty**: Integration with arc-explainer API for AI trustworthiness data
-- **Enhanced Search**: Exact puzzle ID lookup and random selection by AI difficulty  
-- **Performance Analytics**: Real AI accuracy scores (40.9%, 36.3%, 18.5% etc.) and performance metrics
-- **Batch Architecture**: Efficient loading of large puzzle collections from PlayFab
-- **Officer Ranks**: DO NOT EXIST are not designed yet!
-
-### Assessment Platform
-- **Human vs AI Benchmarking**: Compare performance against LLM accuracy data at `/assessment`
-- **2-Attempt System**: Progressive assessment with auto-advancement logic (`AssessmentInterface.tsx`)
-- **Hint System**: 3-tier progressive hints integrated with arc-explainer API (`PermanentHintSystem.tsx`)
-- **Success Feedback**: User-controlled progression with success modal requiring interaction (`SuccessModal.tsx`)
-
-### UI/UX Features
-- **No Mobile**: Any specific mobile features are not yet implemented, it is difficult enough making it look ok on desktop with such big grids.
-- **Responsive Design**: `ResponsiveOfficerGrid.tsx` controls puzzle solving.
-- **Grid Customization**: Separate input/output size controls via `SizeSlider.tsx` (50-100px range)
-- **Visual Integration**: Painting tools show actual ARC colors in Numbers Only mode
-- **Dynamic Metadata**: Navbar displays puzzle performance data from arc-explainer API
-- **Colorblind Friendly**: Multiple emoji sets with clear visual distinctions
-
-## Technical Stack
-
-### Core Technologies
-- **Frontend**: React + TypeScript with Vite (Static Site)
-- **Backend**: PlayFab Cloud Services (No Server Required) 
-- **AI Analytics**: arc-explainer API for AI performance data
-- **UI Components**: Tailwind CSS + shadcn/ui
-- **Data Storage**: PlayFab Title Data & User Data
-- **Authentication**: PlayFab Anonymous Login
-
-### Architecture Overview
-
-This is a **pure static web application** with all backend functionality handled by PlayFab cloud services.
-
-```
-PlayFab Cloud Backend (Single Source of Truth)          arc-explainer API
-├── Title Data:                                          ├── AI Performance Data
-│   ├── AllTasks (155 enlisted tasks)                   │   ├── Accuracy scores (40.9%, 36.3%, etc.)
-│   ├── officer-tasks-training-batch1-4.json (400)     │   ├── Composite difficulty scores  
-│   ├── officer-tasks-training2-batch1-10.json (1000)  │   ├── Wrong count & explanation metrics
-│   ├── officer-tasks-evaluation-batch1-4.json (400)   │   └── AI trustworthiness data
-│   └── officer-tasks-evaluation2-batch1-2.json (120)  └── Puzzle ID cross-referencing
-├── User Data: Player progress & officer track stats              ↓
-├── Statistics: Global leaderboards & rankings                    ↓
-└── Events: Game analytics & logging                              ↓
-    ↓                                                              ↓
-Static React App (client/) ←------ HTTP API Calls ----------------┘
-├── components/    # Game UI + AI difficulty cards
-│   ├── assessment/      # Human vs AI assessment platform
-│   ├── officer/         # Officer track puzzle solver
-│   ├── ui/             # Reusable components (SuccessModal, SizeSlider)
-│   └── layout/         # Navigation (Navbar with dynamic metadata)
-├── constants/     # Emoji sets and game constants
-├── services/      # Pure HTTP integrations
-│   ├── idConverter.ts # ID conversion service between PlayFab and arc-explainer IDs !!!
-│   ├── playfab/         # PlayFab services
-|   |── core/            # Core arc-explainer services
-|        ├── arcExplainerClient.ts
-|        ├── playfabPuzzleClient.ts
-|        ├── puzzleRepository.ts
-│        ├── cacheManager.ts
-│        ├── index.ts
-|
-│   ├── arcDataService.ts       # Officer track batch loading DEPRECATED for files in services/core/
-│   └── arcExplainerService.ts  # AI performance metadata integration  DEPRECATED for files in services/core/ 
-├── types/         # TypeScript definitions
-└── pages/         # Route components with AI-curated filtering
-
-### Data Flow
-1. **Enlisted Tasks**: Loaded from `AllTasks` PlayFab Title Data key
-2. **Officer Tasks**: Batch-loaded from multiple Title Data keys per dataset
-2.1 **HARC Tasks**: Batch-loaded from multiple Title Data keys per dataset
-3. **AI Performance**: Real-time HTTP calls to arc-explainer API for difficulty curation
-4. **Assessment Flow**: 2-attempt system with auto-advancement via `AssessmentInterface.tsx`
-5. **Authentication**: Anonymous PlayFab login with persistent device ID
-6. **Progress**: Stored separately for enlisted vs officer tracks in User Data
-7. **Validation**: Client-side logic with PlayFab progress updates
-8. **Hints**: Progressive 3-tier system integrated with arc-explainer API
-9. **Success Feedback**: User-controlled progression via `SuccessModal.tsx`
-10. **Leaderboards**: Separate leaderboards for enlisted and officer tracks
-11. **AI Filtering**: Cross-reference PlayFab puzzle IDs with arc-explainer performance data
-12. **Deployment**: Static files served from CDN (Railway)
-
-
-
-## Task System
-
-### Task Structure
-
-Tasks are defined in JSON format with the following structure:
-
-```json
-{
-  "id": "OS-001",
-  "title": "Oxygen Sensor Calibration",
-  "description": "Task description for context",
-  "category": "🛡️ O₂ Sensor Check",
-  "difficulty": "Basic",
-  "gridSize": 2,
-  "timeLimit": null,
-  "basePoints": 3,
-  "requiredRankLevel": 1,
-  "emojiSet": "status_main",
-  "examples": [{"input": [[0,1],[1,0]], "output": [[1,0],[0,1]]}],
-  "testInput": [[0,1],[1,0]],
-  "testOutput": [[1,0],[0,1]],
-  "hints": ["Hint 1", "Hint 2", "Solution"]
-}
-```
-
-### Emoji Sets
-
-Tasks use emoji sets to represent different game elements. The mapping from numbers to emojis is handled automatically by the frontend.
-
-## Officer Track ✅ FULLY OPERATIONAL
-
-### AI-Curated Puzzle System
-Advanced ARC-AGI puzzle platform enhanced with real AI performance analytics:
-
-#### 🎯 **Enhanced Puzzle Search**
-- **Exact ID Lookup**: Search by puzzle ID (e.g., `1ae2feb7`, `007bbfb7`)  
-- **AI Difficulty Filtering**: "Impossible" (0%), "Extremely Hard" (0-25%), "Very Hard" (25-50%), "Challenging" (50-75%)
-- **Random Selection**: Get random puzzles filtered by AI difficulty
-- **Cross-Referencing**: Seamless mapping between PlayFab (`ARC-TR-007bbfb7`) and ARC Explainer (`007bbfb7`) IDs
-
-#### 📊 **AI Performance Analytics** 
-- **Real Accuracy Scores**: Live data showing actual AI success rates (e.g., 40.9%, 36.3%, 18.5%)
-- **Performance Metrics**: Wrong count, explanation attempts, composite difficulty scores
-- **Trustworthiness Data**: Highlight puzzles that consistently stump AI systems
-- **Difficulty Cards**: Dynamic statistics showing puzzle distribution across AI difficulty categories
-
-#### 🏗️ **Technical Implementation**
-- **Data Source**: 2,020 puzzles stored in PlayFab Title Data across 20 batches
-- **API Integration**: Real-time HTTP calls to `arc-explainer-production.up.railway.app`
-- **Batch Loading**: Efficient pagination system for large puzzle collections
-- **Performance Optimized**: Only essential metrics transferred, not full puzzle arrays
-
-### Usage Examples
-```typescript
-// Search for specific puzzle
-await handlePuzzleSearch("1ae2feb7");
-
-// Get random "impossible" puzzle (0% AI accuracy)  
-await handleRandomPuzzle("impossible");
-
-// Filter by AI performance
-const hardPuzzles = puzzles.filter(p => 
-  arcExplainerAPI.getDifficultyCategory(p.avgAccuracy) === "extremely_hard"
-);
-```
-
-## Development
-
-
-## Gameplay
-
-### Rank Progression
-
-Players advance through Space Force enlisted ranks by earning points from solving puzzles. Each rank requires more points to achieve than the previous one.
-
-### Task Categories
-
-- **🛡️ O₂ Sensor Check**: Oxygen system diagnostics
-- **🚀 Pre-Launch Ops**: Launch preparation tasks
-- **📊 Fuel Systems**: Fuel flow and mixture analysis
-- **🧭 Navigation**: Directional calibration
-- **📡 Communications**: Communication systems
-- **⚡ Power Systems**: Power distribution
-- **🔒 Security**: Security systems
-
-## Development
-
-### Getting Started
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Set up environment variables: Copy `.env` and configure:
-   ```bash
-   VITE_PLAYFAB_TITLE_ID="19FACB"
-   VITE_ARC_EXPLAINER_URL="https://arc-explainer-production.up.railway.app"
-   ```
-4. Start development server: `npm run test` (builds + runs dev server)
-
-### Key File Organization for Development
-
-```
-client/src/
-├── components/
-│   ├── assessment/          # Assessment platform (/assessment route)
-│   │   ├── AssessmentInterface.tsx    # Main 2-attempt assessment flow
-│   │   └── AssessmentModal.tsx        # User onboarding modal
-│   ├── officer/             # Officer track puzzle solver
-│   │   ├── ResponsivePuzzleSolver.tsx # Main solver interface
-│   │   ├── PermanentHintSystem.tsx    # 3-tier progressive hints
-│   │   └── EmojiPaletteDivider.tsx    # Painting tools with ARC colors
-│   ├── ui/                  # Reusable components
-│   │   ├── SuccessModal.tsx           # Success feedback (user-controlled)
-│   │   └── SizeSlider.tsx             # Grid size controls (50-100px)
-│   └── layout/
-│       └── Navbar.tsx                 # Dynamic metadata display
-├── services/
-│   ├── playfab/             # Backend integration
-│   └── arcExplainerService.ts         # AI metadata from arc-explainer API
-└── types/                   # TypeScript definitions
-    ├── arcTypes.ts                    # ARC puzzle types
-    └── puzzleDisplayTypes.ts          # UI state types
-```
-
-### Officer Track Setup
-The Officer Track with AI-curated difficulty requires:
-- **PlayFab Title Data**: 2,020 puzzles across 20 batch keys (already configured)
-- **arc-explainer API**: External service providing AI performance analytics
-- **Environment**: `VITE_ARC_EXPLAINER_URL` must point to your arc-explainer instance
-
-#### Arc-Explainer API Integration
-The Officer Track uses the arc-explainer API for AI difficulty analysis:
-
-**Key Endpoint**: `/api/puzzle/worst-performing`
-- **Parameters**: `limit` (max 50), `sortBy`, `minAccuracy`, `maxAccuracy`, `zeroAccuracyOnly`
-- **Response**: Puzzle performance data with `avgAccuracy`, `compositeScore`, etc.
-- **ID Format**: Uses raw puzzle IDs (e.g., `007bbfb7`) vs PlayFab format (`ARC-TR-007bbfb7`)
-
-**Data Flow**:
-1. PlayFab stores puzzle content (authoritative source)
-2. Arc-explainer provides AI performance metadata  
-3. ID conversion: `ARC-TR-007bbfb7` ↔ `007bbfb7`
-4. Merged data enables difficulty-based filtering
-
-**Available Filters**:
-- `zeroAccuracyOnly=true` - Puzzles with 0% AI success rate (impossible category)
-- `minAccuracy`/`maxAccuracy` - Accuracy range filtering
-- `sortBy=composite` - Sort by composite difficulty score
-
-### Documentation
-
-📚 **See [docs/](./docs/)** for comprehensive documentation:
-- **[PlayFab API Analysis](./docs/playfab-api-analysis.md)** - Complete API reference and security audit
-- **[Migration Plan](./docs/2SeptPlayfabTasks.md)** - PlayFab implementation phases
-
-⚠️ **Security Notice**: Current task validation is client-side only. See API Analysis for production security recommendations.
-
-### Adding New Tasks
-
-Tasks are now managed in **PlayFab Title Data**. To add new tasks:
-
-1. Use the PlayFab dashboard to update Title Data
-2. Follow the task structure shown above
-3. Use numbers 0-9 in input/output arrays (emojis are mapped in the UI)
-4. Tasks are loaded automatically on app refresh
-5. No server restart required - it's a static site!
-
-### Deployment
+Use a recent Node.js release with npm.
 
 ```bash
-# Build static site
-npm run build
-
-# Preview production build locally  
-npm start
+npm ci
 ```
 
-Static files are deployed to Railway and served from CDN.
+Create a `.env` file in the repository root with the public application configuration:
+
+```dotenv
+VITE_PLAYFAB_TITLE_ID=19FACB
+VITE_ARC_EXPLAINER_URL=https://arc.markbarney.net
+```
+
+Then start Vite:
+
+```bash
+npm run dev
+```
+
+Open the local address printed by Vite. The browser connects to the configured live services; this is not an offline copy of the puzzle and progress databases. For an independent deployment, configure your own PlayFab title and its required data and CloudScript.
+
+Useful commands:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the development frontend. |
+| `npm run build` | Build static files into `dist/`. |
+| `npm start` | Preview the built frontend locally. |
+| `npm run check` | Run TypeScript checking. |
+
+The legacy `npm test` command is **not an automated test suite**. Its `pretest` scripts synchronize PlayFab CloudScript and AI-model data before building and starting the development server. Use the commands above for ordinary frontend development.
+
+## Hosting on ARC Explainer
+
+The public address is **https://arc.markbarney.net/human-arc/**. ARC Explainer builds a pinned revision of this repository as a separate frontend and serves it at that prefix.
+
+To build for the same prefix, with the `.env` configuration above:
+
+```bash
+HARC_BASE_PATH=/human-arc/ npm run build
+```
+
+Root hosting remains the default when `HARC_BASE_PATH` is unset. For a subpath deployment, serve `dist/` beneath that prefix and return its `index.html` for application routes. Missing assets must return 404 rather than an HTML page. ARC Explainer provides this routing through its Human ARC middleware.
+
+The PlayFab title ID is public configuration. Never put a PlayFab secret key in a `VITE_` variable or frontend bundle. Guest identity is stored in the browser, so moving between domains or clearing browser storage does not automatically preserve access to the same guest profile.
+
+## How it is organized
+
+- **Frontend:** React, TypeScript, Vite, Wouter, Tailwind CSS, and shadcn/ui components in `client/`.
+- **Puzzle access:** the shared repository in `client/src/services/core/` combines ARC Explainer and PlayFab sources. The library solver uses ARC Explainer first, with PlayFab fallback.
+- **Progress and profiles:** the PlayFab services in `client/src/services/playfab/` manage anonymous identity, stored progress, and leaderboard data.
+- **Validation and scoring:** `cloudscript.js` contains the PlayFab CloudScript implementation; some client flows also retain fallback validation.
+- **Historical code:** the repository includes earlier server and Space Force tooling. The standard Vite build produces the current static frontend; it does not start that legacy server.
+
+## Documentation
+
+- [ARC Explainer hosting plan](docs/07102026-ARCExplainerHosting.md) — integration scope, routing, and release checks.
+- [October 2026 public-site cleanup](docs/07102026-public-site-cleanup.md) — guest navigation and clearer result descriptions.
+- [Changelog](CHANGELOG.md) — changes across releases.
+- [Assessment modal analysis](ASSESSMENT_MODAL_DEEP_DIVE.md) — assessment state transitions and earlier fixes.
+- [Architecture notes](docs/architecture.md), [PlayFab integration](docs/playfab-integration.md), and [ARC Explainer integration](docs/arc-explainer-integration.md) — older design context; check current source and the hosting notes when implementing changes.
+- [Archived plans](docs/archive/) — historical migrations, experiments, and retired systems.
 
 ## Contributing
 
-Contributions are welcome! Please follow these guidelines:
+Issues and pull requests are welcome. Describe the affected page, the steps to reproduce a problem, and what you expected. For development conventions, read [CLAUDE.md](CLAUDE.md). Changes to PlayFab data or CloudScript are separate from publishing the frontend.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+## Credits
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [ARC-AGI](https://arcprize.org/arc-agi) for the puzzle framework
-- PlayFab for backend services
-    "⬛ <background clarification>"
-  ]
-}
-```
-
-# ARC-AGI Transformation Types will involve one or more of these:
-
-## Geometric Transformations
-- Rotation (90°, 180°, 270°)
-- Reflection (horizontal, vertical, diagonal)
-- Translation (moving objects)
-- Scaling (resize objects)
-
-## Pattern Operations
-- Pattern completion
-- Pattern extension
-- Pattern repetition
-- Sequence prediction
-
-## Logical Operations
-- AND operations
-- OR operations
-- XOR operations
-- NOT operations
-- Conditional logic
-
-## Grid Operations
-- Grid splitting (horizontal, vertical, quadrant)
-- Grid merging
-- Grid overlay
-- Grid subtraction
-
-## Object Manipulation
-- Object counting
-- Object sorting
-- Object grouping
-- Object filtering
-
-## Spatial Relationships
-- Inside/outside relationships
-- Adjacent/touching relationships
-- Containment relationships
-- Proximity relationships
-
-## Color Operations
-- Color mapping
-- Color replacement
-- Color pattern matching
-- Color logic operations
-
-## Shape Operations
-- Shape detection
-- Shape transformation
-- Shape combination
-- Shape decomposition
-
-## Rule Inference
-- Single rule application
-- Multiple rule application
-- Rule interaction
-- Rule generalization
-
-## Abstract Reasoning
-- Symbol interpretation
-- Semantic relationships
-- Conceptual mapping
-- Abstract pattern recognition
-
-### UI Components
-- Game components in `client/src/components/game/`
-- Use existing shadcn components for consistency
-- Follow space theme with dark backgrounds and cyan accents
-
-## PlayFab Integration
-
-### Task Management
-- **GetTitleData**: Loads all 155 tasks from PlayFab Title Data
-- **Client Validation**: Solution validation happens in browser
-- **Progress Tracking**: Results stored in PlayFab User Data
-
-### User Features  
-- **Anonymous Authentication**: Automatic device-based login
-- **Statistics**: Global leaderboards via PlayFab Statistics API
-- **Event Logging**: Game analytics via PlayFab Events API
-
-
-
-## Narrative Story Wrapper System  //  BEING REMOVED WITH PLAYFAB!
-
-### Purpose
-Adds a light-hearted Space-Force-2050 story layer to mundane training tasks without touching core puzzle data.
-
-### How It Works
-1. `server/data/problems.json` – Holds every narrative template.  Keys are transformation types; each array contains one template per task **category** (O₂ Sensor Check, Pre-Launch Ops, Fuel Systems, Navigation, Communications, Power Systems, Security).
-2. `server/data/antagonists.json` – List of mischievous characters (e.g. "Rick the Intern") that caused the mishap.
-3. `server/data/components.json` – List of ship components the antagonist fiddled with.
-4. `server/templates/storyTemplates.ts` – Loader that reads `problems.json` at runtime and exposes templates to the factory.
-5. `server/tools/story-factory.ts` – Pure function that:
-   - Randomly selects an antagonist + component.
-   - Picks the correct template for the task’s `transformationType` + `category`.
-   - Substitutes `{{antagonist}}` and `{{component}}` placeholders.
-   - Returns an enriched task object ready for the API/UI.
-
-### Updating Stories (Writers-Friendly)
-- Open `server/data/problems.json`.
-- Find the transformation type you want (e.g. `rotation_90deg`).
-- Add or edit an object in the array with fields: `id`, `category`, `title`, `description`.
-- Keep it short (<60-char title, <180-char description) and include placeholders where relevant.
-- No code changes are needed – the loader will pick it up automatically.
-
-## AI Failure Content System
-
-### Purpose
-Provides humorous and educational content about why AI struggles with different transformation types, adding both entertainment value and educational insights to tasks.
-
-### AI Failure Data Structure
-The `server/data/ai_failure.json` file contains content for each transformation type:
-
-```json
-{
-  "transformation_type": {
-    "ai_difficulty": "Technical explanation of why AI struggles with this transformation",
-    "comic_situation1": "Humorous scenario showing AI failing at the transformation",
-    "comic_situation2": "Another humorous scenario",
-    "comic_situation3": "A third humorous scenario",
-    "kids_explanation": "Simple explanation for younger players about why the transformation is hard for AI",
-    "kids_explanation1": "Second simple explanation",
-    "kids_explanation2": "Third simple explanation"
-  }
-}
-```
-
-### Transformation Types Covered
-- `horizontal_reflection`: Mirror flips left-to-right
-- `vertical_reflection`: Mirror flips top-to-bottom
-- `rotation_90deg`: 90° clockwise rotation
-- `rotation_270deg`: 270° clockwise (or 90° counter-clockwise) rotation
-- `pattern_completion`: Logical sequence pattern completion
-
-### Using the AI Failure Content
-- Use the `scripts/enhance-tasks.js` script to automatically enhance task descriptions and hints with this content
-- The enhancement script:
-  1. Detects the transformation type used in each task
-  2. Prepends a random comic situation and AI difficulty explanation to the task's description
-  3. Adds the three kids_explanation entries to the beginning of the hints array
-- For tasks that don't follow standard transformation naming patterns, manual enhancement is recommended
-
-### Updating AI Failure Content
-- Edit `server/data/ai_failure.json` to modify existing content
-- Maintain the structure of each transformation type entry
-- When adding new transformation types, ensure all seven fields are included
-- After updating, re-run the enhancement script to apply changes to task files
-
----
-
-## Future Enhancements
-
-### Scalability Considerations
-- Database migration from in-memory to persistent storage
-
-### Feature Roadmap
-- Unity port
-- UI/UX improvements
-- Officer track with complex transformations
-- Onboarding system
+Built on the [Abstraction and Reasoning Corpus](https://github.com/fchollet/ARC-AGI) and the work of the [ARC Prize community](https://arcprize.org/). [ARC Explainer](https://github.com/82deutschmark/arc-explainer) supplies the public hosting and puzzle-result integration; PlayFab provides the existing progress services.
